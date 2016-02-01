@@ -8,9 +8,9 @@ let mapCan, mapCtx;
 let navCan, navCtx;
 
 let ships = [
-  {name: 'A', x: 0, y: 0, heading: 0},
-  {name: 'B', x: 59, y: 59},
-  {name: 'C', x: 20, y: 8},
+  {name: 'P28', x: 0, y: 0, heading: 0},
+  {name: 'A19', x: 38, y: 18},
+  {name: 'S93', x: 20, y: 8},
 ];
 
 function start() {
@@ -53,11 +53,11 @@ function inputs() {
 }
 
 function turnLeft() {
-  ships[0].heading += 2;
+  ships[0].heading -= 2;
 }
 
 function turnRight() {
-  ships[0].heading -= 2;
+  ships[0].heading += 2;
 }
 
 function frame() {
@@ -67,12 +67,18 @@ function frame() {
 }
 
 function draw() {
-  drawGrid();
-  drawShips();
+  drawMap();
   drawNav();
 }
 
-function drawGrid() {
+function drawMap() {
+  mapCtx.clearRect(0, 0, mapCan.width, mapCan.height);
+  
+  drawGrid();
+  drawBlips();
+}
+
+function drawGrid() {  
   mapCtx.beginPath();
   for (var i = 0; i < GRID_SIZE; i++) {
     mapCtx.moveTo(i * TILE_PX + .5, .5);
@@ -85,14 +91,22 @@ function drawGrid() {
   mapCtx.stroke();
 }
 
-function drawShips() {
+function drawBlips() {
   for (let ship of ships) {
     mapCtx.beginPath();
-    mapCtx.arc(ship.x*TILE_PX + TILE_PX/2 + .5,
-            ship.y*TILE_PX + TILE_PX/2 + .5,
-            BLIP_PX, 0, 2 * Math.PI);
+    let x = ship.x * TILE_PX + TILE_PX / 2 + .5;
+    let y = ship.y * TILE_PX + TILE_PX / 2 + .5;
+    mapCtx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
     mapCtx.fillStyle = '#FF0000';
     mapCtx.fill();
+
+    mapCtx.beginPath();
+    mapCtx.fillStyle = '#fff';
+    mapCtx.font = '20px monospace';
+    mapCtx.strokeStyle = '#000';
+    mapCtx.lineWidth = 3;
+    mapCtx.strokeText(ship.name, x + 10, y + 5);
+    mapCtx.fillText(ship.name, x + 10, y + 5);
   }
 }
 
