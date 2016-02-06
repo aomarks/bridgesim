@@ -28,12 +28,16 @@ function drawGrid() {
 }
 
 function drawBlips() {
-  for (let ship of ships) {
+  for (let s of ships) {
     mapCtx.beginPath();
-    let x = ship.x * TILE_PX + TILE_PX / 2 + .5;
-    let y = ship.y * TILE_PX + TILE_PX / 2 + .5;
+    let x = s.x * TILE_PX + TILE_PX / 2 + .5;
+    let y = s.y * TILE_PX + TILE_PX / 2 + .5;
     mapCtx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
-    mapCtx.fillStyle = '#FF0000';
+    if (ship === s) {
+      mapCtx.fillStyle = '#00C2D8';
+    } else {
+      mapCtx.fillStyle = '#FF0000';
+    }
     mapCtx.fill();
 
     mapCtx.beginPath();
@@ -41,7 +45,7 @@ function drawBlips() {
     mapCtx.font = '20px monospace';
     mapCtx.strokeStyle = '#000';
     mapCtx.lineWidth = 3;
-    mapCtx.strokeText(ship.name, x + 10, y + 5);
-    mapCtx.fillText(ship.name, x + 10, y + 5);
+    mapCtx.strokeText(s.name, x + 10, y + 5);
+    mapCtx.fillText(s.name, x + 10, y + 5);
   }
 }
