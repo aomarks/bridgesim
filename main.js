@@ -9,7 +9,7 @@ let ship;
 
 function init() {
   ships = [
-    new Ship('P28', 0, 0, 0),
+    new Ship('P28', 30, 30, 0),
     new Ship('A19', 18, 2, 18),
     new Ship('S93', 20, 8, 37),
   ];
@@ -25,8 +25,15 @@ function init() {
 
 function frame() {
   inputs();
+  tick();
   draw();
   requestAnimationFrame(frame);
+}
+
+function tick() {
+  for (var ship of ships) {
+    ship.tick();
+  }
 }
 
 function draw() {
