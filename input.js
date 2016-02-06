@@ -3,6 +3,8 @@
 let keyBindings = {
   'ArrowLeft': turnLeft,
   'ArrowRight': turnRight,
+  'ArrowUp': thrustUp,
+  'ArrowDown': thrustDown,
 };
 
 let keyPressed = {};
@@ -33,9 +35,23 @@ function inputs() {
 }
 
 function turnLeft() {
-  ships[0].heading -= 2;
+  ship.heading -= 2;
 }
 
 function turnRight() {
-  ships[0].heading += 2;
+  ship.heading += 2;
+}
+
+function thrustUp() {
+  ship.thrust += .01;
+  if (ship.thrust > 1) {
+    ship.thrust = 1;
+  }
+}
+
+function thrustDown() {
+  ship.thrust -= .01;
+  if (ship.thrust < 0) {
+    ship.thrust = 0;
+  }
 }

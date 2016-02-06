@@ -19,7 +19,6 @@ function drawNav() {
   navCtx.strokeStyle = '#555';
   navCtx.stroke();
 
-  let ship = ships[0];
   let angle = radians(ship.heading - 90);
   navCtx.beginPath();
   navCtx.moveTo(w/2 + .5, w/2 + .5);

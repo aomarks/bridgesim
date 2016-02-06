@@ -4,16 +4,21 @@ const GRID_SIZE = 61;
 const TILE_PX = 10;
 const BLIP_PX = 2;
 
-let ships = [
-  {name: 'P28', x: 0, y: 0, heading: 0},
-  {name: 'A19', x: 38, y: 18},
-  {name: 'S93', x: 20, y: 8},
-];
+let ships = [];
+let ship;
 
 function init() {
+  ships = [
+    new Ship('P28', 0, 0, 0),
+    new Ship('A19', 18, 2, 18),
+    new Ship('S93', 20, 8, 37),
+  ];
+  ship = ships[0];
+
   initInput();
   initMap();
   initNav();
+  initThrust();
   
   requestAnimationFrame(frame);
 }
@@ -27,4 +32,5 @@ function frame() {
 function draw() {
   drawMap();
   drawNav();
+  drawThrust();
 }
