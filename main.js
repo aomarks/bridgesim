@@ -5,7 +5,7 @@ const TILE_PX = 10;
 const BLIP_PX = 2;
 
 let ships = [];
-let ship;
+let ship, shipIdx;
 
 function init() {
   ships = [
@@ -14,6 +14,7 @@ function init() {
     new Ship('S93', 20, 8, 37),
   ];
   ship = ships[0];
+  shipIdx = 0;
 
   initInput();
   initMap();

@@ -5,6 +5,8 @@ let keyBindings = {
   'ArrowRight': turnRight,
   'ArrowUp': thrustUp,
   'ArrowDown': thrustDown,
+  'BracketLeft': prevShip,
+  'BracketRight': nextShip,
 };
 
 let keyPressed = {};
@@ -18,7 +20,7 @@ function onKeydown(event) {
   if (event.repeat) {
     return;
   }
-  keyPressed[event.code] = true;
+  keyPressed[event.code] = 0;
 }
 
 function onKeyup(event) {
@@ -29,8 +31,9 @@ function inputs() {
   for (let key in keyPressed) {
     let fn = keyBindings[key];
     if (fn) {
-      fn();
+      fn(keyPressed[key]);
     }
+    keyPressed[key]++;
   }
 }
 
@@ -49,9 +52,33 @@ function thrustUp() {
   }
 }
 
-function thrustDown() {
+function thrustDown(ticks) {
   ship.thrust -= .01;
   if (ship.thrust < 0) {
     ship.thrust = 0;
   }
+}
+
+function nextShip(tick) {
+  if (tick > 0) {
+    return;
+  }
+  if (shipIdx == ships.length - 1) {
+    shipIdx = 0;
+  } else {
+    shipIdx++;
+  }
+  ship = ships[shipIdx]
+}
+
+function prevShip(tick) {
+  if (tick > 0) {
+    return;
+  }
+  if (shipIdx == 0) {
+    shipIdx = ships.length - 1;
+  } else {
+    shipIdx--;
+  }
+  ship = ships[shipIdx]
 }
