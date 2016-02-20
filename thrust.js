@@ -8,8 +8,8 @@ function initThrust() {
 }
 
 function drawThrust() {
-  var w = thrustCan.width;
-  var h = thrustCan.height;
+  let w = thrustCan.width;
+  let h = thrustCan.height;
   thrustCtx.clearRect(0, 0, w, h);
 
   thrustCtx.strokeStyle = '#AAA';

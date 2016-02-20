@@ -7,6 +7,10 @@ let keyBindings = {
   'ArrowDown': thrustDown,
   'BracketLeft': prevShip,
   'BracketRight': nextShip,
+  'Numpad4': prevSubsystem,
+  'Numpad6': nextSubsystem,
+  'Numpad8': powerUp,
+  'Numpad5': powerDown,
 };
 
 let keyPressed = {};
@@ -21,6 +25,7 @@ function onKeydown(event) {
     return;
   }
   keyPressed[event.code] = 0;
+  console.log('key down', event.code);
 }
 
 function onKeyup(event) {
@@ -38,25 +43,19 @@ function inputs() {
 }
 
 function turnLeft() {
-  ship.heading -= 2;
+  ship.turnLeft();
 }
 
 function turnRight() {
-  ship.heading += 2;
+  ship.turnRight();
 }
 
 function thrustUp() {
-  ship.thrust += .01;
-  if (ship.thrust > 1) {
-    ship.thrust = 1;
-  }
+  ship.thrustUp();
 }
 
 function thrustDown(ticks) {
-  ship.thrust -= .01;
-  if (ship.thrust < 0) {
-    ship.thrust = 0;
-  }
+  ship.thrustDown();
 }
 
 function nextShip(tick) {
@@ -81,4 +80,34 @@ function prevShip(tick) {
     shipIdx--;
   }
   ship = ships[shipIdx]
+}
+
+function nextSubsystem(tick) {
+  if (tick > 0) {
+    return;
+  }
+  if (ship.curSubsystem == ship.subsystems.length - 1) {
+    ship.curSubsystem = 0;
+  } else {
+    ship.curSubsystem++;
+  }
+}
+
+function prevSubsystem(tick) {
+  if (tick > 0) {
+    return;
+  }
+  if (ship.curSubsystem == 0) {
+    ship.curSubsystem = ship.subsystems.length - 1;
+  } else {
+    ship.curSubsystem--;
+  }
+}
+
+function powerUp(tick) {
+  ship.powerUp();
+}
+
+function powerDown(tick) {
+  ship.powerDown();
 }

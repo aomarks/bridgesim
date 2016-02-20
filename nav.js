@@ -8,8 +8,8 @@ function initNav() {
 }
 
 function drawNav() {
-  var w = navCan.width;
-  var h = navCan.height;
+  let w = navCan.width;
+  let h = navCan.height;
   navCtx.clearRect(0, 0, w, h);
   
   navCtx.beginPath();

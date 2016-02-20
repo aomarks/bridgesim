@@ -16,7 +16,7 @@ function drawMap() {
 
 function drawGrid() {  
   mapCtx.beginPath();
-  for (var i = 0; i < GRID_SIZE; i++) {
+  for (let i = 0; i < GRID_SIZE; i++) {
     mapCtx.moveTo(i * TILE_PX + .5, .5);
     mapCtx.lineTo(i * TILE_PX + .5, 600+.5);
     mapCtx.moveTo(0 + .5, i * TILE_PX+.5);

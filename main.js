@@ -3,6 +3,7 @@
 const GRID_SIZE = 61;
 const TILE_PX = 10;
 const BLIP_PX = 2;
+const HP = 0.5; // half pixel
 
 let ships = [];
 let ship, shipIdx;
@@ -20,7 +21,8 @@ function init() {
   initMap();
   initNav();
   initThrust();
-  
+  initPower();
+
   requestAnimationFrame(frame);
 }
 
@@ -32,7 +34,7 @@ function frame() {
 }
 
 function tick() {
-  for (var ship of ships) {
+  for (let ship of ships) {
     ship.tick();
   }
 }
@@ -41,4 +43,5 @@ function draw() {
   drawMap();
   drawNav();
   drawThrust();
+  drawPower();
 }
