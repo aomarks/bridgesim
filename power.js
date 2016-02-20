@@ -26,7 +26,7 @@ function drawPower() {
       (i * BAR_W) + PAD + HP,
       h - PAD + HP,
       BAR_W - PAD,
-      -((s.level / 100) * (h - PAD2))
+      snap(-((s.level / 100) * (h - PAD2)))
     );
   }
 

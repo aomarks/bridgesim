@@ -8,15 +8,20 @@ function initThrust() {
 }
 
 function drawThrust() {
-  let w = thrustCan.width;
-  let h = thrustCan.height;
+  let w = thrustCan.width - 1;
+  let h = thrustCan.height - 1;
   thrustCtx.clearRect(0, 0, w, h);
 
   thrustCtx.strokeStyle = '#AAA';
-  thrustCtx.strokeRect(0, 0, w, h);
-  
+  thrustCtx.strokeRect(HP, HP, w, h);
+
   thrustCtx.fillStyle = '#FFF';
-  let bar = h/20;
-  let foo = h - bar;
-  thrustCtx.fillRect(0, foo-(foo*ship.thrust), w, bar);
+  let barHeight = Math.round(h/20);
+  let maxHeight = h - barHeight;
+
+  thrustCtx.fillRect(
+    HP,
+    snap(maxHeight - (ship.thrust * maxHeight)),
+    w,
+    barHeight);
 }

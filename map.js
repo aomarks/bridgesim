@@ -9,18 +9,18 @@ function initMap() {
 
 function drawMap() {
   mapCtx.clearRect(0, 0, mapCan.width, mapCan.height);
-  
+
   drawGrid();
   drawBlips();
 }
 
-function drawGrid() {  
+function drawGrid() {
   mapCtx.beginPath();
   for (let i = 0; i < GRID_SIZE; i++) {
-    mapCtx.moveTo(i * TILE_PX + .5, .5);
-    mapCtx.lineTo(i * TILE_PX + .5, 600+.5);
-    mapCtx.moveTo(0 + .5, i * TILE_PX+.5);
-    mapCtx.lineTo(600 + .5, i * TILE_PX+.5);
+    mapCtx.moveTo(i * TILE_PX + HP, HP);
+    mapCtx.lineTo(i * TILE_PX + HP, 600+HP);
+    mapCtx.moveTo(0 + HP, i * TILE_PX+HP);
+    mapCtx.lineTo(600 + HP, i * TILE_PX+HP);
   }
   mapCtx.lineWidth = 1;
   mapCtx.strokeStyle = '#8BC34A';
@@ -30,8 +30,8 @@ function drawGrid() {
 function drawBlips() {
   for (let s of ships) {
     mapCtx.beginPath();
-    let x = s.x * TILE_PX + TILE_PX / 2 + .5;
-    let y = s.y * TILE_PX + TILE_PX / 2 + .5;
+    let x = s.x * TILE_PX + TILE_PX / 2 + HP;
+    let y = s.y * TILE_PX + TILE_PX / 2 + HP;
     mapCtx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
     if (ship === s) {
       mapCtx.fillStyle = '#00C2D8';
