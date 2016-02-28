@@ -1,16 +1,30 @@
 'use strict';
 
+// TODO: Key codes are kind of a mess. This should work for Chrome at least.
+// See http://unixpapa.com/js/key.html
+
+const KEY_ARROW_L = 37;
+const KEY_ARROW_U = 38;
+const KEY_ARROW_R = 39;
+const KEY_ARROW_D = 40;
+const KEY_K = 'K'.charCodeAt();
+const KEY_L = 'L'.charCodeAt();
+const KEY_O = 'O'.charCodeAt();
+const KEY_P = 'P'.charCodeAt();
+const KEY_S = 'S'.charCodeAt();
+const KEY_W = 'W'.charCodeAt();
+
 let keyBindings = {
-  'ArrowLeft': turnLeft,
-  'ArrowRight': turnRight,
-  'ArrowUp': thrustUp,
-  'ArrowDown': thrustDown,
-  'BracketLeft': prevShip,
-  'BracketRight': nextShip,
-  'Numpad4': prevSubsystem,
-  'Numpad6': nextSubsystem,
-  'Numpad8': powerUp,
-  'Numpad5': powerDown,
+  [KEY_ARROW_L]: turnLeft,
+  [KEY_ARROW_R]: turnRight,
+  [KEY_ARROW_U]: thrustUp,
+  [KEY_ARROW_D]: thrustDown,
+  [KEY_O]: prevShip,
+  [KEY_P]: nextShip,
+  [KEY_K]: prevSubsystem,
+  [KEY_L]: nextSubsystem,
+  [KEY_W]: powerUp,
+  [KEY_S]: powerDown,
 };
 
 let keyPressed = {};
@@ -24,12 +38,12 @@ function onKeydown(event) {
   if (event.repeat) {
     return;
   }
-  keyPressed[event.code] = 0;
-  console.log('key down', event.code);
+  keyPressed[event.keyCode] = 0;
+  console.log('key down', event.keyCode);
 }
 
 function onKeyup(event) {
-  delete keyPressed[event.code];
+  delete keyPressed[event.keyCode];
 }
 
 function inputs() {
