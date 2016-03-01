@@ -16,12 +16,9 @@ function drawThrust() {
   thrustCtx.strokeRect(HP, HP, w, h);
 
   thrustCtx.fillStyle = '#FFF';
-  let barHeight = Math.round(h/20);
+  let barHeight = Math.round(h / 20);
   let maxHeight = h - barHeight;
 
-  thrustCtx.fillRect(
-    HP,
-    snap(maxHeight - (ship.thrust * maxHeight)),
-    w,
-    barHeight);
+  thrustCtx.fillRect(HP, snap(maxHeight - (ship.thrust * maxHeight)), w,
+                     barHeight);
 }

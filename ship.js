@@ -28,13 +28,9 @@ class Ship {
     this.y += t * Math.sin(rads);
   }
 
-  turnLeft() {
-    this.heading -= this.maneuvering.level / 20;
-  }
+  turnLeft() { this.heading -= this.maneuvering.level / 20; }
 
-  turnRight() {
-    this.heading += this.maneuvering.level / 20;
-  }
+  turnRight() { this.heading += this.maneuvering.level / 20; }
 
   thrustUp() {
     this.thrust += .01;

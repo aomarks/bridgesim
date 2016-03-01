@@ -13,7 +13,7 @@ function drawNav() {
   navCtx.clearRect(0, 0, w, h);
 
   navCtx.beginPath();
-  navCtx.arc(w/2 + HP, w/2 + HP, w/2 - 5, 0, 2 * Math.PI);
+  navCtx.arc(w / 2 + HP, w / 2 + HP, w / 2 - 5, 0, 2 * Math.PI);
   navCtx.fillStyle = '#333';
   navCtx.fill();
   navCtx.strokeStyle = '#555';
@@ -21,11 +21,9 @@ function drawNav() {
 
   let angle = radians(ship.heading - 90);
   navCtx.beginPath();
-  navCtx.moveTo(w/2 + HP, w/2 + HP);
-  navCtx.lineTo(
-    Math.cos(angle) * (w/2 - 8) + w/2 + HP,
-    Math.sin(angle) * (w/2 - 8) + w/2 + HP
-  )
+  navCtx.moveTo(w / 2 + HP, w / 2 + HP);
+  navCtx.lineTo(Math.cos(angle) * (w / 2 - 8) + w / 2 + HP,
+                Math.sin(angle) * (w / 2 - 8) + w / 2 + HP);
   navCtx.strokeStyle = '#ff0000';
   navCtx.lineWidth = 2;
   navCtx.stroke();

@@ -22,19 +22,11 @@ function drawPower() {
   powerCtx.fillStyle = '#00F';
   for (let i in ship.subsystems) {
     let s = ship.subsystems[i];
-    powerCtx.fillRect(
-      (i * BAR_W) + PAD + HP,
-      h - PAD + HP,
-      BAR_W - PAD,
-      snap(-((s.level / 100) * (h - PAD2)))
-    );
+    powerCtx.fillRect((i * BAR_W) + PAD + HP, h - PAD + HP, BAR_W - PAD,
+                      snap(-((s.level / 100) * (h - PAD2))));
   }
 
   powerCtx.strokeStyle = '#F00';
-  powerCtx.strokeRect(
-    (ship.curSubsystem * BAR_W) + PAD + HP,
-    PAD + HP,
-    BAR_W - PAD,
-    h - PAD2
-  );
+  powerCtx.strokeRect((ship.curSubsystem * BAR_W) + PAD + HP, PAD + HP,
+                      BAR_W - PAD, h - PAD2);
 }

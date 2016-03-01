@@ -3,7 +3,7 @@
 let mapCan, mapCtx;
 
 function initMap() {
-  mapCan = document.getElementById('map')
+  mapCan = document.getElementById('map');
   mapCtx = mapCan.getContext('2d');
 }
 
@@ -18,9 +18,9 @@ function drawGrid() {
   mapCtx.beginPath();
   for (let i = 0; i < GRID_SIZE; i++) {
     mapCtx.moveTo(i * TILE_PX + HP, HP);
-    mapCtx.lineTo(i * TILE_PX + HP, 600+HP);
-    mapCtx.moveTo(0 + HP, i * TILE_PX+HP);
-    mapCtx.lineTo(600 + HP, i * TILE_PX+HP);
+    mapCtx.lineTo(i * TILE_PX + HP, 600 + HP);
+    mapCtx.moveTo(0 + HP, i * TILE_PX + HP);
+    mapCtx.lineTo(600 + HP, i * TILE_PX + HP);
   }
   mapCtx.lineWidth = 1;
   mapCtx.strokeStyle = '#8BC34A';
