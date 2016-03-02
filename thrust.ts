@@ -1,4 +1,5 @@
-'use strict';
+///<reference path="util.ts" />
+///<reference path="global.ts" />
 
 let thrustCan, thrustCtx;
 

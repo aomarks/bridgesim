@@ -1,4 +1,5 @@
-'use strict';
+///<reference path="util.ts" />
+///<reference path="global.ts" />
 
 // TODO: Key codes are kind of a mess. This should work for Chrome at least.
 // See http://unixpapa.com/js/key.html
@@ -7,12 +8,12 @@ const KEY_ARROW_L = 37;
 const KEY_ARROW_U = 38;
 const KEY_ARROW_R = 39;
 const KEY_ARROW_D = 40;
-const KEY_K = 'K'.charCodeAt();
-const KEY_L = 'L'.charCodeAt();
-const KEY_O = 'O'.charCodeAt();
-const KEY_P = 'P'.charCodeAt();
-const KEY_S = 'S'.charCodeAt();
-const KEY_W = 'W'.charCodeAt();
+const KEY_K = 'K'.charCodeAt(0);
+const KEY_L = 'L'.charCodeAt(0);
+const KEY_O = 'O'.charCodeAt(0);
+const KEY_P = 'P'.charCodeAt(0);
+const KEY_S = 'S'.charCodeAt(0);
+const KEY_W = 'W'.charCodeAt(0);
 
 let keyBindings = {
   [KEY_ARROW_L]: turnLeft,

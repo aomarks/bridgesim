@@ -1,12 +1,12 @@
-'use strict';
-
-const GRID_SIZE = 61;
-const TILE_PX = 10;
-const BLIP_PX = 2;
-const HP = 0.5;  // half pixel
-
-let ships = [];
-let ship, shipIdx;
+///<reference path="input.ts" />
+///<reference path="map.ts" />
+///<reference path="nav.ts" />
+///<reference path="power.ts" />
+///<reference path="ship.ts" />
+///<reference path="thrust.ts" />
+///<reference path="util.ts" />
+///<reference path="const.ts" />
+///<reference path="global.ts" />
 
 function init() {
   ships = [

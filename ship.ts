@@ -1,6 +1,17 @@
-'use strict';
+///<reference path="util.ts" />
 
 class Ship {
+  name;
+  x;
+  y;
+  heading;
+  thrust;
+  engine;
+  maneuvering;
+  weapons;
+  subsystems: Subsystem[];
+  curSubsystem;
+
   constructor(name, x, y, heading) {
     this.name = name;
     this.x = x;
@@ -64,6 +75,10 @@ class Ship {
 }
 
 class Subsystem {
+  name;
+  level;
+  coolant;
+
   constructor(name) {
     this.name = name;
     this.level = 100;

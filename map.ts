@@ -1,4 +1,5 @@
-'use strict';
+///<reference path="const.ts" />
+///<reference path="global.ts" />
 
 let mapCan, mapCtx;
 

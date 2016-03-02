@@ -1,4 +1,6 @@
-'use strict';
+///<reference path="const.ts" />
+///<reference path="global.ts" />
+///<reference path="util.ts" />
 
 let powerCan, powerCtx;
 
@@ -20,7 +22,7 @@ function drawPower() {
   powerCtx.strokeRect(HP, HP, w, h);
 
   powerCtx.fillStyle = '#00F';
-  for (let i in ship.subsystems) {
+  for (let i = 0; i < ship.subsystems.length; i++) {
     let s = ship.subsystems[i];
     powerCtx.fillRect((i * BAR_W) + PAD + HP, h - PAD + HP, BAR_W - PAD,
                       snap(-((s.level / 100) * (h - PAD2))));
