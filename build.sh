@@ -1,3 +1,3 @@
 #!/bin/sh
 
-tsc --out main.js main.ts
+tsc --out main.js ts/main.ts
