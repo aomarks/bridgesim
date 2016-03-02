@@ -1,4 +1,7 @@
+///<reference path="ship.ts" />
+
 // TODO Get rid of this file.
 
-let ships = [];
-let ship, shipIdx;
+let ships: Ship[];
+let ship: Ship;
+let shipIdx: number;

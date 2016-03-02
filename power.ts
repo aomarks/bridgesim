@@ -2,18 +2,19 @@
 ///<reference path="global.ts" />
 ///<reference path="util.ts" />
 
-let powerCan, powerCtx;
+let powerCan: HTMLCanvasElement;
+let powerCtx: CanvasRenderingContext2D;
 
 const PAD = 5;
 const PAD2 = PAD * 2;
 const BAR_W = 40;
 
-function initPower() {
-  powerCan = document.getElementById('power');
+function initPower(): void {
+  powerCan = <HTMLCanvasElement>document.getElementById('power');
   powerCtx = powerCan.getContext('2d');
 }
 
-function drawPower() {
+function drawPower(): void {
   const w = powerCan.width - 1;
   const h = powerCan.height - 1;
   powerCtx.clearRect(0, 0, w, h);

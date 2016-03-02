@@ -1,21 +1,22 @@
 ///<reference path="const.ts" />
 ///<reference path="global.ts" />
 
-let mapCan, mapCtx;
+let mapCan: HTMLCanvasElement;
+let mapCtx: CanvasRenderingContext2D;
 
-function initMap() {
-  mapCan = document.getElementById('map');
+function initMap(): void {
+  mapCan = <HTMLCanvasElement>document.getElementById('map');
   mapCtx = mapCan.getContext('2d');
 }
 
-function drawMap() {
+function drawMap(): void {
   mapCtx.clearRect(0, 0, mapCan.width, mapCan.height);
 
   drawGrid();
   drawBlips();
 }
 
-function drawGrid() {
+function drawGrid(): void {
   mapCtx.beginPath();
   for (let i = 0; i < GRID_SIZE; i++) {
     mapCtx.moveTo(i * TILE_PX + HP, HP);
@@ -28,7 +29,7 @@ function drawGrid() {
   mapCtx.stroke();
 }
 
-function drawBlips() {
+function drawBlips(): void {
   for (let s of ships) {
     mapCtx.beginPath();
     let x = s.x * TILE_PX + TILE_PX / 2 + HP;

@@ -1,14 +1,15 @@
 ///<reference path="util.ts" />
 ///<reference path="global.ts" />
 
-let thrustCan, thrustCtx;
+let thrustCan: HTMLCanvasElement;
+let thrustCtx: CanvasRenderingContext2D;
 
 function initThrust() {
-  thrustCan = document.getElementById('thrust');
+  thrustCan = <HTMLCanvasElement>document.getElementById('thrust');
   thrustCtx = thrustCan.getContext('2d');
 }
 
-function drawThrust() {
+function drawThrust(): void {
   let w = thrustCan.width - 1;
   let h = thrustCan.height - 1;
   thrustCtx.clearRect(0, 0, w, h);

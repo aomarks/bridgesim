@@ -1,14 +1,15 @@
 ///<reference path="util.ts" />
 ///<reference path="global.ts" />
 
-let navCan, navCtx;
+let navCan: HTMLCanvasElement;
+let navCtx: CanvasRenderingContext2D;
 
-function initNav() {
-  navCan = document.getElementById('nav');
+function initNav(): void {
+  navCan = <HTMLCanvasElement>document.getElementById('nav');
   navCtx = navCan.getContext('2d');
 }
 
-function drawNav() {
+function drawNav(): void {
   let w = navCan.width;
   let h = navCan.height;
   navCtx.clearRect(0, 0, w, h);

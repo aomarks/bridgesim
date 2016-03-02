@@ -15,7 +15,7 @@ const KEY_P = 'P'.charCodeAt(0);
 const KEY_S = 'S'.charCodeAt(0);
 const KEY_W = 'W'.charCodeAt(0);
 
-let keyBindings = {
+let keyBindings: {[key: number]: (tick: number) => void} = {
   [KEY_ARROW_L]: turnLeft,
   [KEY_ARROW_R]: turnRight,
   [KEY_ARROW_U]: thrustUp,
@@ -28,14 +28,14 @@ let keyBindings = {
   [KEY_S]: powerDown,
 };
 
-let keyPressed = {};
+let keyPressed: {[key: number]: number} = {};
 
-function initInput() {
+function initInput(): void {
   addEventListener('keydown', onKeydown);
   addEventListener('keyup', onKeyup);
 }
 
-function onKeydown(event) {
+function onKeydown(event: KeyboardEvent): void {
   if (event.repeat) {
     return;
   }
@@ -43,11 +43,11 @@ function onKeydown(event) {
   console.log('key down', event.keyCode);
 }
 
-function onKeyup(event) {
+function onKeyup(event: KeyboardEvent): void {
   delete keyPressed[event.keyCode];
 }
 
-function inputs() {
+function inputs(): void {
   for (let key in keyPressed) {
     let fn = keyBindings[key];
     if (fn) {
@@ -57,23 +57,23 @@ function inputs() {
   }
 }
 
-function turnLeft() {
+function turnLeft(): void {
   ship.turnLeft();
 }
 
-function turnRight() {
+function turnRight(): void {
   ship.turnRight();
 }
 
-function thrustUp() {
+function thrustUp(): void {
   ship.thrustUp();
 }
 
-function thrustDown(ticks) {
+function thrustDown(): void {
   ship.thrustDown();
 }
 
-function nextShip(tick) {
+function nextShip(tick: number): void {
   if (tick > 0) {
     return;
   }
@@ -85,7 +85,7 @@ function nextShip(tick) {
   ship = ships[shipIdx]
 }
 
-function prevShip(tick) {
+function prevShip(tick: number): void {
   if (tick > 0) {
     return;
   }
@@ -97,7 +97,7 @@ function prevShip(tick) {
   ship = ships[shipIdx]
 }
 
-function nextSubsystem(tick) {
+function nextSubsystem(tick: number): void {
   if (tick > 0) {
     return;
   }
@@ -108,7 +108,7 @@ function nextSubsystem(tick) {
   }
 }
 
-function prevSubsystem(tick) {
+function prevSubsystem(tick: number): void {
   if (tick > 0) {
     return;
   }
@@ -119,10 +119,10 @@ function prevSubsystem(tick) {
   }
 }
 
-function powerUp(tick) {
+function powerUp(tick: number): void {
   ship.powerUp();
 }
 
-function powerDown(tick) {
+function powerDown(tick: number): void {
   ship.powerDown();
 }

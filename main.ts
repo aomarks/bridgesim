@@ -8,7 +8,7 @@
 ///<reference path="const.ts" />
 ///<reference path="global.ts" />
 
-function init() {
+function init(): void {
   ships = [
     new Ship('P28', 30, 30, 0),
     new Ship('A19', 18, 2, 18),
@@ -26,20 +26,20 @@ function init() {
   requestAnimationFrame(frame);
 }
 
-function frame() {
+function frame(): void {
   inputs();
   tick();
   draw();
   requestAnimationFrame(frame);
 }
 
-function tick() {
+function tick(): void {
   for (let ship of ships) {
     ship.tick();
   }
 }
 
-function draw() {
+function draw(): void {
   drawMap();
   drawNav();
   drawThrust();
