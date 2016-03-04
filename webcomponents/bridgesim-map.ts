@@ -1,15 +1,14 @@
 ///<reference path="../typings/main.d.ts" />
+///<reference path="../ts/const.ts" />
 ///<reference path="../ts/ship.ts" />
 
 Polymer({
   is: 'bridgesim-map',
 
-  ready() { this.ctx = (<HTMLCanvasElement>this.$.canvas).getContext('2d'); },
+  ready: function(): void { this.ctx = this.$.canvas.getContext('2d'); },
 
-  draw: function(size, ships) {
-    let ctx = this.ctx;
-    let TILE_PX = 10;
-    let HP = 0.5;
+  draw: function(size: number, ships: Ship[]): void {
+    let ctx: CanvasRenderingContext2D = this.ctx;
 
     ctx.beginPath();
     for (let i = 0; i < size; i++) {
@@ -29,7 +28,7 @@ Polymer({
       ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
       // if (ship === s) {
       //  ctx.fillStyle = '#00C2D8';
-      //} else {
+      //} else
       ctx.fillStyle = '#FF0000';
       //}
       ctx.fill();

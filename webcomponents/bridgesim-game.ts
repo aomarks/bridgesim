@@ -11,6 +11,7 @@ Polymer({
       new Ship('A19', 18, 2, 18),
       new Ship('S93', 20, 8, 37),
     ];
+    this.ship = this.ships[0];
 
     this.mpf = 1000 / 60;
     this.prevTs = 0;
@@ -26,5 +27,8 @@ Polymer({
       this.lag -= this.mpf;
     }
     this.$.map.draw(this.size, this.ships);
+    this.$.nav.draw(this.ship);
+    this.$.thrust.draw(this.ship);
+    this.$.power.draw(this.ship);
   },
 });
