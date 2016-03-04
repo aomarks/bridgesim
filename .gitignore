@@ -1,1 +1,4 @@
 main.js
+bower_components
+typings
+*.js

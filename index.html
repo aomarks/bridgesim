@@ -1,16 +1,12 @@
 <html>
-  <script src="main.js"></script>
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="webcomponents/bridgesim-game.html"></link>
 
   <style>
    body {
-       background-color: #000;
+     background-color: #000;
    }
   </style>
 
-  <body onload="init()">
-    <canvas id="map" width="600" height="600"></canvas>
-    <canvas id="nav" width="200" height="200"></canvas>
-    <canvas id="thrust" width="50" height="200"></canvas>
-    <canvas id="power" width="400" height="200"></canvas>
-  </body>
+  <bridgesim-game></bridgesim-game>
 </html>
