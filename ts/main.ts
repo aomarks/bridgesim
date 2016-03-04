@@ -23,14 +23,27 @@ function init(): void {
   initThrust();
   initPower();
 
-  requestAnimationFrame(frame);
+  requestAnimationFrame(function(ts: number) {
+    requestAnimationFrame(frame);
+    draw();
+    prevTs = ts;
+  });
 }
 
-function frame(): void {
-  inputs();
-  tick();
-  draw();
+let prevTs: number;
+let lag: number = 0;
+
+function frame(ts: number): void {
   requestAnimationFrame(frame);
+  lag += ts - prevTs;
+  while (lag >= TGT_MPF) {
+    // TODO probably should be handling inputs only once per frame
+    inputs();
+    tick();
+    lag -= TGT_MPF;
+  }
+  draw();
+  prevTs = ts;
 }
 
 function tick(): void {
