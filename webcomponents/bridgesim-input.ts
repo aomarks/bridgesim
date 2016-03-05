@@ -1,7 +1,7 @@
 ///<reference path="../typings/main.d.ts" />
-///<reference path="../ts/const.ts" />
-///<reference path="../ts/util.ts" />
-///<reference path="../ts/ship.ts" />
+///<reference path="../engine/const.ts" />
+///<reference path="../engine/util.ts" />
+///<reference path="../engine/ship.ts" />
 
 // TODO: Key codes are kind of a mess. This should work for Chrome at least.
 // See http://unixpapa.com/js/key.html

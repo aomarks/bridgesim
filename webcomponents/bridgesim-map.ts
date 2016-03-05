@@ -1,6 +1,6 @@
 ///<reference path="../typings/main.d.ts" />
-///<reference path="../ts/const.ts" />
-///<reference path="../ts/ship.ts" />
+///<reference path="../engine/const.ts" />
+///<reference path="../engine/ship.ts" />
 
 Polymer({
   is: 'bridgesim-map',

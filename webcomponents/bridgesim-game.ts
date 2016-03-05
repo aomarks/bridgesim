@@ -1,5 +1,5 @@
 ///<reference path="../typings/main.d.ts" />
-///<reference path="../ts/ship.ts" />
+///<reference path="../engine/ship.ts" />
 
 Polymer({
   is: 'bridgesim-game',
