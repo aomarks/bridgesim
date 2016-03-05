@@ -1,25 +1,25 @@
-///<reference path="../typings/main.d.ts" />
+///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../engine/const.ts" />
 ///<reference path="../engine/ship.ts" />
 
-Polymer({
-  is: 'bridgesim-power',
+@component('bridgesim-power')
+class BridgesimPower extends polymer.Base {
+  @property({type: Object}) ship: Ship;
 
-  properties: {
-    ship: {type: Object},
-  },
+  private can: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D;
 
-  ready() {
+  ready(): void {
     this.can = this.$.canvas;
     this.ctx = this.can.getContext('2d');
-  },
+  }
 
-  draw() {
+  draw(): void {
     const PAD = 5;
     const PAD2 = PAD * 2;
     const BAR_W = 40;
 
-    const ctx: CanvasRenderingContext2D = this.ctx;
+    const ctx = this.ctx;
     const w = this.can.width - 1;
     const h = this.can.height - 1;
 
@@ -38,5 +38,6 @@ Polymer({
     ctx.strokeStyle = '#F00';
     ctx.strokeRect((this.ship.curSubsystem * BAR_W) + PAD + HP, PAD + HP,
                    BAR_W - PAD, h - PAD2);
-  },
-});
+  }
+}
+BridgesimPower.register();

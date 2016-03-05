@@ -1,21 +1,21 @@
-///<reference path="../typings/main.d.ts" />
+///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../engine/const.ts" />
 ///<reference path="../engine/util.ts" />
 ///<reference path="../engine/ship.ts" />
 
-Polymer({
-  is: 'bridgesim-nav',
+@component('bridgesim-nav')
+class BridgesimNav extends polymer.Base {
+  @property({type: Object}) ship: Ship;
 
-  properties: {
-    ship: {type: Object},
-  },
+  private can: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D;
 
-  ready() {
+  ready(): void {
     this.can = this.$.canvas;
     this.ctx = this.can.getContext('2d');
-  },
+  }
 
-  draw() {
+  draw(): void {
     let ctx: CanvasRenderingContext2D = this.ctx;
 
     let w = this.can.width;
@@ -37,5 +37,6 @@ Polymer({
     ctx.strokeStyle = '#ff0000';
     ctx.lineWidth = 2;
     ctx.stroke();
-  },
-});
+  }
+}
+BridgesimNav.register();

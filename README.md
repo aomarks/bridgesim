@@ -2,9 +2,8 @@ It's a starship bridge simulator.
 
 ### Install
 ```
-npm -g install bower typescript typings
+npm -g install bower typescript
 bower install
-typings install
 ```
 
 ### Build

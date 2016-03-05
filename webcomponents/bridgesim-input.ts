@@ -1,4 +1,4 @@
-///<reference path="../typings/main.d.ts" />
+///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../engine/const.ts" />
 ///<reference path="../engine/util.ts" />
 ///<reference path="../engine/ship.ts" />
@@ -17,42 +17,40 @@ const KEY_P = 'P'.charCodeAt(0);
 const KEY_S = 'S'.charCodeAt(0);
 const KEY_W = 'W'.charCodeAt(0);
 
-Polymer({
-  is: 'bridgesim-input',
+@component('bridgesim-input')
+class BridgesimInput extends polymer.Base {
+  @property({type: Object}) ship: Ship;
 
-  properties: {
-    ship: {type: Object},
-  },
+  private keyPressed: {[key: number]: number} = {};
+  private keyBindings: {[key: number]: (tick: number) => void} = {
+    [KEY_ARROW_L]: this.turnLeft.bind(this),
+    [KEY_ARROW_R]: this.turnRight.bind(this),
+    [KEY_ARROW_U]: this.thrustUp.bind(this),
+    [KEY_ARROW_D]: this.thrustDown.bind(this),
+    [KEY_O]: this.prevShip.bind(this),
+    [KEY_P]: this.nextShip.bind(this),
+    [KEY_K]: this.prevSubsystem.bind(this),
+    [KEY_L]: this.nextSubsystem.bind(this),
+    [KEY_W]: this.powerUp.bind(this),
+    [KEY_S]: this.powerDown.bind(this),
+  };
 
-  ready() {
-    this.keyPressed = {};
-    this.keyBindings = {
-      [KEY_ARROW_L]: this.turnLeft.bind(this),
-      [KEY_ARROW_R]: this.turnRight.bind(this),
-      [KEY_ARROW_U]: this.thrustUp.bind(this),
-      [KEY_ARROW_D]: this.thrustDown.bind(this),
-      [KEY_O]: this.prevShip.bind(this),
-      [KEY_P]: this.nextShip.bind(this),
-      [KEY_K]: this.prevSubsystem.bind(this),
-      [KEY_L]: this.nextSubsystem.bind(this),
-      [KEY_W]: this.powerUp.bind(this),
-      [KEY_S]: this.powerDown.bind(this),
-    };
+  ready(): void {
     addEventListener('keydown', this.onKeydown.bind(this));
     addEventListener('keyup', this.onKeyup.bind(this));
-  },
+  }
 
-  onKeydown(event: KeyboardEvent) {
+  onKeydown(event: KeyboardEvent): void {
     if (event.repeat) {
       return;
     }
     this.keyPressed[event.keyCode] = 0;
     console.log('key down', event.keyCode);
-  },
+  }
 
-  onKeyup(event: KeyboardEvent) { delete this.keyPressed[event.keyCode]; },
+  onKeyup(event: KeyboardEvent): void { delete this.keyPressed[event.keyCode]; }
 
-  process() {
+  process(): void {
     for (let key in this.keyPressed) {
       let fn = this.keyBindings[key];
       if (fn) {
@@ -60,31 +58,31 @@ Polymer({
       }
       this.keyPressed[key]++;
     }
-  },
+  }
 
-  turnLeft() { this.ship.turnLeft(); },
+  turnLeft(): void { this.ship.turnLeft(); }
 
-  turnRight() { this.ship.turnRight(); },
+  turnRight(): void { this.ship.turnRight(); }
 
-  thrustUp() { this.ship.thrustUp(); },
+  thrustUp(): void { this.ship.thrustUp(); }
 
-  thrustDown() { this.ship.thrustDown(); },
+  thrustDown(): void { this.ship.thrustDown(); }
 
-  nextShip(tick: number) {
+  nextShip(tick: number): void {
     if (tick > 0) {
       return;
     }
     this.fire('next-ship');
-  },
+  }
 
-  prevShip(tick: number) {
+  prevShip(tick: number): void {
     if (tick > 0) {
       return;
     }
     this.fire('prev-ship');
-  },
+  }
 
-  nextSubsystem(tick: number) {
+  nextSubsystem(tick: number): void {
     if (tick > 0) {
       return;
     }
@@ -93,9 +91,9 @@ Polymer({
     } else {
       this.ship.curSubsystem++;
     }
-  },
+  }
 
-  prevSubsystem(tick: number) {
+  prevSubsystem(tick: number): void {
     if (tick > 0) {
       return;
     }
@@ -104,9 +102,10 @@ Polymer({
     } else {
       this.ship.curSubsystem--;
     }
-  },
+  }
 
-  powerUp(tick: number) { this.ship.powerUp(); },
+  powerUp(tick: number): void { this.ship.powerUp(); }
 
-  powerDown(tick: number) { this.ship.powerDown(); },
-});
+  powerDown(tick: number): void { this.ship.powerDown(); }
+}
+BridgesimInput.register();

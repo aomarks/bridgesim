@@ -1,22 +1,22 @@
-///<reference path="../typings/main.d.ts" />
+///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../engine/util.ts" />
 ///<reference path="../engine/ship.ts" />
 ///<reference path="../engine/const.ts" />
 
-Polymer({
-  is: 'bridgesim-thrust',
+@component('bridgesim-thrust')
+class BridgesimThrust extends polymer.Base {
+  @property({type: Object}) ship: Ship;
 
-  properties: {
-    ship: {type: Object},
-  },
+  private can: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D;
 
-  ready() {
+  ready(): void {
     this.can = this.$.canvas;
     this.ctx = this.can.getContext('2d');
-  },
+  }
 
-  draw() {
-    let ctx: CanvasRenderingContext2D = this.ctx;
+  draw(): void {
+    let ctx = this.ctx;
     let w = this.can.width - 1;
     let h = this.can.height - 1;
 
@@ -32,4 +32,5 @@ Polymer({
     ctx.fillRect(HP, snap(maxHeight - (this.ship.thrust * maxHeight)), w,
                  barHeight);
   }
-});
+}
+BridgesimThrust.register();

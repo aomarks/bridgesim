@@ -1,23 +1,23 @@
-///<reference path="../typings/main.d.ts" />
+///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../engine/const.ts" />
 ///<reference path="../engine/ship.ts" />
 
-Polymer({
-  is: 'bridgesim-map',
+@component('bridgesim-map')
+class BridgesimMap extends polymer.Base {
+  @property({type: Number}) size: number;
+  @property({type: Array}) ships: Ship[];
+  @property({type: Object}) ship: Ship;
 
-  properties: {
-    size: {type: Number},
-    ships: {type: Array},
-    ship: {type: Object},
-  },
+  private can: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D;
 
-  ready() {
+  ready(): void {
     this.can = this.$.canvas;
     this.ctx = this.can.getContext('2d');
-  },
+  }
 
-  draw() {
-    let ctx: CanvasRenderingContext2D = this.ctx;
+  draw(): void {
+    let ctx = this.ctx;
 
     ctx.clearRect(0, 0, this.can.width, this.can.height);
 
@@ -51,5 +51,6 @@ Polymer({
       ctx.strokeText(s.name, x + 10, y + 5);
       ctx.fillText(s.name, x + 10, y + 5);
     }
-  },
-});
+  }
+}
+BridgesimMap.register();
