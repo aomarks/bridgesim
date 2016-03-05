@@ -5,9 +5,9 @@
 Polymer({
   is: 'bridgesim-map',
 
-  ready: function(): void { this.ctx = this.$.canvas.getContext('2d'); },
+  ready() { this.ctx = this.$.canvas.getContext('2d'); },
 
-  draw: function(size: number, ships: Ship[]): void {
+  draw(size: number, ships: Ship[], ship: Ship) {
     let ctx: CanvasRenderingContext2D = this.ctx;
 
     ctx.beginPath();
@@ -26,11 +26,10 @@ Polymer({
       let x = s.x * TILE_PX + TILE_PX / 2 + HP;
       let y = s.y * TILE_PX + TILE_PX / 2 + HP;
       ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
-      // if (ship === s) {
-      //  ctx.fillStyle = '#00C2D8';
-      //} else
-      ctx.fillStyle = '#FF0000';
-      //}
+      if (ship === s) {
+        ctx.fillStyle = '#00C2D8';
+      } else
+        ctx.fillStyle = '#FF0000';
       ctx.fill();
 
       ctx.beginPath();

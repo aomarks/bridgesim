@@ -11,6 +11,7 @@ Polymer({
       new Ship('A19', 18, 2, 18),
       new Ship('S93', 20, 8, 37),
     ];
+    this.shipIdx = 0;
     this.ship = this.ships[0];
 
     this.mpf = 1000 / 60;
@@ -20,13 +21,32 @@ Polymer({
     this.frame(0);
   },
 
+  nextShip() {
+    if (this.shipIdx == this.ships.length - 1) {
+      this.shipIdx = 0;
+    } else {
+      this.shipIdx++;
+    }
+    this.ship = this.ships[this.shipIdx];
+  },
+
+  prevShip() {
+    if (this.shipIdx == 0) {
+      this.shipIdx = this.ships.length - 1;
+    } else {
+      this.shipIdx--;
+    }
+    this.ship = this.ships[this.shipIdx]
+  },
+
   frame(ts: number) {
     requestAnimationFrame(this.frame.bind(this));
+    this.$.input.process();
     this.lag += ts - this.prevTs;
     while (this.lag >= this.mpf) {
       this.lag -= this.mpf;
     }
-    this.$.map.draw(this.size, this.ships);
+    this.$.map.draw(this.size, this.ships, this.ship);
     this.$.nav.draw(this.ship);
     this.$.thrust.draw(this.ship);
     this.$.power.draw(this.ship);
