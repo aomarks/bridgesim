@@ -1,5 +1,5 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../engine/ship.ts" />
+///<reference path="../core/ship.ts" />
 ///<reference path="const.ts" />
 ///<reference path="util.ts" />
 
