@@ -21,10 +21,7 @@ Polymer({
   is: 'bridgesim-input',
 
   properties: {
-    ship: {
-      type: Object,
-      notify: false,
-    },
+    ship: {type: Object},
   },
 
   ready() {

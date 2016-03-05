@@ -44,11 +44,14 @@ Polymer({
     this.$.input.process();
     this.lag += ts - this.prevTs;
     while (this.lag >= this.mpf) {
+      for (var i = 0; i < this.ships.length; i++) {
+        this.ships[i].tick();
+      }
       this.lag -= this.mpf;
     }
-    this.$.map.draw(this.size, this.ships, this.ship);
-    this.$.nav.draw(this.ship);
-    this.$.thrust.draw(this.ship);
-    this.$.power.draw(this.ship);
+    this.$.map.draw();
+    this.$.nav.draw();
+    this.$.thrust.draw();
+    this.$.power.draw();
   },
 });

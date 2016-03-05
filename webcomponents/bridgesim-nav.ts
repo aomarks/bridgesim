@@ -6,12 +6,16 @@
 Polymer({
   is: 'bridgesim-nav',
 
+  properties: {
+    ship: {type: Object},
+  },
+
   ready() {
     this.can = this.$.canvas;
     this.ctx = this.can.getContext('2d');
   },
 
-  draw(ship: Ship) {
+  draw() {
     let ctx: CanvasRenderingContext2D = this.ctx;
 
     let w = this.can.width;
@@ -25,7 +29,7 @@ Polymer({
     ctx.strokeStyle = '#555';
     ctx.stroke();
 
-    let angle = radians(ship.heading - 90);
+    let angle = radians(this.ship.heading - 90);
     ctx.beginPath();
     ctx.moveTo(w / 2 + HP, w / 2 + HP);
     ctx.lineTo(Math.cos(angle) * (w / 2 - 8) + w / 2 + HP,

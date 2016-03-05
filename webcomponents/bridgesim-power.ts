@@ -5,12 +5,16 @@
 Polymer({
   is: 'bridgesim-power',
 
+  properties: {
+    ship: {type: Object},
+  },
+
   ready() {
     this.can = this.$.canvas;
     this.ctx = this.can.getContext('2d');
   },
 
-  draw(ship: Ship) {
+  draw() {
     const PAD = 5;
     const PAD2 = PAD * 2;
     const BAR_W = 40;
@@ -25,14 +29,14 @@ Polymer({
     ctx.strokeRect(HP, HP, w, h);
 
     ctx.fillStyle = '#00F';
-    for (let i = 0; i < ship.subsystems.length; i++) {
-      let s = ship.subsystems[i];
+    for (let i = 0; i < this.ship.subsystems.length; i++) {
+      let s = this.ship.subsystems[i];
       ctx.fillRect((i * BAR_W) + PAD + HP, h - PAD + HP, BAR_W - PAD,
                    snap(-((s.level / 100) * (h - PAD2))));
     }
 
     ctx.strokeStyle = '#F00';
-    ctx.strokeRect((ship.curSubsystem * BAR_W) + PAD + HP, PAD + HP,
+    ctx.strokeRect((this.ship.curSubsystem * BAR_W) + PAD + HP, PAD + HP,
                    BAR_W - PAD, h - PAD2);
   },
 });

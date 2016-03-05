@@ -6,12 +6,16 @@
 Polymer({
   is: 'bridgesim-thrust',
 
+  properties: {
+    ship: {type: Object},
+  },
+
   ready() {
     this.can = this.$.canvas;
     this.ctx = this.can.getContext('2d');
   },
 
-  draw(ship: Ship) {
+  draw() {
     let ctx: CanvasRenderingContext2D = this.ctx;
     let w = this.can.width - 1;
     let h = this.can.height - 1;
@@ -25,6 +29,7 @@ Polymer({
     let barHeight = Math.round(h / 20);
     let maxHeight = h - barHeight;
 
-    ctx.fillRect(HP, snap(maxHeight - (ship.thrust * maxHeight)), w, barHeight);
+    ctx.fillRect(HP, snap(maxHeight - (this.ship.thrust * maxHeight)), w,
+                 barHeight);
   }
 });

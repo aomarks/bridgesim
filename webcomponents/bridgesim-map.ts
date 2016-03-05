@@ -5,13 +5,24 @@
 Polymer({
   is: 'bridgesim-map',
 
-  ready() { this.ctx = this.$.canvas.getContext('2d'); },
+  properties: {
+    size: {type: Number},
+    ships: {type: Array},
+    ship: {type: Object},
+  },
 
-  draw(size: number, ships: Ship[], ship: Ship) {
+  ready() {
+    this.can = this.$.canvas;
+    this.ctx = this.can.getContext('2d');
+  },
+
+  draw() {
     let ctx: CanvasRenderingContext2D = this.ctx;
 
+    ctx.clearRect(0, 0, this.can.width, this.can.height);
+
     ctx.beginPath();
-    for (let i = 0; i < size; i++) {
+    for (let i = 0; i < this.size; i++) {
       ctx.moveTo(i * TILE_PX + HP, HP);
       ctx.lineTo(i * TILE_PX + HP, 600 + HP);
       ctx.moveTo(0 + HP, i * TILE_PX + HP);
@@ -21,12 +32,12 @@ Polymer({
     ctx.strokeStyle = '#8BC34A';
     ctx.stroke();
 
-    for (let s of ships) {
+    for (let s of this.ships) {
       ctx.beginPath();
       let x = s.x * TILE_PX + TILE_PX / 2 + HP;
       let y = s.y * TILE_PX + TILE_PX / 2 + HP;
       ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
-      if (ship === s) {
+      if (this.ship === s) {
         ctx.fillStyle = '#00C2D8';
       } else
         ctx.fillStyle = '#FF0000';

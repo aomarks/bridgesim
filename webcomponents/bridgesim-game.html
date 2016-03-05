@@ -7,17 +7,16 @@
 
 <dom-module id="bridgesim-game">
   <template>
-    <bridgesim-input
-      id="input"
-      ship="[[ship]]"
-      on-next-ship="nextShip"
-      on-prev-ship="prevShip">
+    <bridgesim-input id="input" ship="[[ship]]"
+      on-next-ship="nextShip" on-prev-ship="prevShip">
     </bridgesim-input>
 
-    <bridgesim-map id="map"></bridgesim-map>
-    <bridgesim-nav id="nav"></bridgesim-nav>
-    <bridgesim-thrust id="thrust"></bridgesim-thrust>
-    <bridgesim-power id="power"></bridgesim-power>
+    <bridgesim-map id="map" size="[[size]]" ships="[[ships]]" ship="[[ship]]">
+    </bridgesim-map>
+
+    <bridgesim-nav id="nav" ship="[[ship]]"></bridgesim-nav>
+    <bridgesim-thrust id="thrust" ship="[[ship]]"></bridgesim-thrust>
+    <bridgesim-power id="power" ship="[[ship]]"></bridgesim-power>
   </template>
 
   <script src="bridgesim-game.js"></script>
