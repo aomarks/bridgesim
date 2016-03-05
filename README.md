@@ -9,7 +9,7 @@ typings install
 
 ### Build
 ```
-tsc
+tsc -w
 ```
 
 ### Run
