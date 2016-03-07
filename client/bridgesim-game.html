@@ -4,9 +4,41 @@
 <link rel="import" href="bridgesim-nav.html">
 <link rel="import" href="bridgesim-thrust.html">
 <link rel="import" href="bridgesim-power.html">
+<link rel="import" href="bridgesim-webrtc-server.html">
+<link rel="import" href="bridgesim-webrtc-client.html">
 
 <dom-module id="bridgesim-game">
   <template>
+    <section>
+      <label>Server: <input type="checkbox" checked="{{isServer::change}}"></label>
+      <br><br>
+
+      <template is="dom-if" if="[[isClient]]" restamp="true">
+        <bridgesim-webrtc-client id="client"></bridgesim-webrtc-client>
+
+        <button on-tap="makeOffer">make offer</button>
+        <input id="offer" disabled="true" value="{{offer}}">
+        <br><br>
+
+        <input id="answer" value="{{answer::change}}">
+        <button on-tap="setAnswer">set answer</button>
+      </template>
+
+      <template is="dom-if" if="[[isServer]]" restamp="true">
+        <bridgesim-webrtc-server id="server"></bridgesim-webrtc-server>
+
+        <input id="offer" value="{{offer::change}}">
+        <button on-tap="acceptOffer">offer -&gt; answer</button>
+        <input id="answer" value="{{answer}}">
+      </template>
+
+      <br><br>
+
+      <input id="msg" value="{{msg::change}}">
+      <button on-tap="sendMessage">send message</button>
+    </section>
+    <br>
+
     <bridgesim-input id="input" ship="[[ship]]"
       on-next-ship="nextShip" on-prev-ship="prevShip">
     </bridgesim-input>

@@ -1,10 +1,13 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
+///<reference path="../typings/browser.d.ts" />
 ///<reference path="../core/ship.ts" />
 ///<reference path="const.ts" />
 ///<reference path="bridgesim-map.ts" />
 ///<reference path="bridgesim-nav.ts" />
 ///<reference path="bridgesim-thrust.ts" />
 ///<reference path="bridgesim-power.ts" />
+///<reference path="bridgesim-webrtc-server.ts" />
+///<reference path="bridgesim-webrtc-client.ts" />
 
 namespace Bridgesim.Client {
 
@@ -24,11 +27,22 @@ namespace Bridgesim.Client {
     private thrust: Thrust;
     private power: Power;
 
+    private isServer: boolean = false;
+    private offer: string;
+    private answer: string;
+    private msg: string;
+
+    @computed()
+    isClient(isServer) {
+      return !isServer;
+    }
+
     ready(): void {
       this.map = this.$.map;
       this.nav = this.$.nav;
       this.thrust = this.$.thrust;
       this.power = this.$.power;
+
       this.ships = [
         new Core.Ship('P28', 30, 30, 0),
         new Core.Ship('A19', 18, 2, 18),
@@ -36,6 +50,36 @@ namespace Bridgesim.Client {
       ];
       this.ship = this.ships[0];
       this.frame(0);
+    }
+
+    makeOffer(): void {
+      const client: WebRTCClient = this.$$('#client');
+      client.makeOffer().then(offer => { this.offer = JSON.stringify(offer); });
+    }
+
+    acceptOffer(): void {
+      const server: WebRTCServer = this.$$('#server');
+      server.receiveOffer(new RTCSessionDescription(JSON.parse(this.offer)))
+          .then(answer => { this.answer = JSON.stringify(answer); });
+    }
+
+    setAnswer(): void {
+      const client: WebRTCClient = this.$$('#client');
+      client.receiveAnswer(new RTCSessionDescription(JSON.parse(this.answer)));
+    }
+
+    sendMessage(): void {
+      if (this.isServer) {
+        const server: WebRTCServer = this.$$('#server');
+        server.clients.forEach(client => {
+          client.goodChan.send(this.msg);
+          client.fastChan.send(this.msg);
+        });
+      } else {
+        const client: WebRTCClient = this.$$('#client');
+        client.goodChan.send(this.msg);
+        client.fastChan.send(this.msg);
+      }
     }
 
     nextShip(): void {
