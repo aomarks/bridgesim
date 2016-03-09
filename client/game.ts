@@ -2,12 +2,12 @@
 ///<reference path="../typings/browser.d.ts" />
 ///<reference path="../core/ship.ts" />
 ///<reference path="const.ts" />
-///<reference path="bridgesim-map.ts" />
-///<reference path="bridgesim-nav.ts" />
-///<reference path="bridgesim-thrust.ts" />
-///<reference path="bridgesim-power.ts" />
-///<reference path="bridgesim-webrtc-server.ts" />
-///<reference path="bridgesim-webrtc-client.ts" />
+///<reference path="map.ts" />
+///<reference path="nav.ts" />
+///<reference path="thrust.ts" />
+///<reference path="power.ts" />
+///<reference path="webrtc-server.ts" />
+///<reference path="webrtc-client.ts" />
 
 namespace Bridgesim.Client {
 
