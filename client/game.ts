@@ -27,15 +27,12 @@ namespace Bridgesim.Client {
     private thrust: Thrust;
     private power: Power;
 
-    private isServer: boolean = false;
+    private isServer: boolean;
     private offer: string;
     private answer: string;
     private msg: string;
 
-    @computed()
-    isClient(isServer) {
-      return !isServer;
-    }
+    private urlQuery: string;
 
     ready(): void {
       this.map = this.$.map;
@@ -52,20 +49,49 @@ namespace Bridgesim.Client {
       this.frame(0);
     }
 
-    makeOffer(): void {
-      const client: WebRTCClient = this.$$('#client');
-      client.makeOffer().then(offer => { this.offer = JSON.stringify(offer); });
+    @computed()
+    isClient(isServer): boolean {
+      return !isServer;
     }
 
-    acceptOffer(): void {
-      const server: WebRTCServer = this.$$('#server');
-      server.receiveOffer(new RTCSessionDescription(JSON.parse(this.offer)))
-          .then(answer => { this.answer = JSON.stringify(answer); });
+    @observe('urlQuery')
+    urlQueryChanged(urlQuery): void {
+      this.isServer = this.urlQuery.indexOf('server') != -1;
     }
 
-    setAnswer(): void {
+    joinGame(): void {
       const client: WebRTCClient = this.$$('#client');
-      client.receiveAnswer(new RTCSessionDescription(JSON.parse(this.answer)));
+      client.makeOffer().then(offer => {
+        this.offer = this.encodeRSD(offer);
+        this.$.offerDialog.open();
+      });
+    }
+
+    invitePlayer(): void { this.$.inviteDialog.open(); }
+
+    @observe('offer')
+    offerChanged(offer): void {
+      if (offer && this.isServer) {
+        const server: WebRTCServer = this.$$('#server');
+        server.acceptOffer(this.decodeRSD(offer))
+            .then(answer => { this.answer = this.encodeRSD(answer); });
+      }
+    }
+
+    @observe('answer')
+    answerChanged(answer): void {
+      if (answer && !this.isServer) {
+        const client: WebRTCClient = this.$$('#client');
+        client.receiveAnswer(this.decodeRSD(answer));
+      }
+    }
+
+    encodeRSD(decoded: RTCSessionDescription): string {
+      return btoa(JSON.stringify(decoded));
+    }
+
+    decodeRSD(encoded: string): RTCSessionDescription {
+      return new RTCSessionDescription(JSON.parse(atob(encoded)));
     }
 
     sendMessage(): void {

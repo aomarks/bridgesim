@@ -1,3 +1,12 @@
+<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+
+<link rel="import" href="../bower_components/iron-page-url/iron-page-url.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+
 <link rel="import" href="deps.html">
 <link rel="import" href="input.html">
 <link rel="import" href="map.html">
@@ -9,34 +18,73 @@
 
 <dom-module id="bridgesim-game">
   <template>
-    <section>
-      <label>Server: <input type="checkbox" checked="{{isServer::change}}"></label>
-      <br><br>
+    <style>
+      :host {
+        display: block;
+        font-family: roboto;
+      }
+      h1 {
+        margin: 0;
+      }
+      #main-menu {
+        width: 200px;
+      }
+      paper-toggle-button {
+        cursor: pointer;
+      }
+      .token {
+        border: 1px solid #ccc;
+        word-wrap: break-word;
+        padding: 5px;
+        margin: 20px;
+        width: 500px;
+        height: 50px;
+        cursor: pointer;
+        resize: none;
+      }
+    </style>
 
-      <template is="dom-if" if="[[isClient]]" restamp="true">
-        <bridgesim-webrtc-client id="client"></bridgesim-webrtc-client>
+    <iron-page-url query="{{urlQuery}}"></iron-page-url>
 
-        <button on-tap="makeOffer">make offer</button>
-        <input id="offer" disabled="true" value="{{offer}}">
-        <br><br>
+    <h1>Bridgesim</h1>
 
-        <input id="answer" value="{{answer::change}}">
-        <button on-tap="setAnswer">set answer</button>
-      </template>
+    <paper-toggle-button checked="{{isServer}}">Server</paper-toggle-button>
 
-      <template is="dom-if" if="[[isServer]]" restamp="true">
-        <bridgesim-webrtc-server id="server"></bridgesim-webrtc-server>
+    <paper-button disabled$="[[isServer]]" on-tap="joinGame">
+      Join Game</paper-button>
+    <paper-button disabled$="[[isClient]]" on-tap="invitePlayer">
+      Invite Player</paper-button>
 
-        <input id="offer" value="{{offer::change}}">
-        <button on-tap="acceptOffer">offer -&gt; answer</button>
-        <input id="answer" value="{{answer}}">
-      </template>
+    <paper-dialog id="offerDialog">
+      <h2>send this offer to the server:</h2>
+      <textarea class="token"
+        onclick="this.select(); document.execCommand('copy');">[[offer]]</textarea>
 
-      <br><br>
+      <h2>paste the answer here:</h2>
+      <textarea class="token" value="{{answer::input}}"></textarea>
+    </paper-dialog>
 
-      <input id="msg" value="{{msg::change}}">
-      <button on-tap="sendMessage">send message</button>
-    </section>
+    <paper-dialog id="inviteDialog">
+      <h2>paste the player's offer here:</h2>
+      <textarea class="token" value="{{offer::input}}"></textarea>
+
+      <h2>send back this answer:</h2>
+      <textarea class="token"
+        onclick="this.select(); document.execCommand('copy');">[[answer]]</textarea>
+    </paper-dialog>
+
+    <template id="server-menu" is="dom-if" if="[[isClient]]" restamp="true">
+      <bridgesim-webrtc-client id="client"></bridgesim-webrtc-client>
+    </template>
+
+    <template is="dom-if" if="[[isServer]]" restamp="true">
+      <bridgesim-webrtc-server id="server"></bridgesim-webrtc-server>
+    </template>
+
+    <br>
+
+    <input id="msg" value="{{msg::change}}">
+    <button on-tap="sendMessage">send message</button>
     <br>
 
     <bridgesim-input id="input" ship="[[ship]]"

@@ -15,7 +15,7 @@ namespace Bridgesim.Client {
       this.clients.forEach(client => { client.close(); });
     }
 
-    receiveOffer(offer: RTCSessionDescription): Promise<RTCSessionDescription> {
+    acceptOffer(offer: RTCSessionDescription): Promise<RTCSessionDescription> {
       const client = new Client(this.clients.length);
       this.clients.push(client);
       return client.makeAnswer(offer);
