@@ -156,6 +156,7 @@ namespace Bridgesim.Client {
       this.nav.draw();
       this.thrust.draw();
       this.power.draw();
+      this.prevTs = ts;
     }
   }
   Game.register();
