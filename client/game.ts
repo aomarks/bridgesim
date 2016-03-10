@@ -31,6 +31,8 @@ namespace Bridgesim.Client {
     private offer: string;
     private answer: string;
     private msg: string;
+    private players: string[];
+    private chatBuffer: string[];
 
     private urlQuery: string;
 
@@ -56,18 +58,38 @@ namespace Bridgesim.Client {
 
     @observe('urlQuery')
     urlQueryChanged(urlQuery): void {
-      this.isServer = this.urlQuery.indexOf('server') != -1;
+      if (this.urlQuery.indexOf('server') != -1) {
+        this.isServer = true;
+        this.invitePlayer();
+      } else if (this.urlQuery.indexOf('join') != -1) {
+        setTimeout(this.joinGame.bind(this), 1000);
+      }
+    }
+
+    @listen('network-chat')
+    onChat(event) {
+      this.$.lobby.receiveMsg(event.detail);
     }
 
     joinGame(): void {
       const client: WebRTCClient = this.$$('#client');
       client.makeOffer().then(offer => {
         this.offer = this.encodeRSD(offer);
-        this.$.offerDialog.open();
+        this.$.joinDialog.open();
       });
     }
 
     invitePlayer(): void { this.$.inviteDialog.open(); }
+
+    clearTokens(): void {
+      this.offer = '';
+      this.answer = '';
+    }
+
+    selectAndCopy(event: Event): void {
+      (<HTMLTextAreaElement>event.target).select();
+      document.execCommand('copy');
+    }
 
     @observe('offer')
     offerChanged(offer): void {
@@ -82,7 +104,7 @@ namespace Bridgesim.Client {
     answerChanged(answer): void {
       if (answer && !this.isServer) {
         const client: WebRTCClient = this.$$('#client');
-        client.receiveAnswer(this.decodeRSD(answer));
+        client.acceptAnswer(this.decodeRSD(answer));
       }
     }
 
@@ -92,6 +114,14 @@ namespace Bridgesim.Client {
 
     decodeRSD(encoded: string): RTCSessionDescription {
       return new RTCSessionDescription(JSON.parse(atob(encoded)));
+    }
+
+    sendChat(event): void {
+      if (!this.isServer) {
+        const client: WebRTCClient = this.$$('#client');
+        client.goodChan.send(
+            JSON.stringify({type: 'chat', detail: event.detail}));
+      }
     }
 
     nextShip(): void {

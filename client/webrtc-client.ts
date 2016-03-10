@@ -21,8 +21,11 @@ namespace Bridgesim.Client {
       [this.goodChan, this.fastChan].forEach(chan => {
         chan.onopen =
             () => { console.log('client channel open:', chan.label); };
-        chan.onmessage =
-            msg => { console.log('client received message:', chan.label, msg); }
+        chan.onmessage = msg => {
+          console.log('client received message:', chan.label, msg);
+          const decoded = JSON.parse(msg.data);
+          this.fire('network-' + decoded.type, decoded.detail);
+        }
       });
     }
 
@@ -45,7 +48,7 @@ namespace Bridgesim.Client {
       });
     }
 
-    receiveAnswer(answer: RTCSessionDescription): Promise<{}> {
+    acceptAnswer(answer: RTCSessionDescription): Promise<{}> {
       return new Promise((resolve, reject) => {
         this.peer.setRemoteDescription(answer, resolve, reject);
       });

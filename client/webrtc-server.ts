@@ -16,9 +16,16 @@ namespace Bridgesim.Client {
     }
 
     acceptOffer(offer: RTCSessionDescription): Promise<RTCSessionDescription> {
-      const client = new Client(this.clients.length);
+      const client = new Client(this.clients.length, this.onMsg.bind(this));
       this.clients.push(client);
       return client.makeAnswer(offer);
+    }
+
+    onMsg(clientId: number, msg: MessageEvent): void {
+      console.log('server received message:', clientId, msg.data);
+      this.clients.forEach(client => {client.goodChan.send(msg.data)});
+      const decoded = JSON.parse(msg.data);
+      this.fire('network-' + decoded.type, decoded.detail);
     }
   }
   WebRTCServer.register();
@@ -27,16 +34,16 @@ namespace Bridgesim.Client {
     private peer: RTCPeerConnection;
     goodChan: RTCDataChannel;
     fastChan: RTCDataChannel;
+    messages: Object[];
 
-    constructor(public id: number) {
+    constructor(public id: number,
+                onMsg: (clientId: number, msg: MessageEvent) => void) {
       this.peer = new webkitRTCPeerConnection(PEER_CONFIG);
       this.peer.ondatachannel = (event: RTCDataChannelEvent) => {
         const chan = event.channel;
         chan.onopen =
             () => { console.log('server channel open:', this.id, chan.label); };
-        chan.onmessage = msg => {
-          console.log('server received message:', this.id, chan.label, msg);
-        };
+        chan.onmessage = (msg: MessageEvent): void => { onMsg(id, msg) };
         if (chan.label == 'good') {
           this.goodChan = chan;
         } else if (chan.label == 'fast') {

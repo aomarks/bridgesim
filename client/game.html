@@ -16,6 +16,7 @@
 <link rel="import" href="power.html">
 <link rel="import" href="webrtc-server.html">
 <link rel="import" href="webrtc-client.html">
+<link rel="import" href="lobby.html">
 
 <dom-module id="bridgesim-game">
   <template>
@@ -65,6 +66,10 @@
         cursor: pointer;
         resize: none;
       }
+      bridgesim-lobby {
+        width: 300px;
+        height: 400px;
+      }
     </style>
 
     <section id="header" class="layout horizontal center">
@@ -76,20 +81,18 @@
       <paper-toggle-button checked="{{isServer}}">SERVER</paper-toggle-button>
     </section>
 
-    <paper-dialog id="offerDialog">
+    <paper-dialog id="joinDialog" on-iron-overlay-closed="clearTokens">
       <h2>send this offer to the server:</h2>
-      <textarea class="token"
-        onclick="this.select(); document.execCommand('copy');">[[offer]]</textarea>
+      <textarea class="token" on-tap="selectAndCopy">[[offer]]</textarea>
       <h2>paste the answer here:</h2>
       <textarea class="token" value="{{answer::input}}"></textarea>
     </paper-dialog>
 
-    <paper-dialog id="inviteDialog">
+    <paper-dialog id="inviteDialog" on-iron-overlay-closed="clearTokens">
       <h2>paste the player's offer here:</h2>
       <textarea class="token" value="{{offer::input}}"></textarea>
       <h2>send back this answer:</h2>
-      <textarea class="token"
-        onclick="this.select(); document.execCommand('copy');">[[answer]]</textarea>
+      <textarea class="token" on-tap="selectAndCopy">[[answer]]</textarea>
     </paper-dialog>
 
     <section id="panels" class="layout horizontal">
@@ -102,6 +105,8 @@
         </div>
         <bridgesim-power id="power" ship="[[ship]]"></bridgesim-power>
       </div>
+
+      <bridgesim-lobby id="lobby" on-send-chat="sendChat"></bridgesim-lobby>
     </section>
   </template>
 
