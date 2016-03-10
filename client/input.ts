@@ -10,6 +10,10 @@ namespace Bridgesim.Client {
   const KEY_ARROW_U = 38;
   const KEY_ARROW_R = 39;
   const KEY_ARROW_D = 40;
+  const KEY_A = 'A'.charCodeAt(0);
+  const KEY_D = 'D'.charCodeAt(0);
+  const KEY_H = 'H'.charCodeAt(0);
+  const KEY_J = 'J'.charCodeAt(0);
   const KEY_K = 'K'.charCodeAt(0);
   const KEY_L = 'L'.charCodeAt(0);
   const KEY_O = 'O'.charCodeAt(0);
@@ -23,16 +27,18 @@ namespace Bridgesim.Client {
 
     private keyPressed: {[key: number]: number} = {};
     private keyBindings: {[key: number]: (tick: number) => void} = {
-      [KEY_ARROW_L]: this.turnLeft.bind(this),
-      [KEY_ARROW_R]: this.turnRight.bind(this),
-      [KEY_ARROW_U]: this.thrustUp.bind(this),
-      [KEY_ARROW_D]: this.thrustDown.bind(this),
+      [KEY_W]: this.thrustUp.bind(this),
+      [KEY_A]: this.turnLeft.bind(this),
+      [KEY_S]: this.thrustDown.bind(this),
+      [KEY_D]: this.turnRight.bind(this),
+
+      [KEY_H]: this.prevSubsystem.bind(this),
+      [KEY_L]: this.nextSubsystem.bind(this),
+      [KEY_K]: this.powerUp.bind(this),
+      [KEY_J]: this.powerDown.bind(this),
+
       [KEY_O]: this.prevShip.bind(this),
       [KEY_P]: this.nextShip.bind(this),
-      [KEY_K]: this.prevSubsystem.bind(this),
-      [KEY_L]: this.nextSubsystem.bind(this),
-      [KEY_W]: this.powerUp.bind(this),
-      [KEY_S]: this.powerDown.bind(this),
     };
 
     ready(): void {

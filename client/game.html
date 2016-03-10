@@ -1,6 +1,7 @@
 <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 
 <link rel="import" href="../bower_components/iron-page-url/iron-page-url.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
@@ -18,16 +19,38 @@
 
 <dom-module id="bridgesim-game">
   <template>
+    <iron-page-url query="{{urlQuery}}"></iron-page-url>
+
+    <template is="dom-if" if="[[isClient]]" restamp="true">
+      <bridgesim-webrtc-client id="client"></bridgesim-webrtc-client>
+    </template>
+
+    <template is="dom-if" if="[[isServer]]" restamp="true">
+      <bridgesim-webrtc-server id="server"></bridgesim-webrtc-server>
+    </template>
+
+    <bridgesim-input id="input" ship="[[ship]]"
+      on-next-ship="nextShip" on-prev-ship="prevShip">
+    </bridgesim-input>
+
+    <style include="iron-flex iron-flex-alignment"></style>
     <style>
       :host {
         display: block;
         font-family: roboto;
+        background-color: #000;
       }
-      h1 {
-        margin: 0;
+      #header {
+        background-color: #fff;
       }
-      #main-menu {
-        width: 200px;
+      #header * {
+        margin: 10px;
+      }
+      #panels {
+        margin: 20px;
+      }
+      #panels * {
+        margin-right: 20px;
       }
       paper-toggle-button {
         cursor: pointer;
@@ -44,22 +67,19 @@
       }
     </style>
 
-    <iron-page-url query="{{urlQuery}}"></iron-page-url>
-
-    <h1>Bridgesim</h1>
-
-    <paper-toggle-button checked="{{isServer}}">Server</paper-toggle-button>
-
-    <paper-button disabled$="[[isServer]]" on-tap="joinGame">
-      Join Game</paper-button>
-    <paper-button disabled$="[[isClient]]" on-tap="invitePlayer">
-      Invite Player</paper-button>
+    <section id="header" class="layout horizontal center">
+      <h1>BRIDGESIM</h1>
+      <paper-button disabled$="[[isServer]]" on-tap="joinGame">
+        Join Game</paper-button>
+      <paper-button disabled$="[[isClient]]" on-tap="invitePlayer">
+        Invite Player</paper-button>
+      <paper-toggle-button checked="{{isServer}}">SERVER</paper-toggle-button>
+    </section>
 
     <paper-dialog id="offerDialog">
       <h2>send this offer to the server:</h2>
       <textarea class="token"
         onclick="this.select(); document.execCommand('copy');">[[offer]]</textarea>
-
       <h2>paste the answer here:</h2>
       <textarea class="token" value="{{answer::input}}"></textarea>
     </paper-dialog>
@@ -67,36 +87,22 @@
     <paper-dialog id="inviteDialog">
       <h2>paste the player's offer here:</h2>
       <textarea class="token" value="{{offer::input}}"></textarea>
-
       <h2>send back this answer:</h2>
       <textarea class="token"
         onclick="this.select(); document.execCommand('copy');">[[answer]]</textarea>
     </paper-dialog>
 
-    <template id="server-menu" is="dom-if" if="[[isClient]]" restamp="true">
-      <bridgesim-webrtc-client id="client"></bridgesim-webrtc-client>
-    </template>
-
-    <template is="dom-if" if="[[isServer]]" restamp="true">
-      <bridgesim-webrtc-server id="server"></bridgesim-webrtc-server>
-    </template>
-
-    <br>
-
-    <input id="msg" value="{{msg::change}}">
-    <button on-tap="sendMessage">send message</button>
-    <br>
-
-    <bridgesim-input id="input" ship="[[ship]]"
-      on-next-ship="nextShip" on-prev-ship="prevShip">
-    </bridgesim-input>
-
-    <bridgesim-map id="map" size="[[size]]" ships="[[ships]]" ship="[[ship]]">
-    </bridgesim-map>
-
-    <bridgesim-nav id="nav" ship="[[ship]]"></bridgesim-nav>
-    <bridgesim-thrust id="thrust" ship="[[ship]]"></bridgesim-thrust>
-    <bridgesim-power id="power" ship="[[ship]]"></bridgesim-power>
+    <section id="panels" class="layout horizontal">
+      <bridgesim-map id="map" size="[[size]]"
+        ships="[[ships]]" ship="[[ship]]"> </bridgesim-map>
+      <div class="layout vertical justified">
+        <div>
+          <bridgesim-nav id="nav" ship="[[ship]]"></bridgesim-nav>
+          <bridgesim-thrust id="thrust" ship="[[ship]]"></bridgesim-thrust>
+        </div>
+        <bridgesim-power id="power" ship="[[ship]]"></bridgesim-power>
+      </div>
+    </section>
   </template>
 
   <script src="game.js"></script>

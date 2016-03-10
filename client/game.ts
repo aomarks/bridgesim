@@ -13,7 +13,7 @@ namespace Bridgesim.Client {
 
   @component('bridgesim-game')
   class Game extends polymer.Base {
-    @property({type: Number, value: 60}) size: number;
+    @property({type: Number, value: 50}) size: number;
 
     private ship: Core.Ship;
     private ships: Core.Ship[];
@@ -92,20 +92,6 @@ namespace Bridgesim.Client {
 
     decodeRSD(encoded: string): RTCSessionDescription {
       return new RTCSessionDescription(JSON.parse(atob(encoded)));
-    }
-
-    sendMessage(): void {
-      if (this.isServer) {
-        const server: WebRTCServer = this.$$('#server');
-        server.clients.forEach(client => {
-          client.goodChan.send(this.msg);
-          client.fastChan.send(this.msg);
-        });
-      } else {
-        const client: WebRTCClient = this.$$('#client');
-        client.goodChan.send(this.msg);
-        client.fastChan.send(this.msg);
-      }
     }
 
     nextShip(): void {

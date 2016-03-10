@@ -19,6 +19,7 @@ namespace Bridgesim.Client {
     ready(): void {
       this.can = this.$.canvas;
       this.ctx = this.can.getContext('2d');
+      this.ctx.font = '12px roboto mono';
     }
 
     draw(): void {
@@ -27,11 +28,11 @@ namespace Bridgesim.Client {
       ctx.clearRect(0, 0, this.can.width, this.can.height);
 
       ctx.beginPath();
-      for (let i = 0; i < this.size; i++) {
+      for (let i = 0; i < this.size + 1; i++) {
         ctx.moveTo(i * TILE_PX + HP, HP);
-        ctx.lineTo(i * TILE_PX + HP, 600 + HP);
-        ctx.moveTo(0 + HP, i * TILE_PX + HP);
-        ctx.lineTo(600 + HP, i * TILE_PX + HP);
+        ctx.lineTo(i * TILE_PX + HP, this.size * TILE_PX + HP);
+        ctx.moveTo(HP, i * TILE_PX + HP);
+        ctx.lineTo(this.size * TILE_PX + HP, i * TILE_PX + HP);
       }
       ctx.lineWidth = 1;
       ctx.strokeStyle = '#8BC34A';
@@ -50,8 +51,7 @@ namespace Bridgesim.Client {
         ctx.fill();
 
         ctx.beginPath();
-        ctx.fillStyle = '#fff';
-        ctx.font = '20px monospace';
+        ctx.fillStyle = '#FFF';
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 3;
         ctx.strokeText(s.name, x + 10, y + 5);
