@@ -29,8 +29,6 @@ namespace Bridgesim.Client {
     private isServer: boolean;
     private offer: string;
     private answer: string;
-    private client: WebRTCClient;
-    private server: WebRTCServer;
 
     private urlQuery: string;
 
@@ -53,34 +51,26 @@ namespace Bridgesim.Client {
       }
     }
 
-    @observe('isServer')
-    isServerChanged(isServer): void {
-      // TODO doesn't work on toggle
-      Polymer.dom.flush();  // elements might not be attached yet
-      if (isServer) {
-        this.server = this.$$('#server');
-      } else {
-        this.client = this.$$('#client');
-        this.server = null;
-      }
-    }
+    // TODO this is dumb
+    client(): WebRTCClient { return this.$$('#client'); }
+    server(): WebRTCServer { return this.$$('#server'); }
 
     /** Send a network message over the reliable channel. */
     sendGood(msg: Net.Msg): void {
       if (this.isServer) {
         // we use -1 for the fake local client peer id
-        this.server.receive(-1, msg);
-      } else if (this.client.connected()) {
-        this.client.goodChan.send(Net.pack(msg));
+        this.server().receive(-1, msg);
+      } else if (this.client().connected()) {
+        this.client().goodChan.send(Net.pack(msg));
       }
     }
 
     /** Send a network message over the unreliable channel. */
     sendFast(msg: Net.Msg): void {
       if (this.isServer) {
-        this.server.receive(-1, msg);
-      } else if (this.client.connected()) {
-        this.client.fastChan.send(Net.pack(msg));
+        this.server().receive(-1, msg);
+      } else if (this.client().connected()) {
+        this.client().fastChan.send(Net.pack(msg));
       }
     }
 
@@ -110,7 +100,7 @@ namespace Bridgesim.Client {
     }
 
     joinGame(): void {
-      this.client.makeOffer().then(offer => {
+      this.client().makeOffer().then(offer => {
         this.offer = this.encodeRSD(offer);
         this.$.joinDialog.open();
       });
@@ -131,7 +121,8 @@ namespace Bridgesim.Client {
     @observe('offer')
     offerChanged(offer): void {
       if (offer && this.isServer) {
-        this.server.acceptOffer(this.decodeRSD(offer))
+        this.server()
+            .acceptOffer(this.decodeRSD(offer))
             .then(answer => { this.answer = this.encodeRSD(answer); });
       }
     }
@@ -139,7 +130,7 @@ namespace Bridgesim.Client {
     @observe('answer')
     answerChanged(answer): void {
       if (answer && !this.isServer) {
-        this.client.acceptAnswer(this.decodeRSD(answer));
+        this.client().acceptAnswer(this.decodeRSD(answer));
       }
     }
 
