@@ -3,23 +3,40 @@ namespace Bridgesim.Client.Net {
   export function pack(msg: Msg): string { return JSON.stringify(msg); }
   export function unpack(msg: string): Msg { return JSON.parse(msg); }
 
+  export enum Type {Hello, Welcome, SendChat, ReceiveChat, Update, Sync}
+
   export interface Msg {
     type: Type;
-    hi?: Hi;
-    bye?: Bye;
-    chat?: Chat;
+    hello?: Hello;
+    welcome?: Welcome;
+    sendChat?: SendChat;
+    receiveChat?: ReceiveChat;
+    update?: Update;
+    sync?: Sync;
   }
 
-  export enum Type {Hi, Bye, Chat}
-  ;
+  export interface Hello { name: string; }
 
-  export interface Hi { name: string; }
+  export interface Welcome {
+    clientId: number;
+    shipId: number;
+    updates: Update[];
+  }
 
-  export interface Bye { name: string; }
+  export interface SendChat { text: string; }
 
-  export interface Chat {
-    ts?: Number;
-    id?: Number;
+  export interface ReceiveChat {
+    timestamp: number;
+    clientId: number;
     text: string;
   }
+
+  export interface Update {
+    shipId?: number;
+    x: number;
+    y: number;
+    heading: number;
+  }
+
+  export interface Sync { updates: Update[] }
 }

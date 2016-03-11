@@ -7,7 +7,7 @@ namespace Bridgesim.Client {
   export class Lobby extends polymer.Base {
     private chatBox: HTMLElement;
     private chatText: string;
-    private chatLog: Net.Chat[];
+    private chatLog: Net.ReceiveChat[];
 
     ready(): void {
       this.chatBox = this.$.chatBox;
@@ -19,7 +19,7 @@ namespace Bridgesim.Client {
       this.chatText = '';
     }
 
-    receiveMsg(chat: Net.Chat): void { this.push('chatLog', chat); }
+    receiveMsg(chat: Net.ReceiveChat): void { this.push('chatLog', chat); }
   }
   Lobby.register();
 }

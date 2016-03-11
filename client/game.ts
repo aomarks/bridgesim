@@ -16,12 +16,15 @@ namespace Bridgesim.Client {
   class Game extends polymer.Base {
     @property({type: Number, value: 50}) size: number;
 
+    private clientId: number;
     private ship: Core.Ship;
     private ships: Core.Ship[];
-    private shipIdx: number = 0;
+    private shipId: number = 0;
 
+    private latestSync: Net.Sync;
     private prevTs: number = 0;
     private lag: number = 0;
+    private netLag: number = 0;
 
     private isServer: boolean;
     private offer: string;
@@ -31,15 +34,8 @@ namespace Bridgesim.Client {
 
     private urlQuery: string;
 
-    ready(): void {
-      this.ships = [
-        new Core.Ship('P28', 30, 30, 0),
-        new Core.Ship('A19', 18, 2, 18),
-        new Core.Ship('S93', 20, 8, 37),
-      ];
-      this.ship = this.ships[0];
-      this.frame(0);
-    }
+
+    ready(): void { this.ships = []; }
 
     @computed()
     isClient(isServer): boolean {
@@ -59,11 +55,10 @@ namespace Bridgesim.Client {
 
     @observe('isServer')
     isServerChanged(isServer): void {
-      // TODO is this the best way to do this?
+      // TODO doesn't work on toggle
       Polymer.dom.flush();  // elements might not be attached yet
       if (isServer) {
         this.server = this.$$('#server');
-        this.client = null;
       } else {
         this.client = this.$$('#client');
         this.server = null;
@@ -89,11 +84,28 @@ namespace Bridgesim.Client {
       }
     }
 
+    @listen('connected')
+    onConnected() {
+      console.log('connected');
+      this.sendGood({type: Net.Type.Hello, hello: {name: 'stranger'}});
+    }
+
     @listen('net')
     onNet(event) {
       const msg = <Net.Msg>event.detail;
-      if (msg.type == Net.Type.Chat) {
-        this.$.lobby.receiveMsg(msg.chat);
+      if (msg.type == Net.Type.Welcome) {
+        this.clientId = msg.welcome.clientId;
+        this.shipId = msg.welcome.shipId;
+        this.applyUpdates(msg.welcome.updates);
+        this.ship = this.ships[this.shipId];
+        this.frame(0);
+        this.$.joinDialog.close();
+
+      } else if (msg.type == Net.Type.ReceiveChat) {
+        this.$.lobby.receiveMsg(msg.receiveChat);
+
+      } else if (msg.type == Net.Type.Sync) {
+        this.latestSync = msg.sync;
       }
     }
 
@@ -140,41 +152,60 @@ namespace Bridgesim.Client {
     }
 
     sendChat(event): void {
-      this.sendGood({type: Net.Type.Chat, chat: {text: event.detail.text}});
+      this.sendGood(
+          {type: Net.Type.SendChat, sendChat: {text: event.detail.text}});
     }
 
-    nextShip(): void {
-      if (this.shipIdx == this.ships.length - 1) {
-        this.shipIdx = 0;
-      } else {
-        this.shipIdx++;
-      }
-      this.ship = this.ships[this.shipIdx];
-    }
-
-    prevShip(): void {
-      if (this.shipIdx == 0) {
-        this.shipIdx = this.ships.length - 1;
-      } else {
-        this.shipIdx--;
-      }
-      this.ship = this.ships[this.shipIdx]
+    applyUpdates(updates: Net.Update[]): void {
+      updates.forEach(u => {
+        let ship = this.ships[u.shipId];
+        if (!ship) {
+          ship = new Core.Ship(u.shipId.toString(), u.x, u.y, u.heading);
+          this.ships[u.shipId] = ship;
+        } else if (u.shipId != this.shipId) {
+          ship.x = u.x;
+          ship.y = u.y;
+          ship.heading = u.heading;
+        }
+      });
     }
 
     frame(ts: number): void {
       requestAnimationFrame(this.frame.bind(this));
+
+      if (this.latestSync) {
+        this.applyUpdates(this.latestSync.updates);
+        this.latestSync = null;
+      }
+
       this.$.input.process();
-      this.lag += ts - this.prevTs;
+
+      const elapsed = ts - this.prevTs;
+      this.lag += elapsed;
+      this.netLag += elapsed;
+
       while (this.lag >= MPF) {
         for (var i = 0; i < this.ships.length; i++) {
           this.ships[i].tick();
         }
         this.lag -= MPF;
       }
+
       this.$.map.draw();
       this.$.nav.draw();
       this.$.thrust.draw();
       this.$.power.draw();
+
+      if (this.netLag >= 1000 / 30) {
+        const update: Net.Update = {
+          x: this.ship.x,
+          y: this.ship.y,
+          heading: this.ship.heading
+        };
+        this.sendFast({type: Net.Type.Update, update: update});
+        this.netLag = 0;
+      }
+
       this.prevTs = ts;
     }
   }

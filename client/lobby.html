@@ -27,7 +27,9 @@
       <div class="layout horizontal flex-auto">
         <div id="messages" class="flex-2">
           <template is="dom-repeat" items="{{chatLog}}">
-            <p class="msg">{{item.ts}} &lt;{{item.id}}&gt; {{item.text}}</p>
+            <p class="msg">
+              {{item.timestamp}} &lt;{{item.clientId}}&gt; {{item.text}}
+            </p>
           </template>
         </div>
         <div id="players" class="flex"></div>

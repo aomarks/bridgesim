@@ -16,8 +16,6 @@ namespace Bridgesim.Client {
   const KEY_J = 'J'.charCodeAt(0);
   const KEY_K = 'K'.charCodeAt(0);
   const KEY_L = 'L'.charCodeAt(0);
-  const KEY_O = 'O'.charCodeAt(0);
-  const KEY_P = 'P'.charCodeAt(0);
   const KEY_S = 'S'.charCodeAt(0);
   const KEY_W = 'W'.charCodeAt(0);
 
@@ -36,9 +34,6 @@ namespace Bridgesim.Client {
       [KEY_L]: this.nextSubsystem.bind(this),
       [KEY_K]: this.powerUp.bind(this),
       [KEY_J]: this.powerDown.bind(this),
-
-      [KEY_O]: this.prevShip.bind(this),
-      [KEY_P]: this.nextShip.bind(this),
     };
 
     ready(): void {
@@ -51,7 +46,7 @@ namespace Bridgesim.Client {
         return;
       }
       this.keyPressed[event.keyCode] = 0;
-      console.log('key down', event.keyCode);
+      // console.log('key down', event.keyCode);
     }
 
     onKeyup(event: KeyboardEvent): void {

@@ -20,12 +20,12 @@ namespace Bridgesim.Client {
       this.fastChan = this.peer.createDataChannel(
           'fast', {ordered: false, maxRetransmits: 0});
       [this.goodChan, this.fastChan].forEach(chan => {
-        chan.onopen =
-            () => { console.log('client channel open:', chan.label); };
-        chan.onmessage = msg => {
-          console.log('client received message:', chan.label, msg);
-          this.fire('net', Net.unpack(msg.data));
-        }
+        chan.onopen = () => {
+          if (this.connected()) {
+            this.fire('connected');
+          }
+        };
+        chan.onmessage = msg => { this.fire('net', Net.unpack(msg.data)); }
       });
     }
 
