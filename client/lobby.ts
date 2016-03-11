@@ -1,24 +1,25 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
+///<reference path="network.ts" />
 
 namespace Bridgesim.Client {
 
   @component('bridgesim-lobby')
   export class Lobby extends polymer.Base {
     private chatBox: HTMLElement;
-    private chatMsg: string;
-    private msgBuffer: string[];
+    private chatText: string;
+    private chatLog: Net.Chat[];
 
     ready(): void {
       this.chatBox = this.$.chatBox;
-      this.msgBuffer = [];
+      this.chatLog = [];
     }
 
     sendChat(): void {
-      this.fire('send-chat', {msg: this.chatMsg});
-      this.chatMsg = '';
+      this.fire('send-chat', {text: this.chatText});
+      this.chatText = '';
     }
 
-    receiveMsg(msg): void { this.push('msgBuffer', msg.msg); }
+    receiveMsg(chat: Net.Chat): void { this.push('chatLog', chat); }
   }
   Lobby.register();
 }

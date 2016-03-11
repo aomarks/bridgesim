@@ -1,5 +1,6 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/browser.d.ts" />
+///<reference path="network.ts" />
 
 namespace Bridgesim.Client {
 
@@ -23,10 +24,14 @@ namespace Bridgesim.Client {
             () => { console.log('client channel open:', chan.label); };
         chan.onmessage = msg => {
           console.log('client received message:', chan.label, msg);
-          const decoded = JSON.parse(msg.data);
-          this.fire('network-' + decoded.type, decoded.detail);
+          this.fire('net', Net.unpack(msg.data));
         }
       });
+    }
+
+    connected(): boolean {
+      return this.goodChan.readyState == 'open' &&
+             this.fastChan.readyState == 'open';
     }
 
     detached(): void {

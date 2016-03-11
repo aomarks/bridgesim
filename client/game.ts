@@ -8,6 +8,7 @@
 ///<reference path="power.ts" />
 ///<reference path="webrtc-server.ts" />
 ///<reference path="webrtc-client.ts" />
+///<reference path="network.ts" />
 
 namespace Bridgesim.Client {
 
@@ -22,26 +23,15 @@ namespace Bridgesim.Client {
     private prevTs: number = 0;
     private lag: number = 0;
 
-    private map: Map;
-    private nav: Nav;
-    private thrust: Thrust;
-    private power: Power;
-
     private isServer: boolean;
     private offer: string;
     private answer: string;
-    private msg: string;
-    private players: string[];
-    private chatBuffer: string[];
+    private client: WebRTCClient;
+    private server: WebRTCServer;
 
     private urlQuery: string;
 
     ready(): void {
-      this.map = this.$.map;
-      this.nav = this.$.nav;
-      this.thrust = this.$.thrust;
-      this.power = this.$.power;
-
       this.ships = [
         new Core.Ship('P28', 30, 30, 0),
         new Core.Ship('A19', 18, 2, 18),
@@ -62,18 +52,53 @@ namespace Bridgesim.Client {
         this.isServer = true;
         this.invitePlayer();
       } else if (this.urlQuery.indexOf('join') != -1) {
-        setTimeout(this.joinGame.bind(this), 1000);
+        // TODO This is dumb.
+        setTimeout(this.joinGame.bind(this), 100);
       }
     }
 
-    @listen('network-chat')
-    onChat(event) {
-      this.$.lobby.receiveMsg(event.detail);
+    @observe('isServer')
+    isServerChanged(isServer): void {
+      // TODO is this the best way to do this?
+      Polymer.dom.flush();  // elements might not be attached yet
+      if (isServer) {
+        this.server = this.$$('#server');
+        this.client = null;
+      } else {
+        this.client = this.$$('#client');
+        this.server = null;
+      }
+    }
+
+    /** Send a network message over the reliable channel. */
+    sendGood(msg: Net.Msg): void {
+      if (this.isServer) {
+        // we use -1 for the fake local client peer id
+        this.server.receive(-1, msg);
+      } else if (this.client.connected()) {
+        this.client.goodChan.send(Net.pack(msg));
+      }
+    }
+
+    /** Send a network message over the unreliable channel. */
+    sendFast(msg: Net.Msg): void {
+      if (this.isServer) {
+        this.server.receive(-1, msg);
+      } else if (this.client.connected()) {
+        this.client.fastChan.send(Net.pack(msg));
+      }
+    }
+
+    @listen('net')
+    onNet(event) {
+      const msg = <Net.Msg>event.detail;
+      if (msg.type == Net.Type.Chat) {
+        this.$.lobby.receiveMsg(msg.chat);
+      }
     }
 
     joinGame(): void {
-      const client: WebRTCClient = this.$$('#client');
-      client.makeOffer().then(offer => {
+      this.client.makeOffer().then(offer => {
         this.offer = this.encodeRSD(offer);
         this.$.joinDialog.open();
       });
@@ -94,8 +119,7 @@ namespace Bridgesim.Client {
     @observe('offer')
     offerChanged(offer): void {
       if (offer && this.isServer) {
-        const server: WebRTCServer = this.$$('#server');
-        server.acceptOffer(this.decodeRSD(offer))
+        this.server.acceptOffer(this.decodeRSD(offer))
             .then(answer => { this.answer = this.encodeRSD(answer); });
       }
     }
@@ -103,8 +127,7 @@ namespace Bridgesim.Client {
     @observe('answer')
     answerChanged(answer): void {
       if (answer && !this.isServer) {
-        const client: WebRTCClient = this.$$('#client');
-        client.acceptAnswer(this.decodeRSD(answer));
+        this.client.acceptAnswer(this.decodeRSD(answer));
       }
     }
 
@@ -117,11 +140,7 @@ namespace Bridgesim.Client {
     }
 
     sendChat(event): void {
-      if (!this.isServer) {
-        const client: WebRTCClient = this.$$('#client');
-        client.goodChan.send(
-            JSON.stringify({type: 'chat', detail: event.detail}));
-      }
+      this.sendGood({type: Net.Type.Chat, chat: {text: event.detail.text}});
     }
 
     nextShip(): void {
@@ -152,10 +171,10 @@ namespace Bridgesim.Client {
         }
         this.lag -= MPF;
       }
-      this.map.draw();
-      this.nav.draw();
-      this.thrust.draw();
-      this.power.draw();
+      this.$.map.draw();
+      this.$.nav.draw();
+      this.$.thrust.draw();
+      this.$.power.draw();
       this.prevTs = ts;
     }
   }

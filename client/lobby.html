@@ -26,13 +26,13 @@
     <div class="layout vertical" id="main">
       <div class="layout horizontal flex-auto">
         <div id="messages" class="flex-2">
-          <template is="dom-repeat" items="{{msgBuffer}}">
-            <p class="msg">{{item}}</p>
+          <template is="dom-repeat" items="{{chatLog}}">
+            <p class="msg">{{item.ts}} &lt;{{item.id}}&gt; {{item.text}}</p>
           </template>
         </div>
         <div id="players" class="flex"></div>
       </div>
-      <input id="chat" value="{{chatMsg::input}}"></input>
+      <input id="chat" value="{{chatText::input}}"></input>
     </div>
 
     <iron-a11y-keys target="[[chatBox]]"

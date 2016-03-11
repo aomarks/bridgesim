@@ -1,5 +1,6 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/browser.d.ts" />
+///<reference path="network.ts" />
 
 namespace Bridgesim.Client {
 
@@ -16,16 +17,25 @@ namespace Bridgesim.Client {
     }
 
     acceptOffer(offer: RTCSessionDescription): Promise<RTCSessionDescription> {
-      const client = new Client(this.clients.length, this.onMsg.bind(this));
+      const client = new Client(this.clients.length, this.receive.bind(this));
       this.clients.push(client);
       return client.makeAnswer(offer);
     }
 
-    onMsg(clientId: number, msg: MessageEvent): void {
-      console.log('server received message:', clientId, msg.data);
-      this.clients.forEach(client => {client.goodChan.send(msg.data)});
-      const decoded = JSON.parse(msg.data);
-      this.fire('network-' + decoded.type, decoded.detail);
+    receive(clientId: number, msg: Net.Msg): void {
+      console.log('server received message:', clientId, msg);
+      if (msg.type == Net.Type.Chat) {
+        // server is authoritative on provenance
+        msg.chat.ts = Date.now();
+        msg.chat.id = clientId;
+        this.broadcastGood(msg);
+      }
+    }
+
+    broadcastGood(msg: Net.Msg): void {
+      this.fire('net', msg);  // for the local client
+      const packed = Net.pack(msg);
+      this.clients.forEach(client => { client.goodChan.send(packed); });
     }
   }
   WebRTCServer.register();
@@ -34,16 +44,16 @@ namespace Bridgesim.Client {
     private peer: RTCPeerConnection;
     goodChan: RTCDataChannel;
     fastChan: RTCDataChannel;
-    messages: Object[];
 
     constructor(public id: number,
-                onMsg: (clientId: number, msg: MessageEvent) => void) {
+                onMsg: (clientId: number, msg: Net.Msg) => void) {
       this.peer = new webkitRTCPeerConnection(PEER_CONFIG);
       this.peer.ondatachannel = (event: RTCDataChannelEvent) => {
         const chan = event.channel;
         chan.onopen =
             () => { console.log('server channel open:', this.id, chan.label); };
-        chan.onmessage = (msg: MessageEvent): void => { onMsg(id, msg) };
+        chan.onmessage =
+            (msg: MessageEvent): void => { onMsg(id, Net.unpack(msg.data)) };
         if (chan.label == 'good') {
           this.goodChan = chan;
         } else if (chan.label == 'fast') {
