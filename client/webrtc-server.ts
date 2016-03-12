@@ -1,6 +1,7 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/browser.d.ts" />
 ///<reference path="../core/ship.ts" />
+///<reference path="const.ts" />
 ///<reference path="network.ts" />
 
 namespace Bridgesim.Client {
@@ -8,8 +9,6 @@ namespace Bridgesim.Client {
   const PEER_CONFIG: RTCConfiguration = {
     iceServers: [{urls: 'stun:stun.1.google.com:19302'}]
   };
-
-  const MS_PER_TICK = 1000 / 30;
 
   @component('bridgesim-webrtc-server')
   export class WebRTCServer extends polymer.Base {
@@ -27,7 +26,7 @@ namespace Bridgesim.Client {
     }
 
     tick(): void {
-      setTimeout(this.tick.bind(this), MS_PER_TICK);
+      setTimeout(this.tick.bind(this), NET_TICK);
       const sync: Net.Sync = {updates: this.updates()};
       this.broadcastFast({type: Net.Type.Sync, sync: sync});
     }
@@ -35,8 +34,13 @@ namespace Bridgesim.Client {
     updates(): Net.Update[] {
       const updates = [];
       this.ships.forEach((ship, shipId) => {
-        updates.push(
-            {shipId: shipId, x: ship.x, y: ship.y, heading: ship.heading});
+        updates.push({
+          shipId: shipId,
+          x: ship.x,
+          y: ship.y,
+          heading: ship.heading,
+          thrust: ship.thrust
+        });
       });
       return updates;
     }
@@ -78,6 +82,7 @@ namespace Bridgesim.Client {
         ship.x = msg.update.x;
         ship.y = msg.update.y;
         ship.heading = msg.update.heading;
+        ship.thrust = msg.update.thrust;
       }
     }
 

@@ -36,6 +36,7 @@ namespace Bridgesim.Client.Net {
     x: number;
     y: number;
     heading: number;
+    thrust: number;
   }
 
   export interface Sync { updates: Update[] }

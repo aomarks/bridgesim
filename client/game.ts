@@ -152,11 +152,13 @@ namespace Bridgesim.Client {
         let ship = this.ships[u.shipId];
         if (!ship) {
           ship = new Core.Ship(u.shipId.toString(), u.x, u.y, u.heading);
+          ship.thrust = u.thrust;
           this.ships[u.shipId] = ship;
         } else if (u.shipId != this.shipId) {
           ship.x = u.x;
           ship.y = u.y;
           ship.heading = u.heading;
+          ship.thrust = u.thrust;
         }
       });
     }
@@ -175,11 +177,11 @@ namespace Bridgesim.Client {
       this.lag += elapsed;
       this.netLag += elapsed;
 
-      while (this.lag >= MPF) {
+      while (this.lag >= SIM_TICK) {
         for (var i = 0; i < this.ships.length; i++) {
           this.ships[i].tick();
         }
-        this.lag -= MPF;
+        this.lag -= SIM_TICK;
       }
 
       this.$.map.draw();
@@ -187,11 +189,12 @@ namespace Bridgesim.Client {
       this.$.thrust.draw();
       this.$.power.draw();
 
-      if (this.netLag >= 1000 / 30) {
+      if (this.netLag >= NET_TICK) {
         const update: Net.Update = {
           x: this.ship.x,
           y: this.ship.y,
-          heading: this.ship.heading
+          heading: this.ship.heading,
+          thrust: this.ship.thrust
         };
         this.sendFast({type: Net.Type.Update, update: update});
         this.netLag = 0;
