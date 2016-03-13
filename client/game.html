@@ -36,10 +36,10 @@
         margin: 10px;
       }
       #panels {
-        margin: 20px;
+        padding: 10px;
       }
       #panels * {
-        margin-right: 20px;
+        padding: 0 10px 20px 0;
       }
       paper-toggle-button {
         cursor: pointer;
@@ -55,8 +55,8 @@
         resize: none;
       }
       bridgesim-lobby {
-        width: 300px;
-        height: 400px;
+        width: 776px;
+        height: 75px;
       }
     </style>
 
@@ -83,18 +83,19 @@
       <textarea class="token" on-tap="selectAndCopy">[[copyAnswer]]</textarea>
     </paper-dialog>
 
-    <section id="panels" class="layout horizontal">
-      <bridgesim-map id="map" size="[[size]]"
-        ships="[[ships]]" ship="[[ship]]"> </bridgesim-map>
-      <div class="layout vertical justified">
-        <div>
-          <bridgesim-nav id="nav" ship="[[ship]]"></bridgesim-nav>
-          <bridgesim-thrust id="thrust" ship="[[ship]]"></bridgesim-thrust>
-        </div>
-        <bridgesim-power id="power" ship="[[ship]]"></bridgesim-power>
-      </div>
-
+    <section id="panels" class="layout vertical">
       <bridgesim-lobby id="lobby" on-send-chat="sendChat"></bridgesim-lobby>
+      <div class="layout horizontal">
+        <bridgesim-map id="map" size="[[size]]"
+          ships="[[ships]]" ship="[[ship]]"> </bridgesim-map>
+        <div class="layout vertical justified">
+          <div>
+            <bridgesim-nav id="nav" ship="[[ship]]"></bridgesim-nav>
+            <bridgesim-thrust id="thrust" ship="[[ship]]"></bridgesim-thrust>
+          </div>
+          <bridgesim-power id="power" ship="[[ship]]"></bridgesim-power>
+        </div>
+      </div>
     </section>
   </template>
 

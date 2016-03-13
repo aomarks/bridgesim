@@ -19,7 +19,7 @@ namespace Bridgesim.Client {
       this.chatText = '';
     }
 
-    receiveMsg(chat: Net.ReceiveChat): void { this.push('chatLog', chat); }
+    receiveMsg(chat: Net.ReceiveChat): void { this.unshift('chatLog', chat); }
   }
   Lobby.register();
 }

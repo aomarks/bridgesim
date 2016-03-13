@@ -10,16 +10,17 @@
         height: 100%;
         border: 1px solid #ccc;
         color: #fff;
+        font-size: 11px;
       }
       #messages {
-        border-right: 1px solid #ccc;
         overflow-y: scroll;
       }
-      #chat {
-        padding: 5px;
-      }
       .msg {
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #383838;
+        margin: 0;
+      }
+      .who {
+        color: #03A9F4;
       }
     </style>
 
@@ -28,11 +29,13 @@
         <div id="messages" class="flex-2">
           <template is="dom-repeat" items="{{chatLog}}">
             <p class="msg">
-              {{item.timestamp}} &lt;{{item.clientId}}&gt; {{item.text}}
+              <span class="who">
+                {{item.timestamp}} &lt;{{item.clientId}}&gt;
+              </span>
+              {{item.text}}
             </p>
           </template>
         </div>
-        <div id="players" class="flex"></div>
       </div>
       <input id="chat" value="{{chatText::input}}"></input>
     </div>
