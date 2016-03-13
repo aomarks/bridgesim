@@ -4,6 +4,8 @@ namespace Bridgesim.Net {
 
   export interface Message {
     type: Type;
+    seq?: number;
+
     hello?: Hello;
     welcome?: Welcome;
     sendChat?: SendChat;

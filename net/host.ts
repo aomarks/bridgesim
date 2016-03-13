@@ -11,6 +11,7 @@ namespace Bridgesim.Net {
     private ships: Update[] = [];
     private conn2ship: {[connId: number]: Update} = {};
     private timeoutId: number;
+    private seq = 0;
 
     addConnection(conn: Connection) {
       const connId = this.conns.length;
@@ -38,7 +39,9 @@ namespace Bridgesim.Net {
 
     private tick() {
       this.timeoutId = setTimeout(this.tick.bind(this), NET_TICK);
-      this.broadcast({type: Type.Sync, sync: {updates: this.ships}}, false);
+      this.broadcast(
+          {type: Type.Sync, seq: this.seq++, sync: {updates: this.ships}},
+          false);
     }
 
     private onMessage(connId: number, msg: Message) {

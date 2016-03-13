@@ -46,6 +46,8 @@ namespace Bridgesim.Client {
     private shipId: number;
 
     private latestSync: Net.Sync;
+    private latestSeq = -1;
+
     private prevTs: number = 0;
     private lag: number = 0;
     private netLag: number = 0;
@@ -89,6 +91,7 @@ namespace Bridgesim.Client {
       this.ships = [];
       this.shipId = null;
       this.latestSync = null;
+      this.latestSeq = -1;
       this.prevTs = 0;
       this.lag = 0;
       this.netLag = 0;
@@ -177,7 +180,14 @@ namespace Bridgesim.Client {
         this.$.lobby.receiveMsg(msg.receiveChat);
 
       } else if (msg.type == Net.Type.Sync) {
-        this.latestSync = msg.sync;
+        const offset = msg.seq - this.latestSeq;
+        if (offset != 1) {
+          console.log('missed', offset - 1, 'server updates');
+        }
+        if (offset > 0) {
+          this.latestSync = msg.sync;
+          this.latestSeq = msg.seq;
+        }
       }
     }
 
