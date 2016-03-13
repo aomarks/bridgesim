@@ -1,11 +1,8 @@
-namespace Bridgesim.Client.Net {
-
-  export function pack(msg: Msg): string { return JSON.stringify(msg); }
-  export function unpack(msg: string): Msg { return JSON.parse(msg); }
+namespace Bridgesim.Net {
 
   export enum Type {Hello, Welcome, SendChat, ReceiveChat, Update, Sync}
 
-  export interface Msg {
+  export interface Message {
     type: Type;
     hello?: Hello;
     welcome?: Welcome;

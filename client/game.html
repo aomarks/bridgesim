@@ -14,21 +14,11 @@
 <link rel="import" href="nav.html">
 <link rel="import" href="thrust.html">
 <link rel="import" href="power.html">
-<link rel="import" href="webrtc-server.html">
-<link rel="import" href="webrtc-client.html">
 <link rel="import" href="lobby.html">
 
 <dom-module id="bridgesim-game">
   <template>
     <iron-page-url query="{{urlQuery}}"></iron-page-url>
-
-    <template is="dom-if" if="[[isClient]]" restamp="true">
-      <bridgesim-webrtc-client id="client"></bridgesim-webrtc-client>
-    </template>
-
-    <template is="dom-if" if="[[isServer]]" restamp="true">
-      <bridgesim-webrtc-server id="server"></bridgesim-webrtc-server>
-    </template>
 
     <bridgesim-input id="input" ship="[[ship]]"></bridgesim-input>
 
@@ -72,25 +62,25 @@
 
     <section id="header" class="layout horizontal center">
       <h1>BRIDGESIM</h1>
-      <paper-button disabled$="[[isServer]]" on-tap="joinGame">
+      <paper-button disabled$="[[isHost]]" on-tap="joinGame">
         Join Game</paper-button>
       <paper-button disabled$="[[isClient]]" on-tap="invitePlayer">
         Invite Player</paper-button>
-      <paper-toggle-button checked="{{isServer}}">SERVER</paper-toggle-button>
+      <paper-toggle-button checked="{{isHost}}">HOST</paper-toggle-button>
     </section>
 
     <paper-dialog id="joinDialog" on-iron-overlay-closed="clearTokens">
       <h2>send this offer to the server:</h2>
-      <textarea class="token" on-tap="selectAndCopy">[[offer]]</textarea>
+      <textarea class="token" on-tap="selectAndCopy">[[copyOffer]]</textarea>
       <h2>paste the answer here:</h2>
-      <textarea class="token" value="{{answer::input}}"></textarea>
+      <textarea class="token" value="{{pasteAnswer::input}}"></textarea>
     </paper-dialog>
 
     <paper-dialog id="inviteDialog" on-iron-overlay-closed="clearTokens">
       <h2>paste the player's offer here:</h2>
-      <textarea class="token" value="{{offer::input}}"></textarea>
+      <textarea class="token" value="{{pasteOffer::input}}"></textarea>
       <h2>send back this answer:</h2>
-      <textarea class="token" on-tap="selectAndCopy">[[answer]]</textarea>
+      <textarea class="token" on-tap="selectAndCopy">[[copyAnswer]]</textarea>
     </paper-dialog>
 
     <section id="panels" class="layout horizontal">

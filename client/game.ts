@@ -1,89 +1,171 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/browser.d.ts" />
 ///<reference path="../core/ship.ts" />
+///<reference path="../net/message.ts" />
+///<reference path="../net/host.ts" />
+///<reference path="../net/webrtc.ts" />
+///<reference path="../net/loopback.ts" />
 ///<reference path="const.ts" />
 ///<reference path="map.ts" />
 ///<reference path="nav.ts" />
 ///<reference path="thrust.ts" />
 ///<reference path="power.ts" />
-///<reference path="webrtc-server.ts" />
-///<reference path="webrtc-client.ts" />
-///<reference path="network.ts" />
 
 namespace Bridgesim.Client {
+
+  const RTC_CONFIG: RTCConfiguration = {
+    iceServers: [{urls: 'stun:stun.1.google.com:19302'}]
+  };
 
   @component('bridgesim-game')
   class Game extends polymer.Base {
     @property({type: Number, value: 50}) size: number;
 
+    private isHost: boolean;
+
+    @computed()
+    isClient(isHost): boolean {
+      return !isHost;
+    }
+
+    // WebRTC token signalling
+    private pendingConn: Net.WebRTCConnection;
+    private copyOffer: string;
+    private copyAnswer: string;
+    private pasteOffer: string;
+    private pasteAnswer: string;
+
+    private host: Net.Host;
+
+    // client -> server
+    private conn: Net.Connection;
+
     private clientId: number;
     private ship: Core.Ship;
     private ships: Core.Ship[];
-    private shipId: number = 0;
+    private shipId: number;
 
     private latestSync: Net.Sync;
     private prevTs: number = 0;
     private lag: number = 0;
     private netLag: number = 0;
 
-    private isServer: boolean;
-    private offer: string;
-    private answer: string;
-
     private urlQuery: string;
 
+    private animationRequestId: number;
 
-    ready(): void { this.ships = []; }
-
-    @computed()
-    isClient(isServer): boolean {
-      return !isServer;
-    }
-
-    @observe('urlQuery')
-    urlQueryChanged(urlQuery): void {
-      if (this.urlQuery.indexOf('server') != -1) {
-        this.isServer = true;
+    ready(): void {
+      this.ships = [];
+      if (this.urlQuery.indexOf('invite') != -1) {
+        this.isHost = true;
         this.invitePlayer();
       } else if (this.urlQuery.indexOf('join') != -1) {
-        // TODO This is dumb.
-        setTimeout(this.joinGame.bind(this), 100);
+        this.joinGame();
       }
     }
 
-    // TODO this is dumb
-    client(): WebRTCClient { return this.$$('#client'); }
-    server(): WebRTCServer { return this.$$('#server'); }
-
-    /** Send a network message over the reliable channel. */
-    sendGood(msg: Net.Msg): void {
-      if (this.isServer) {
-        // we use -1 for the fake local client peer id
-        this.server().receive(-1, msg);
-      } else if (this.client().connected()) {
-        this.client().goodChan.send(Net.pack(msg));
+    @observe('isHost')
+    isHostChanged(isHost): void {
+      this.resetSimulation();
+      this.resetNetwork();
+      if (isHost) {
+        const loopback = new Net.Loopback();
+        this.conn = loopback.a;
+        this.setupConn();
+        this.host = new Net.Host();
+        this.host.addConnection(loopback.b);
+        this.host.start();
+        loopback.open();
       }
     }
 
-    /** Send a network message over the unreliable channel. */
-    sendFast(msg: Net.Msg): void {
-      if (this.isServer) {
-        this.server().receive(-1, msg);
-      } else if (this.client().connected()) {
-        this.client().fastChan.send(Net.pack(msg));
+    resetSimulation() {
+      console.log('reset simulation');
+      if (this.animationRequestId != null) {
+        cancelAnimationFrame(this.animationRequestId);
+        this.animationRequestId = null;
+      }
+      this.ship = null;
+      this.ships = [];
+      this.shipId = null;
+      this.latestSync = null;
+      this.prevTs = 0;
+      this.lag = 0;
+      this.netLag = 0;
+    }
+
+    resetNetwork() {
+      console.log('reset network');
+      if (this.conn) {
+        this.conn.close();
+        this.conn = null;
+      }
+      if (this.host) {
+        this.host.stop();
+        this.host = null;
+      }
+      this.clientId = null;
+    }
+
+    setupConn() {
+      this.conn.onOpen = () => {
+        this.conn.send({type: Net.Type.Hello, hello: {name: 'stranger'}}, true);
+      };
+      this.conn.onMessage = this.onMessage.bind(this);
+      this.conn.onClose = () => {
+        console.log('disconnected');
+        this.resetSimulation();
       }
     }
 
-    @listen('connected')
-    onConnected() {
-      console.log('connected');
-      this.sendGood({type: Net.Type.Hello, hello: {name: 'stranger'}});
+    joinGame(): void {
+      this.$.joinDialog.open();
+      this.conn = this.pendingConn = new Net.WebRTCConnection(RTC_CONFIG);
+      this.setupConn();
+      this.pendingConn.makeOffer().then(
+          offer => { this.copyOffer = Net.encodeRSD(offer); });
     }
 
-    @listen('net')
-    onNet(event) {
-      const msg = <Net.Msg>event.detail;
+    invitePlayer(): void { this.$.inviteDialog.open(); }
+
+    @observe('pasteOffer')
+    onPasteOffer(offer): void {
+      if (!offer) {
+        return;
+      }
+      this.pendingConn = new Net.WebRTCConnection(RTC_CONFIG);
+      this.pendingConn.onOpen = () => {
+        this.host.addConnection(this.pendingConn);
+        this.$.inviteDialog.close();
+      };
+      this.pendingConn.takeOffer(Net.decodeRSD(offer))
+          .then(answer => { this.copyAnswer = Net.encodeRSD(answer); });
+    }
+
+    @observe('pasteAnswer')
+    onPasteAnswer(answer): void {
+      if (!answer) {
+        return;
+      }
+      this.pendingConn.takeAnswer(Net.decodeRSD(answer));
+    }
+
+    clearTokens(): void {
+      this.pendingConn = null;
+      this.copyOffer = '';
+      this.copyAnswer = '';
+      this.pasteOffer = '';
+      this.pasteAnswer = '';
+    }
+
+    selectAndCopy(event: Event): void {
+      (<HTMLTextAreaElement>event.target).select();
+      document.execCommand('copy');
+    }
+
+    onMessage(msg: Net.Message) {
       if (msg.type == Net.Type.Welcome) {
+        console.log('welcome', msg.welcome);
         this.clientId = msg.welcome.clientId;
         this.shipId = msg.welcome.shipId;
         this.applyUpdates(msg.welcome.updates);
@@ -99,52 +181,9 @@ namespace Bridgesim.Client {
       }
     }
 
-    joinGame(): void {
-      this.client().makeOffer().then(offer => {
-        this.offer = this.encodeRSD(offer);
-        this.$.joinDialog.open();
-      });
-    }
-
-    invitePlayer(): void { this.$.inviteDialog.open(); }
-
-    clearTokens(): void {
-      this.offer = '';
-      this.answer = '';
-    }
-
-    selectAndCopy(event: Event): void {
-      (<HTMLTextAreaElement>event.target).select();
-      document.execCommand('copy');
-    }
-
-    @observe('offer')
-    offerChanged(offer): void {
-      if (offer && this.isServer) {
-        this.server()
-            .acceptOffer(this.decodeRSD(offer))
-            .then(answer => { this.answer = this.encodeRSD(answer); });
-      }
-    }
-
-    @observe('answer')
-    answerChanged(answer): void {
-      if (answer && !this.isServer) {
-        this.client().acceptAnswer(this.decodeRSD(answer));
-      }
-    }
-
-    encodeRSD(decoded: RTCSessionDescription): string {
-      return btoa(JSON.stringify(decoded));
-    }
-
-    decodeRSD(encoded: string): RTCSessionDescription {
-      return new RTCSessionDescription(JSON.parse(atob(encoded)));
-    }
-
     sendChat(event): void {
-      this.sendGood(
-          {type: Net.Type.SendChat, sendChat: {text: event.detail.text}});
+      this.conn.send(
+          {type: Net.Type.SendChat, sendChat: {text: event.detail.text}}, true);
     }
 
     applyUpdates(updates: Net.Update[]): void {
@@ -164,7 +203,7 @@ namespace Bridgesim.Client {
     }
 
     frame(ts: number): void {
-      requestAnimationFrame(this.frame.bind(this));
+      this.animationRequestId = requestAnimationFrame(this.frame.bind(this));
 
       if (this.latestSync) {
         this.applyUpdates(this.latestSync.updates);
@@ -196,7 +235,7 @@ namespace Bridgesim.Client {
           heading: this.ship.heading,
           thrust: this.ship.thrust
         };
-        this.sendFast({type: Net.Type.Update, update: update});
+        this.conn.send({type: Net.Type.Update, update: update}, false);
         this.netLag = 0;
       }
 

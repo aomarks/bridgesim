@@ -1,5 +1,5 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="network.ts" />
+///<reference path="../net/message.ts" />
 
 namespace Bridgesim.Client {
 
