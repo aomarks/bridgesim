@@ -5,7 +5,7 @@
 namespace Bridgesim.Net {
 
   export function encodeRSD(rsd: RTCSessionDescription): string {
-    return btoa(JSON.stringify(rsd));
+    return btoa(JSON.stringify(rsd)).replace(/=+/g, '');
   }
 
   export function decodeRSD(rsd: string): RTCSessionDescription {
