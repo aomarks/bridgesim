@@ -17,6 +17,12 @@ namespace Bridgesim.Client {
     iceServers: [{urls: 'stun:stun.1.google.com:19302'}]
   };
 
+  interface localOffer {
+    offer: RTCSessionDescriptionInit;
+    answer: RTCSessionDescriptionInit;
+    pending: boolean;
+  }
+
   @component('bridgesim-game')
   class Game extends polymer.Base {
     @property({type: Number, value: 50}) size: number;
@@ -34,6 +40,8 @@ namespace Bridgesim.Client {
     private copyAnswer: string;
     private pasteOffer: string;
     private pasteAnswer: string;
+    private localOffers: {[key: string]: localOffer};
+    private localOfferKey: string;
 
     private host: Net.Host;
 
@@ -58,11 +66,10 @@ namespace Bridgesim.Client {
 
     ready(): void {
       this.ships = [];
-      if (this.urlQuery.indexOf('invite') != -1) {
+      if (this.urlQuery.indexOf('host') != -1) {
         this.isHost = true;
-        this.invitePlayer();
-      } else if (this.urlQuery.indexOf('join') != -1) {
-        this.joinGame();
+      } else if (this.urlQuery.indexOf('client') != -1) {
+        this.makeLocalOffer();
       }
     }
 
@@ -119,6 +126,50 @@ namespace Bridgesim.Client {
         console.log('disconnected');
         this.resetSimulation();
       }
+    }
+
+    initLocalOffers() { this.localOffers = {}; }
+
+    @observe('localOffers')
+    onLocalOffers(offers: {[key: string]: localOffer}) {
+      console.log('localOffers:', offers);
+      if (!offers) {
+        return;
+      }
+      if (this.host) {
+        Object.keys(offers).forEach(key => {
+          const o = offers[key];
+          if (!o.pending) {
+            console.log('accepting local offer', key, o);
+            o.pending = true;
+            const conn = new Net.WebRTCConnection(RTC_CONFIG);
+            conn.onOpen = () => { this.host.addConnection(conn); };
+            conn.takeOffer(new RTCSessionDescription(o.offer))
+                .then(answer => {
+                  this.set('localOffers.' + key + '.answer', answer);
+                });
+          }
+        });
+
+      } else if (this.localOfferKey != null) {
+        const key = this.localOfferKey;
+        const o = offers[key];
+        if (o && o.answer) {
+          console.log('accepting local answer', key, o.answer);
+          this.pendingConn.takeAnswer(new RTCSessionDescription(o.answer));
+          // TODO delete offer from localstorage
+        }
+      }
+    }
+
+    makeLocalOffer() {
+      this.localOfferKey = Math.floor(Math.random() * 10000).toString();
+      this.conn = this.pendingConn = new Net.WebRTCConnection(RTC_CONFIG);
+      this.setupConn();
+      this.pendingConn.makeOffer().then(offer => {
+        console.log('making local offer', this.localOfferKey, offer);
+        this.set('localOffers.' + this.localOfferKey, {offer: offer});
+      });
     }
 
     joinGame(): void {
