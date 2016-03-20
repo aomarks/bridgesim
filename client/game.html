@@ -18,7 +18,7 @@
 <link rel="import" href="nav.html">
 <link rel="import" href="thrust.html">
 <link rel="import" href="power.html">
-<link rel="import" href="lobby.html">
+<link rel="import" href="chat.html">
 
 <dom-module id="bridgesim-game">
   <template>
@@ -43,11 +43,8 @@
       #header * {
         margin: 10px;
       }
-      #panels {
-        padding: 10px;
-      }
-      #panels * {
-        padding: 0 10px 20px 0;
+      #panels > * {
+        margin: 10px;
       }
       paper-toggle-button {
         cursor: pointer;
@@ -62,8 +59,8 @@
         cursor: pointer;
         resize: none;
       }
-      bridgesim-lobby {
-        width: 776px;
+      bridgesim-chat {
+        width: 775px;
         height: 75px;
       }
       paper-tabs {
@@ -96,7 +93,7 @@
     </paper-dialog>
 
     <section id="panels" class="layout vertical">
-      <bridgesim-lobby id="lobby" on-send-chat="sendChat"></bridgesim-lobby>
+      <bridgesim-chat id="chat" on-send-chat="sendChat"></bridgesim-chat>
       <paper-tabs selected="{{station}}" attr-for-selected='name'>
         <paper-tab name='helm'>Helm</paper-tab>
         <paper-tab name='engineering'>Engineering</paper-tab>

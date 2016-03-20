@@ -25,13 +25,11 @@ namespace Bridgesim.Client {
 
   @component('bridgesim-game')
   class Game extends polymer.Base {
-    @property({type: Number, value: 50})
-    size: number;
+    @property({type: Number, value: 50}) size: number;
 
     private isHost: boolean;
 
-    @property({value: 'helm', type: String})
-    station: string;
+    @property({value: 'helm', type: String}) station: string;
 
     @computed()
     isClient(isHost): boolean {
@@ -232,7 +230,7 @@ namespace Bridgesim.Client {
         this.$.joinDialog.close();
 
       } else if (msg.type == Net.Type.ReceiveChat) {
-        this.$.lobby.receiveMsg(msg.receiveChat);
+        this.$.chat.receiveMsg(msg.receiveChat);
 
       } else if (msg.type == Net.Type.Sync) {
         const offset = msg.seq - this.latestSeq;
