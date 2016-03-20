@@ -1,0 +1,45 @@
+<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+
+<link rel="import" href="deps.html">
+
+<dom-module id="bridgesim-chat">
+  <template>
+    <style include="iron-flex iron-flex-alignment iron-flex-factors"></style>
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        border: 1px solid #ccc;
+        color: #fff;
+        font-size: 11px;
+      }
+      #messages {
+        overflow-y: scroll;
+      }
+      .msg {
+        border-bottom: 1px solid #383838;
+      }
+      .who {
+        color: #03A9F4;
+      }
+    </style>
+
+    <div id="messages" class="flex-1">
+      <template is="dom-repeat" items="{{log}}">
+        <div class="msg">
+          <span class="who">
+            {{item.timestamp}} &lt;{{item.clientId}}&gt;
+          </span>
+          {{item.text}}
+        </div>
+      </template>
+    </div>
+
+    <input id="input" value="{{text::input}}"></input>
+
+    <iron-a11y-keys target="[[input]]"
+      keys="enter" on-keys-pressed="send"></iron-a11y-keys>
+  </template>
+
+  <script src="chat.js"></script>
+</dom-module>
