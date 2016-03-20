@@ -37,8 +37,8 @@ namespace Bridgesim.Client {
     };
 
     ready(): void {
-      addEventListener('keydown', this.onKeydown.bind(this));
-      addEventListener('keyup', this.onKeyup.bind(this));
+      window.addEventListener('keydown', this.onKeydown.bind(this));
+      window.addEventListener('keyup', this.onKeyup.bind(this));
     }
 
     onKeydown(event: KeyboardEvent): void {
