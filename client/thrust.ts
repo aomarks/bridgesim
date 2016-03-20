@@ -19,20 +19,25 @@ namespace Bridgesim.Client {
 
     draw(): void {
       let ctx = this.ctx;
+      ctx.clearRect(0, 0, this.can.width, this.can.height);
       let w = this.can.width - 1;
-      let h = this.can.height - 1;
+      let h = this.can.height - 20;
 
-      ctx.clearRect(0, 0, w, h);
-
-      ctx.strokeStyle = '#AAA';
-      ctx.strokeRect(HP, HP, w, h);
-
-      ctx.fillStyle = '#FFF';
       let barHeight = Math.round(h / 20);
       let maxHeight = h - barHeight;
-
+      ctx.fillStyle = AQUA;
       ctx.fillRect(HP, snap(maxHeight - (this.ship.thrust * maxHeight)), w,
                    barHeight);
+
+     ctx.strokeStyle = AQUA;
+     ctx.strokeRect(HP, HP, w, h);
+
+      ctx.font = "16px sans-serif";
+      ctx.fillStyle = RED;
+      const displayThrustValue = Math.round(this.ship.thrust * 100);
+      const thrustWidth = ctx.measureText(displayThrustValue.toString()).width;
+      ctx.fillText(displayThrustValue.toString(), w / 2 - thrustWidth / 2,
+                   this.can.height);
     }
   }
   Thrust.register();
