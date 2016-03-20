@@ -75,6 +75,14 @@ namespace Bridgesim.Client {
       } else if (this.urlQuery.indexOf('client') != -1) {
         this.makeLocalOffer();
       }
+
+      this.listen(window, 'keydown', 'focusLobby');
+    }
+
+    focusLobby(ev: KeyboardEvent) {
+      if (ev.keyCode === 13) { // enter
+        (<Lobby>this.$$('bridgesim-lobby')).focus();
+      }
     }
 
     @observe('isHost')

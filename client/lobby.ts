@@ -20,6 +20,16 @@ namespace Bridgesim.Client {
     }
 
     receiveMsg(chat: Net.ReceiveChat): void { this.unshift('chatLog', chat); }
+
+    @listen('keydown')
+    @listen('keyup')
+    swallowKeyboardEvents(ev: KeyboardEvent): void {
+      ev.cancelBubble = true;
+    }
+
+    focus(): void {
+      (<HTMLInputElement>this.$$('input')).focus();
+    }
   }
   Lobby.register();
 }
