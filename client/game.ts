@@ -25,9 +25,13 @@ namespace Bridgesim.Client {
 
   @component('bridgesim-game')
   class Game extends polymer.Base {
-    @property({type: Number, value: 50}) size: number;
+    @property({type: Number, value: 50})
+    size: number;
 
     private isHost: boolean;
+
+    @property({value: 'helm', type: String})
+    station: string;
 
     @computed()
     isClient(isHost): boolean {

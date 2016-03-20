@@ -7,6 +7,9 @@
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <link rel="import" href="deps.html">
@@ -63,6 +66,10 @@
         width: 776px;
         height: 75px;
       }
+      paper-tabs {
+        color: white;
+        --paper-tabs-selection-bar-color: #8BC34A;
+      }
     </style>
 
     <section id="header" class="layout horizontal center">
@@ -90,17 +97,28 @@
 
     <section id="panels" class="layout vertical">
       <bridgesim-lobby id="lobby" on-send-chat="sendChat"></bridgesim-lobby>
-      <div class="layout horizontal">
-        <bridgesim-map id="map" size="[[size]]"
-          ships="[[ships]]" ship="[[ship]]"> </bridgesim-map>
-        <div class="layout vertical justified">
-          <div>
-            <bridgesim-nav id="nav" ship="[[ship]]"></bridgesim-nav>
-            <bridgesim-thrust id="thrust" ship="[[ship]]"></bridgesim-thrust>
+      <paper-tabs selected="{{station}}" attr-for-selected='name'>
+        <paper-tab name='helm'>Helm</paper-tab>
+        <paper-tab name='engineering'>Engineering</paper-tab>
+      </paper-tabs>
+
+      <iron-pages selected="[[station]]" attr-for-selected='name'>
+        <section name='helm'>
+          <div class="layout horizontal">
+            <bridgesim-map id="map" size="[[size]]"
+              ships="[[ships]]" ship="[[ship]]"> </bridgesim-map>
+            <div class="layout vertical justified">
+              <div>
+                <bridgesim-nav id="nav" ship="[[ship]]"></bridgesim-nav>
+                <bridgesim-thrust id="thrust" ship="[[ship]]"></bridgesim-thrust>
+              </div>
+            </div>
           </div>
+        </section>
+        <section name='engineering'>
           <bridgesim-power id="power" ship="[[ship]]"></bridgesim-power>
-        </div>
-      </div>
+        </section>
+      </iron-pages>
     </section>
   </template>
 
