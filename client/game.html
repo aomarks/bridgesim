@@ -16,7 +16,7 @@
 <link rel="import" href="./input.html">
 <link rel="import" href="./chat.html">
 
-<link rel="import" href="./stations/coms.html">
+<link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
 <link rel="import" href="./stations/helm.html">
 <link rel="import" href="./stations/science.html">
@@ -103,7 +103,7 @@
       <bridgesim-chat id="chat" on-send-chat="sendChat"></bridgesim-chat>
       <paper-tabs selected="{{station}}" attr-for-selected='name'>
         <paper-tab name='helm'>Helm</paper-tab>
-        <paper-tab name='coms'>Coms</paper-tab>
+        <paper-tab name='comms'>Comms</paper-tab>
         <paper-tab name='science'>Science</paper-tab>
         <paper-tab name='weapons'>Weapons</paper-tab>
         <paper-tab name='engineering'>Engineering</paper-tab>
@@ -112,8 +112,8 @@
       <iron-pages id='stations' selected="[[station]]" attr-for-selected='name'>
         <helm-station name='helm' ship="[[ship]]" ships="[[ships]]" size="[[size]]">
         </helm-station>
-        <coms-station name='coms' ship="[[ship]]">
-        </coms-station>
+        <comms-station name='comms' ship="[[ship]]">
+        </comms-station>
         <science-station name='science' ship="[[ship]]">
         </science-station>
         <weapons-station name='weapons' ship="[[ship]]">
