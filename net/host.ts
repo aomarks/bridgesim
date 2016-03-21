@@ -39,17 +39,15 @@ namespace Bridgesim.Net {
 
     private tick() {
       this.timeoutId = setTimeout(this.tick.bind(this), NET_TICK);
-      this.broadcast(
-          {type: Type.Sync, seq: this.seq++, sync: {updates: this.ships}},
-          false);
+      this.broadcast({seq: this.seq++, sync: {updates: this.ships}}, false);
     }
 
     private onMessage(connId: number, msg: Message) {
-      if (msg.type == Type.Hello) {
+      if (msg.hello) {
         this.onHello(connId, msg.hello);
-      } else if (msg.type == Type.SendChat) {
+      } else if (msg.sendChat) {
         this.onSendChat(connId, msg.sendChat);
-      } else if (msg.type == Type.Update) {
+      } else if (msg.update) {
         this.onUpdate(connId, msg.update);
       }
     }
@@ -64,7 +62,7 @@ namespace Bridgesim.Net {
         shipId: shipId,
         updates: this.ships,
       };
-      const msg = {type: Type.Welcome, welcome: welcome};
+      const msg = {welcome: welcome};
       this.conns[connId].send(msg, true);
       this.active[connId] = this.conns[connId];
     }
@@ -75,7 +73,7 @@ namespace Bridgesim.Net {
         clientId: connId,
         text: sendChat.text,
       };
-      this.broadcast({type: Type.ReceiveChat, receiveChat: rc}, true);
+      this.broadcast({receiveChat: rc}, true);
     }
 
     private onUpdate(connId: number, update: Update) {

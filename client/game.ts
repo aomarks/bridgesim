@@ -78,7 +78,7 @@ namespace Bridgesim.Client {
     }
 
     focusLobby(ev: KeyboardEvent) {
-      if (ev.keyCode === 13) { // enter
+      if (ev.keyCode === 13) {  // enter
         (<Chat>this.$$('bridgesim-chat')).focus();
       }
     }
@@ -128,9 +128,8 @@ namespace Bridgesim.Client {
     }
 
     setupConn() {
-      this.conn.onOpen = () => {
-        this.conn.send({type: Net.Type.Hello, hello: {name: 'stranger'}}, true);
-      };
+      this.conn.onOpen =
+          () => { this.conn.send({hello: {name: 'stranger'}}, true); };
       this.conn.onMessage = this.onMessage.bind(this);
       this.conn.onClose = () => {
         console.log('disconnected');
@@ -228,7 +227,7 @@ namespace Bridgesim.Client {
     }
 
     onMessage(msg: Net.Message) {
-      if (msg.type == Net.Type.Welcome) {
+      if (msg.welcome) {
         console.log('welcome', msg.welcome);
         this.clientId = msg.welcome.clientId;
         this.shipId = msg.welcome.shipId;
@@ -237,10 +236,10 @@ namespace Bridgesim.Client {
         this.frame(0);
         this.$.joinDialog.close();
 
-      } else if (msg.type == Net.Type.ReceiveChat) {
+      } else if (msg.receiveChat) {
         this.$.chat.receiveMsg(msg.receiveChat);
 
-      } else if (msg.type == Net.Type.Sync) {
+      } else if (msg.sync) {
         const offset = msg.seq - this.latestSeq;
         if (offset != 1) {
           console.log('missed', offset - 1, 'server updates');
@@ -253,8 +252,7 @@ namespace Bridgesim.Client {
     }
 
     sendChat(event): void {
-      this.conn.send(
-          {type: Net.Type.SendChat, sendChat: {text: event.detail.text}}, true);
+      this.conn.send({sendChat: {text: event.detail.text}}, true);
     }
 
     applyUpdates(updates: Net.Update[]): void {
@@ -306,7 +304,7 @@ namespace Bridgesim.Client {
           heading: this.ship.heading,
           thrust: this.ship.thrust
         };
-        this.conn.send({type: Net.Type.Update, update: update}, false);
+        this.conn.send({update: update}, false);
         this.netLag = 0;
       }
 

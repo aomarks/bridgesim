@@ -1,9 +1,6 @@
 namespace Bridgesim.Net {
 
-  export enum Type {Hello, Welcome, SendChat, ReceiveChat, Update, Sync}
-
   export interface Message {
-    type: Type;
     seq?: number;
 
     hello?: Hello;
