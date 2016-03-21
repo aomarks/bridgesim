@@ -36,11 +36,34 @@ namespace Bridgesim.Client {
         let s = this.ship.subsystems[i];
         ctx.fillRect((i * BAR_W) + PAD + HP, h - PAD + HP, BAR_W - PAD,
                      snap(-((s.level / 100) * (h - PAD2))));
+        switch (i) {
+          case 0:
+            this.drawLabel(ctx, "Engine", h / 2, (i + 0.5) * BAR_W + PAD);
+            break;
+          case 1:
+            this.drawLabel(ctx, "Manuevering", h / 2, (i + 0.5) * BAR_W + PAD);
+            break;
+          case 2:
+            this.drawLabel(ctx, "Weapons", h / 2, (i + 0.5) * BAR_W + PAD);
+            break;
+        }
       }
 
       ctx.strokeStyle = '#F00';
       ctx.strokeRect((this.ship.curSubsystem * BAR_W) + PAD + HP, PAD + HP,
                      BAR_W - PAD, h - PAD2);
+    }
+
+    // Draw |text| centered at (|centerX|, |centerY|)
+    drawLabel(ctx, text, centerY, centerX): void {
+      ctx.save();
+      ctx.font = "12px sans-serif";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = WHITE;
+      ctx.rotate(-90 * Math.PI / 180);
+      const labelWidth = ctx.measureText(text).width;
+      ctx.fillText(text, -centerY - (labelWidth / 2), centerX);
+      ctx.restore();
     }
   }
   Power.register();
