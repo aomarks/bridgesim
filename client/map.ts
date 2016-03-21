@@ -38,17 +38,20 @@ namespace Bridgesim.Client {
       ctx.strokeStyle = GREEN;
       ctx.stroke();
 
+      let shipImage = new Image();
+      shipImage.src = "/images/ship.svg";
+
       for (let s of this.ships) {
         ctx.beginPath();
         let x = s.x * TILE_PX + TILE_PX / 2 + HP;
         let y = s.y * TILE_PX + TILE_PX / 2 + HP;
-        ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
         if (this.ship === s) {
-          ctx.fillStyle = '#00C2D8';
+          ctx.drawImage(shipImage, x, y, 34 / 3, 59 / 3);
         } else {
+          ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
           ctx.fillStyle = '#FF0000';
+          ctx.fill();
         }
-        ctx.fill();
 
         ctx.beginPath();
         ctx.fillStyle = '#FFF';
