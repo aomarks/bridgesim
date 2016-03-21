@@ -20,6 +20,8 @@ namespace Bridgesim.Client {
       this.can = this.$.canvas;
       this.ctx = this.can.getContext('2d');
       this.ctx.font = '12px roboto mono';
+      this.shipImage = new Image();
+      this.shipImage.src = "/images/ship.svg";
     }
 
     draw(): void {
@@ -38,15 +40,19 @@ namespace Bridgesim.Client {
       ctx.strokeStyle = GREEN;
       ctx.stroke();
 
-      let shipImage = new Image();
-      shipImage.src = "/images/ship.svg";
-
       for (let s of this.ships) {
         ctx.beginPath();
         let x = s.x * TILE_PX + TILE_PX / 2 + HP;
         let y = s.y * TILE_PX + TILE_PX / 2 + HP;
         if (this.ship === s) {
-          ctx.drawImage(shipImage, x, y, 34 / 3, 59 / 3);
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(this.ship.heading * Math.PI / 180);
+          const shipWidth = 34 / 3;
+          const shipHeight = 59 / 3;
+          ctx.drawImage(this.shipImage, -shipWidth / 2, -shipHeight / 2,
+                        shipWidth, shipHeight);
+          ctx.restore();
         } else {
           ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
           ctx.fillStyle = '#FF0000';
