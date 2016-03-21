@@ -31,22 +31,12 @@ namespace Bridgesim.Core {
       this.y += t * Math.sin(rads);
     }
 
-    turnLeft(): void { this.heading -= this.maneuvering.level / 20; }
-
-    turnRight(): void { this.heading += this.maneuvering.level / 20; }
-
-    thrustUp(): void {
-      this.thrust += .01;
-      if (this.thrust > 1) {
-        this.thrust = 1;
-      }
+    applyYaw(amount: number): void {
+      this.heading += (this.maneuvering.level / 20) * amount;
     }
 
-    thrustDown(): void {
-      this.thrust -= .01;
-      if (this.thrust < 0) {
-        this.thrust = 0;
-      }
+    applyThrust(amount: number): void {
+      this.thrust = Math.min(1, Math.max(0, this.thrust + (.01 * amount)));
     }
 
     powerUp(): void {

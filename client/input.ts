@@ -19,22 +19,32 @@ namespace Bridgesim.Client {
   const KEY_S = 'S'.charCodeAt(0);
   const KEY_W = 'W'.charCodeAt(0);
 
+  interface HelmCommands {
+    yaw: number,
+    thrust: number,
+  }
+
   @component('bridgesim-input')
   class Input extends polymer.Base {
-    @property({type: Object}) ship: Core.Ship;
+    @property({type : Object}) ship: Core.Ship;
 
-    private keyPressed: {[key: number]: number} = {};
-    private keyBindings: {[key: number]: (tick: number) => void} = {
-      [KEY_W]: this.thrustUp.bind(this),
-      [KEY_A]: this.turnLeft.bind(this),
-      [KEY_S]: this.thrustDown.bind(this),
-      [KEY_D]: this.turnRight.bind(this),
+    private keyPressed: {[key: number] : number} = {};
+    private keyBindings: {[key: number] : (tick: number) => void};
+    private helmCommands: HelmCommands;
 
-      [KEY_H]: this.prevSubsystem.bind(this),
-      [KEY_L]: this.nextSubsystem.bind(this),
-      [KEY_K]: this.powerUp.bind(this),
-      [KEY_J]: this.powerDown.bind(this),
-    };
+    created() {
+      this.helmCommands = {yaw: 0, thrust: 0};
+      this.keyBindings  = {
+        [KEY_H] : this.prevSubsystem.bind(this),
+        [KEY_L] : this.nextSubsystem.bind(this),
+        [KEY_K] : this.powerUp.bind(this),
+        [KEY_J] : this.powerDown.bind(this),
+      }
+      this.keyBindings[KEY_W] = () => this.helmCommands.thrust = 1;
+      this.keyBindings[KEY_S] = () => this.helmCommands.thrust = -1;
+      this.keyBindings[KEY_A] = () => this.helmCommands.yaw = -1;
+      this.keyBindings[KEY_D] = () => this.helmCommands.yaw = 1;
+    }
 
     ready(): void {
       window.addEventListener('keydown', this.onKeydown.bind(this));
@@ -61,15 +71,25 @@ namespace Bridgesim.Client {
         }
         this.keyPressed[key]++;
       }
+      const gamepad = window.navigator.getGamepads()[0];
+      const deadZone = 0.25;
+      if (gamepad) {
+        if (this.helmCommands.yaw === 0) {
+          const yaw = gamepad.axes[0];
+          if (Math.abs(yaw) > deadZone) {
+            this.helmCommands.yaw = yaw;
+          }
+        }
+        if (this.helmCommands.thrust === 0) {
+          this.helmCommands.thrust = gamepad.buttons[7].value - gamepad.buttons[6].value;
+
+        }
+      }
+      this.ship.applyYaw(this.helmCommands.yaw);
+      this.ship.applyThrust(this.helmCommands.thrust);
+      this.helmCommands.thrust = 0;
+      this.helmCommands.yaw = 0;
     }
-
-    turnLeft(): void { this.ship.turnLeft(); }
-
-    turnRight(): void { this.ship.turnRight(); }
-
-    thrustUp(): void { this.ship.thrustUp(); }
-
-    thrustDown(): void { this.ship.thrustDown(); }
 
     nextShip(tick: number): void {
       if (tick > 0) {
