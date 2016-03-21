@@ -4,7 +4,7 @@
 
 namespace Bridgesim.Client {
 
-  const TILE_PX = 10;
+  const TILE_PX = 50;
   const BLIP_PX = 2;
 
   @component('bridgesim-map')
