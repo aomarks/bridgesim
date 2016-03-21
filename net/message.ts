@@ -5,6 +5,7 @@ namespace Bridgesim.Net {
 
     hello?: Hello;
     welcome?: Welcome;
+    playerList?: PlayerList;
     sendChat?: SendChat;
     receiveChat?: ReceiveChat;
     update?: Update;
@@ -19,11 +20,19 @@ namespace Bridgesim.Net {
     updates: Update[];
   }
 
+  export interface PlayerList { players: Player[]; }
+
+  export interface Player {
+    id: number;
+    name: string;
+  }
+
   export interface SendChat { text: string; }
 
   export interface ReceiveChat {
     timestamp: number;
-    clientId: number;
+    clientId?: number;
+    announce?: boolean;
     text: string;
   }
 

@@ -8,7 +8,7 @@ namespace Bridgesim.Client {
   @component('bridgesim-chat')
   export class Chat extends polymer.Base {
     private input: HTMLElement;
-    private text: string;
+    private text: string = '';
     private log: Net.ReceiveChat[];
 
     ready(): void {
@@ -17,6 +17,9 @@ namespace Bridgesim.Client {
     }
 
     send(): void {
+      if (!this.text.trim()) {
+        return;
+      }
       this.fire('send-chat', <ChatEvent>{text: this.text});
       this.text = '';
     }
@@ -29,7 +32,15 @@ namespace Bridgesim.Client {
       ev.cancelBubble = true;
     }
 
-    focus(): void { (<HTMLInputElement>this.$$('input')).focus(); }
+    focus(): void { this.input.focus(); }
+
+    formatTimestamp(millis: number): string {
+      const d = new Date(millis);
+      return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' +
+             pad(d.getSeconds());
+    }
   }
   Chat.register();
+
+  function pad(val: number): string { return ('0' + val).substr(-2); }
 }

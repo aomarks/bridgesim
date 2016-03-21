@@ -55,6 +55,7 @@ namespace Bridgesim.Client {
     private ship: Core.Ship;
     private ships: Core.Ship[];
     private shipId: number;
+    private players: Net.Player[];
 
     private latestSync: Net.Sync;
     private latestSeq = -1;
@@ -236,6 +237,10 @@ namespace Bridgesim.Client {
         this.ship = this.ships[this.shipId];
         this.frame(0);
         this.$.joinDialog.close();
+
+      } else if (msg.playerList) {
+        this.players = msg.playerList.players;
+        console.log('new player list', this.players);
 
       } else if (msg.receiveChat) {
         this.$.chat.receiveMsg(msg.receiveChat);

@@ -10,30 +10,48 @@
       :host {
         display: block;
         @apply(--layout-vertical);
-        border: 1px solid #ccc;
+        background-color: #232535;
         color: #fff;
+        font-family: roboto mono;
         font-size: 11px;
       }
       #messages {
         overflow-y: scroll;
       }
-      .who {
+      .announce {
+        color: red;
+      }
+      .when, .who {
         color: #03A9F4;
       }
-      input: {
-        box-sizing: border-box;
-        width: 100%;
+      input {
+        border: none;
+        background-color: #343856;
+        color: inherit;
+        font-family: inherit;
+        font-size: inherit;
+        padding: 3px 5px;
       }
     </style>
 
     <div id="messages" class="flex-1">
       <template is="dom-repeat" items="{{log}}">
-        <div class="msg">
-          <span class="who">
-            {{item.timestamp}} &lt;{{item.clientId}}&gt;
-          </span>
-          {{item.text}}
-        </div>
+
+        <template is="dom-if" if="{{item.announce}}">
+          <div class="announce">
+            <span class="when">{{formatTimestamp(item.timestamp)}}</span>
+            {{item.text}}
+          </div>
+        </template>
+
+        <template is="dom-if" if="{{!item.announce}}">
+          <div>
+            <span class="when">{{formatTimestamp(item.timestamp)}}</span>
+            <span class="who">&lt;p{{item.clientId}}&gt;</span>
+            {{item.text}}
+          </div>
+        </template>
+
       </template>
     </div>
 

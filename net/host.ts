@@ -10,6 +10,7 @@ namespace Bridgesim.Net {
     private active: Connection[] = [];
     private ships: Update[] = [];
     private conn2ship: {[connId: number]: Update} = {};
+    private players: {[playerId: number]: Player} = {};
     private timeoutId: number;
     private seq = 0;
 
@@ -20,6 +21,9 @@ namespace Bridgesim.Net {
       conn.onClose = () => {
         delete this.conns[connId];
         delete this.active[connId];
+        delete this.players[connId];
+        this.broadcastPlayerList();
+        this.announce('player ' + connId + ' disconnected');
       };
     }
 
@@ -40,6 +44,20 @@ namespace Bridgesim.Net {
     private tick() {
       this.timeoutId = setTimeout(this.tick.bind(this), NET_TICK);
       this.broadcast({seq: this.seq++, sync: {updates: this.ships}}, false);
+    }
+
+    private announce(text: string) {
+      this.broadcast(
+          {receiveChat: {timestamp: Date.now(), announce: true, text: text}},
+          true);
+    }
+
+    private broadcastPlayerList() {
+      const players: Player[] = [];
+      for (let id in this.players) {
+        players.push(this.players[id]);
+      }
+      this.broadcast({playerList: {players: players}}, true);
     }
 
     private onMessage(connId: number, msg: Message) {
@@ -65,6 +83,9 @@ namespace Bridgesim.Net {
       const msg = {welcome: welcome};
       this.conns[connId].send(msg, true);
       this.active[connId] = this.conns[connId];
+      this.players[connId] = {id: connId, name: connId.toString()};
+      this.broadcastPlayerList();
+      this.announce('player ' + connId + ' joined');
     }
 
     private onSendChat(connId: number, sendChat: SendChat) {
