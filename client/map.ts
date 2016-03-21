@@ -1,6 +1,7 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../core/ship.ts" />
 ///<reference path="const.ts" />
+///<reference path="colors.ts" />
 
 namespace Bridgesim.Client {
 
@@ -15,6 +16,7 @@ namespace Bridgesim.Client {
 
     private can: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
+    private shipImage: HTMLImageElement;
 
     ready(): void {
       this.can = this.$.canvas;
