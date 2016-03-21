@@ -27,9 +27,7 @@ namespace Bridgesim.Client {
       ev.cancelBubble = true;
     }
 
-    focus(): void {
-      (<HTMLInputElement>this.$$('input')).focus();
-    }
+    focus(): void { (<HTMLInputElement>this.$$('input')).focus(); }
   }
   Chat.register();
 }

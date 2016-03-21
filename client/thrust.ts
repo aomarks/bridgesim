@@ -29,8 +29,8 @@ namespace Bridgesim.Client {
       ctx.fillRect(HP, snap(maxHeight - (this.ship.thrust * maxHeight)), w,
                    barHeight);
 
-     ctx.strokeStyle = AQUA;
-     ctx.strokeRect(HP, HP, w, h);
+      ctx.strokeStyle = AQUA;
+      ctx.strokeRect(HP, HP, w, h);
 
       ctx.font = "16px sans-serif";
       ctx.fillStyle = RED;

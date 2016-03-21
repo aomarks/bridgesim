@@ -20,26 +20,25 @@ namespace Bridgesim.Client {
   const KEY_W = 'W'.charCodeAt(0);
 
   interface HelmCommands {
-    yaw: number,
-    thrust: number,
+    yaw: number, thrust: number,
   }
 
   @component('bridgesim-input')
   class Input extends polymer.Base {
-    @property({type : Object}) ship: Core.Ship;
+    @property({type: Object}) ship: Core.Ship;
 
-    private keyPressed: {[key: number] : number} = {};
-    private keyBindings: {[key: number] : (tick: number) => void};
+    private keyPressed: {[key: number]: number} = {};
+    private keyBindings: {[key: number]: (tick: number) => void};
     private helmCommands: HelmCommands;
 
     created() {
       this.helmCommands = {yaw: 0, thrust: 0};
-      this.keyBindings  = {
-        [KEY_H] : this.prevSubsystem.bind(this),
-        [KEY_L] : this.nextSubsystem.bind(this),
-        [KEY_K] : this.powerUp.bind(this),
-        [KEY_J] : this.powerDown.bind(this),
-      }
+      this.keyBindings = {
+        [KEY_H]: this.prevSubsystem.bind(this),
+        [KEY_L]: this.nextSubsystem.bind(this),
+        [KEY_K]: this.powerUp.bind(this),
+        [KEY_J]: this.powerDown.bind(this),
+      };
       this.keyBindings[KEY_W] = () => this.helmCommands.thrust = 1;
       this.keyBindings[KEY_S] = () => this.helmCommands.thrust = -1;
       this.keyBindings[KEY_A] = () => this.helmCommands.yaw = -1;
@@ -81,8 +80,8 @@ namespace Bridgesim.Client {
           }
         }
         if (this.helmCommands.thrust === 0) {
-          this.helmCommands.thrust = gamepad.buttons[7].value - gamepad.buttons[6].value;
-
+          this.helmCommands.thrust =
+              gamepad.buttons[7].value - gamepad.buttons[6].value;
         }
       }
       this.ship.applyYaw(this.helmCommands.yaw);

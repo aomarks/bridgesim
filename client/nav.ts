@@ -46,11 +46,11 @@ namespace Bridgesim.Client {
       ctx.stroke();
     }
 
-    // Draw degree markers centered at (centerX, and centerY) of radius |radius|, at
-    // degree increments |degreeIncrements|.
+    // Draw degree markers centered at (centerX, and centerY) of radius
+    // |radius|, at degree increments |degreeIncrements|.
     drawDegreeLabels(ctx, centerX, centerY, radius, degreeIncrements) {
-      // Translate draw context to centerX, centerY and rotate by |degreeIncrements| for
-      // every degree marker.
+      // Translate draw context to centerX, centerY and rotate by
+      // |degreeIncrements| for every degree marker.
       ctx.save();
       ctx.font = "12px sans-serif";
       ctx.fillStyle = AQUA;
@@ -65,9 +65,10 @@ namespace Bridgesim.Client {
       ctx.restore();
     }
 
-    drawDegreeTicks(ctx, centerX, centerY, radius, degreeIncrements, tickLength) {
-      // Translate draw context to centerX, centerY and rotate by |degreeIncrements| for
-      // every degree marker.
+    drawDegreeTicks(ctx, centerX, centerY, radius, degreeIncrements,
+                    tickLength) {
+      // Translate draw context to centerX, centerY and rotate by
+      // |degreeIncrements| for every degree marker.
       ctx.save();
       ctx.strokeStyle = AQUA;
       for (let i = 0; i < 360; i += degreeIncrements) {
