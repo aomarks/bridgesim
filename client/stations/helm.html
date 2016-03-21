@@ -1,0 +1,26 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../map.html">
+<link rel="import" href="../nav.html">
+<link rel="import" href="../thrust.html">
+
+<dom-module id="helm-station">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 100%;
+      }
+    </style>
+    <div class="layout horizontal">
+      <bridgesim-map id="map" size="[[size]]"
+        ships="[[ships]]" ship="[[ship]]"> </bridgesim-map>
+      <div class="layout vertical justified">
+        <div>
+          <bridgesim-nav id="nav" ship="[[ship]]"></bridgesim-nav>
+          <bridgesim-thrust id="thrust" ship="[[ship]]"></bridgesim-thrust>
+        </div>
+      </div>
+    </div>
+  </template>
+  <script src="helm.js"></script>
+</dom-module>

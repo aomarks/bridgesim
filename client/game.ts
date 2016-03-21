@@ -25,7 +25,7 @@ namespace Bridgesim.Client {
 
   @component('bridgesim-game')
   class Game extends polymer.Base {
-    @property({type: Number, value: 50}) size: number;
+    @property({type: Number, value: 100}) size: number;
 
     private isHost: boolean;
 
@@ -294,10 +294,10 @@ namespace Bridgesim.Client {
         this.lag -= SIM_TICK;
       }
 
-      this.$.map.draw();
-      this.$.nav.draw();
-      this.$.thrust.draw();
-      this.$.power.draw();
+      const station = this.$.stations.selectedItem;
+      if (station) {
+        station.draw();
+      }
 
       if (this.netLag >= NET_TICK) {
         const update: Net.Update = {
