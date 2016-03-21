@@ -28,9 +28,9 @@ namespace Bridgesim.Net {
   }
 
   class LoopbackConnection implements Connection {
-    onMessage;
-    onOpen;
-    onClose;
+    onMessage: (msg: Message) => void;
+    onOpen: () => void;
+    onClose: () => void;
     receiver: LoopbackConnection;
     open = false;
 

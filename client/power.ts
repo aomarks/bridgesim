@@ -38,13 +38,13 @@ namespace Bridgesim.Client {
                      snap(-((s.level / 100) * (h - PAD2))));
         switch (i) {
           case 0:
-            this.drawLabel(ctx, "Engine", h / 2, (i + 0.5) * BAR_W + PAD);
+            this.drawLabel("Engine", h / 2, (i + 0.5) * BAR_W + PAD);
             break;
           case 1:
-            this.drawLabel(ctx, "Manuevering", h / 2, (i + 0.5) * BAR_W + PAD);
+            this.drawLabel("Manuevering", h / 2, (i + 0.5) * BAR_W + PAD);
             break;
           case 2:
-            this.drawLabel(ctx, "Weapons", h / 2, (i + 0.5) * BAR_W + PAD);
+            this.drawLabel("Weapons", h / 2, (i + 0.5) * BAR_W + PAD);
             break;
         }
       }
@@ -55,7 +55,8 @@ namespace Bridgesim.Client {
     }
 
     // Draw |text| centered at (|centerX|, |centerY|)
-    drawLabel(ctx, text, centerY, centerX): void {
+    drawLabel(text: string, centerY: number, centerX: number): void {
+      const ctx = this.ctx;
       ctx.save();
       ctx.font = "12px sans-serif";
       ctx.textBaseline = "middle";

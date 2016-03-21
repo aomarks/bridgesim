@@ -10,6 +10,7 @@
 ///<reference path="nav.ts" />
 ///<reference path="thrust.ts" />
 ///<reference path="power.ts" />
+///<reference path="chat.ts" />
 
 namespace Bridgesim.Client {
 
@@ -32,7 +33,7 @@ namespace Bridgesim.Client {
     @property({value: 'helm', type: String}) station: string;
 
     @computed()
-    isClient(isHost): boolean {
+    isClient(isHost: boolean): boolean {
       return !isHost;
     }
 
@@ -84,7 +85,7 @@ namespace Bridgesim.Client {
     }
 
     @observe('isHost')
-    isHostChanged(isHost): void {
+    isHostChanged(isHost: boolean): void {
       this.resetSimulation();
       this.resetNetwork();
       if (isHost) {
@@ -192,7 +193,7 @@ namespace Bridgesim.Client {
     invitePlayer(): void { this.$.inviteDialog.open(); }
 
     @observe('pasteOffer')
-    onPasteOffer(offer): void {
+    onPasteOffer(offer: string): void {
       if (!offer) {
         return;
       }
@@ -206,7 +207,7 @@ namespace Bridgesim.Client {
     }
 
     @observe('pasteAnswer')
-    onPasteAnswer(answer): void {
+    onPasteAnswer(answer: string): void {
       if (!answer) {
         return;
       }
@@ -251,7 +252,7 @@ namespace Bridgesim.Client {
       }
     }
 
-    sendChat(event): void {
+    sendChat(event: {detail: ChatEvent}): void {
       this.conn.send({sendChat: {text: event.detail.text}}, true);
     }
 

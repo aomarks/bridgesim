@@ -16,9 +16,9 @@ namespace Bridgesim.Net {
   function unpack(msg: string): Message { return JSON.parse(msg); }
 
   export class WebRTCConnection implements Connection {
-    onMessage;
-    onOpen;
-    onClose;
+    onMessage: (msg: Message) => void;
+    onOpen: () => void;
+    onClose: () => void;
 
     private peer: RTCPeerConnection;
     private reliable: RTCDataChannel;

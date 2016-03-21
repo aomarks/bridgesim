@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES5",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "pretty": true
   },
   "exclude": [
     "bower_components",

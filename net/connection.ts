@@ -6,7 +6,7 @@ namespace Bridgesim.Net {
     onMessage: (msg: Message) => void;
     onOpen: () => void;
     onClose: () => void;
-    send(msg: Message, reliable: boolean);
-    close();
+    send(msg: Message, reliable: boolean): void;
+    close(): void;
   }
 }

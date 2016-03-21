@@ -19,7 +19,7 @@ namespace Bridgesim.Client {
     }
 
     draw(): void {
-      let ctx: CanvasRenderingContext2D = this.ctx;
+      const ctx = this.ctx;
 
       let w = this.can.width;
       let h = this.can.height;
@@ -31,9 +31,9 @@ namespace Bridgesim.Client {
       ctx.strokeStyle = AQUA;
       ctx.stroke();
 
-      this.drawDegreeTicks(ctx, w / 2, h / 2, w / 2 - 5, 30, 6);
-      this.drawDegreeTicks(ctx, w / 2, h / 2, w / 2 - 5, 5, 4);
-      this.drawDegreeLabels(ctx, w / 2, h / 2, w / 2 - 22, 30);
+      this.drawDegreeTicks(w / 2, h / 2, w / 2 - 5, 30, 6);
+      this.drawDegreeTicks(w / 2, h / 2, w / 2 - 5, 5, 4);
+      this.drawDegreeLabels(w / 2, h / 2, w / 2 - 22, 30);
 
       // Draw heading
       let angle = Bridgesim.Core.radians(this.ship.heading - 90);
@@ -48,9 +48,11 @@ namespace Bridgesim.Client {
 
     // Draw degree markers centered at (centerX, and centerY) of radius
     // |radius|, at degree increments |degreeIncrements|.
-    drawDegreeLabels(ctx, centerX, centerY, radius, degreeIncrements) {
+    drawDegreeLabels(centerX: number, centerY: number, radius: number,
+                     degreeIncrements: number) {
       // Translate draw context to centerX, centerY and rotate by
       // |degreeIncrements| for every degree marker.
+      const ctx = this.ctx;
       ctx.save();
       ctx.font = "12px sans-serif";
       ctx.fillStyle = AQUA;
@@ -65,10 +67,11 @@ namespace Bridgesim.Client {
       ctx.restore();
     }
 
-    drawDegreeTicks(ctx, centerX, centerY, radius, degreeIncrements,
-                    tickLength) {
+    drawDegreeTicks(centerX: number, centerY: number, radius: number,
+                    degreeIncrements: number, tickLength: number) {
       // Translate draw context to centerX, centerY and rotate by
       // |degreeIncrements| for every degree marker.
+      const ctx = this.ctx;
       ctx.save();
       ctx.strokeStyle = AQUA;
       for (let i = 0; i < 360; i += degreeIncrements) {

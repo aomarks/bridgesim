@@ -3,6 +3,8 @@
 
 namespace Bridgesim.Client {
 
+  export interface ChatEvent { text: string }
+
   @component('bridgesim-chat')
   export class Chat extends polymer.Base {
     private input: HTMLElement;
@@ -15,7 +17,7 @@ namespace Bridgesim.Client {
     }
 
     send(): void {
-      this.fire('send-chat', {text: this.text});
+      this.fire('send-chat', <ChatEvent>{text: this.text});
       this.text = '';
     }
 
