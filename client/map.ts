@@ -35,7 +35,7 @@ namespace Bridgesim.Client {
         ctx.lineTo(this.size * TILE_PX + HP, i * TILE_PX + HP);
       }
       ctx.lineWidth = 1;
-      ctx.strokeStyle = '#8BC34A';
+      ctx.strokeStyle = GREEN;
       ctx.stroke();
 
       for (let s of this.ships) {
