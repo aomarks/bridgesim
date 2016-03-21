@@ -4,7 +4,7 @@
 
 namespace Bridgesim.Client {
 
-  const TILE_PX = 10;
+  const TILE_PX = 50;
   const BLIP_PX = 2;
 
   @component('bridgesim-map')
@@ -20,6 +20,8 @@ namespace Bridgesim.Client {
       this.can = this.$.canvas;
       this.ctx = this.can.getContext('2d');
       this.ctx.font = '12px roboto mono';
+      this.shipImage = new Image();
+      this.shipImage.src = "/images/ship.svg";
     }
 
     draw(): void {
@@ -35,20 +37,27 @@ namespace Bridgesim.Client {
         ctx.lineTo(this.size * TILE_PX + HP, i * TILE_PX + HP);
       }
       ctx.lineWidth = 1;
-      ctx.strokeStyle = '#8BC34A';
+      ctx.strokeStyle = GREEN;
       ctx.stroke();
 
       for (let s of this.ships) {
         ctx.beginPath();
         let x = s.x * TILE_PX + TILE_PX / 2 + HP;
         let y = s.y * TILE_PX + TILE_PX / 2 + HP;
-        ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
         if (this.ship === s) {
-          ctx.fillStyle = '#00C2D8';
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(this.ship.heading * Math.PI / 180);
+          const shipWidth = 34 / 3;
+          const shipHeight = 59 / 3;
+          ctx.drawImage(this.shipImage, -shipWidth / 2, -shipHeight / 2,
+                        shipWidth, shipHeight);
+          ctx.restore();
         } else {
+          ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
           ctx.fillStyle = '#FF0000';
+          ctx.fill();
         }
-        ctx.fill();
 
         ctx.beginPath();
         ctx.fillStyle = '#FFF';
