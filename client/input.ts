@@ -5,110 +5,107 @@ namespace Bridgesim.Client {
 
   // TODO: Key codes are kind of a mess. This should work for Chrome at least.
   // See http://unixpapa.com/js/key.html
+  function keyCode(ch: string): number { return ch.charCodeAt(0); }
 
-  const KEY_ARROW_L = 37;
-  const KEY_ARROW_U = 38;
-  const KEY_ARROW_R = 39;
-  const KEY_ARROW_D = 40;
-  const KEY_A = 'A'.charCodeAt(0);
-  const KEY_D = 'D'.charCodeAt(0);
-  const KEY_H = 'H'.charCodeAt(0);
-  const KEY_J = 'J'.charCodeAt(0);
-  const KEY_K = 'K'.charCodeAt(0);
-  const KEY_L = 'L'.charCodeAt(0);
-  const KEY_S = 'S'.charCodeAt(0);
-  const KEY_W = 'W'.charCodeAt(0);
-
-  interface HelmCommands {
-    yaw: number, thrust: number,
+  interface Commands {
+    yaw: number, thrust: number, power: number
   }
 
   @component('bridgesim-input')
   class Input extends polymer.Base {
     @property({type: Object}) ship: Core.Ship;
 
-    private keyPressed: {[key: number]: number} = {};
-    private keyBindings: {[key: number]: (tick: number) => void};
-    private helmCommands: HelmCommands;
+    private keys: {
+      [key: number]: {
+        binding: () => void,  // What to do when key activated.
+        repeat?: boolean,     // Should we run on every tick when held down?
+        pressed?: boolean,    // Was the key pressed since we last sampled?
+        down?: boolean,       // Is the key being held down?
+      }
+    };
+
+    private commands: Commands;
 
     created() {
-      this.helmCommands = {yaw: 0, thrust: 0};
-      this.keyBindings = {
-        [KEY_H]: this.prevSubsystem.bind(this),
-        [KEY_L]: this.nextSubsystem.bind(this),
-        [KEY_K]: this.powerUp.bind(this),
-        [KEY_J]: this.powerDown.bind(this),
+      this.commands = {yaw: 0, thrust: 0, power: 0};
+      this.keys = {
+        [keyCode('W')]: {binding: () => this.commands.thrust = 1, repeat: true},
+        [keyCode('S')]:
+            {binding: () => this.commands.thrust = -1, repeat: true},
+        [keyCode('A')]: {binding: () => this.commands.yaw = -1, repeat: true},
+        [keyCode('D')]: {binding: () => this.commands.yaw = 1, repeat: true},
+        [keyCode('K')]: {binding: () => this.commands.power = 1, repeat: true},
+        [keyCode('J')]: {binding: () => this.commands.power = -1, repeat: true},
+        [keyCode('H')]: {binding: () => this.prevSubsystem()},
+        [keyCode('L')]: {binding: () => this.nextSubsystem()},
       };
-      this.keyBindings[KEY_W] = () => this.helmCommands.thrust = 1;
-      this.keyBindings[KEY_S] = () => this.helmCommands.thrust = -1;
-      this.keyBindings[KEY_A] = () => this.helmCommands.yaw = -1;
-      this.keyBindings[KEY_D] = () => this.helmCommands.yaw = 1;
     }
 
     ready(): void {
       window.addEventListener('keydown', this.onKeydown.bind(this));
       window.addEventListener('keyup', this.onKeyup.bind(this));
-      window.addEventListener('blur', () => this.keyPressed = {});
+      window.addEventListener('blur', this.onBlur.bind(this));
     }
 
     onKeydown(event: KeyboardEvent): void {
       if (event.repeat) {
         return;
       }
-      this.keyPressed[event.keyCode] = 0;
-      // console.log('key down', event.keyCode);
+      const key = this.keys[event.keyCode];
+      if (key) {
+        key.binding();
+        key.pressed = true;
+        key.down = true;
+      }
     }
 
     onKeyup(event: KeyboardEvent): void {
-      delete this.keyPressed[event.keyCode];
+      const key = this.keys[event.keyCode];
+      if (key) {
+        key.down = false;
+      }
+    }
+
+    onBlur(): void {
+      for (let code in this.keys) {
+        this.keys[code].down = false;
+      }
     }
 
     process(): void {
-      for (let key in this.keyPressed) {
-        let fn = this.keyBindings[key];
-        if (fn) {
-          fn(this.keyPressed[key]);
+      for (let code in this.keys) {
+        const key = this.keys[code];
+        if (key.repeat && key.down && !key.pressed) {
+          key.binding();
         }
-        this.keyPressed[key]++;
+        key.pressed = false;
       }
+
       const gamepad = window.navigator.getGamepads()[0];
       const deadZone = 0.25;
       if (gamepad) {
-        if (this.helmCommands.yaw === 0) {
+        if (this.commands.yaw === 0) {
           const yaw = gamepad.axes[0];
           if (Math.abs(yaw) > deadZone) {
-            this.helmCommands.yaw = yaw;
+            this.commands.yaw = yaw;
           }
         }
-        if (this.helmCommands.thrust === 0) {
-          this.helmCommands.thrust =
+        if (this.commands.thrust === 0) {
+          this.commands.thrust =
               gamepad.buttons[7].value - gamepad.buttons[6].value;
         }
       }
-      this.ship.applyYaw(this.helmCommands.yaw);
-      this.ship.applyThrust(this.helmCommands.thrust);
-      this.helmCommands.thrust = 0;
-      this.helmCommands.yaw = 0;
+
+      this.ship.applyYaw(this.commands.yaw);
+      this.ship.applyThrust(this.commands.thrust);
+      this.ship.applyPower(this.commands.power);
+      this.commands.thrust = 0;
+      this.commands.yaw = 0;
+      this.commands.power = 0;
     }
 
-    nextShip(tick: number): void {
-      if (tick > 0) {
-        return;
-      }
-      this.fire('next-ship');
-    }
-
-    prevShip(tick: number): void {
-      if (tick > 0) {
-        return;
-      }
-      this.fire('prev-ship');
-    }
-
-    nextSubsystem(tick: number): void {
-      if (tick > 0) {
-        return;
-      }
+    nextSubsystem(): void {
+      // TODO Consider deferring actually changing subsystem until process.
       if (this.ship.curSubsystem == this.ship.subsystems.length - 1) {
         this.ship.curSubsystem = 0;
       } else {
@@ -116,20 +113,13 @@ namespace Bridgesim.Client {
       }
     }
 
-    prevSubsystem(tick: number): void {
-      if (tick > 0) {
-        return;
-      }
+    prevSubsystem(): void {
       if (this.ship.curSubsystem == 0) {
         this.ship.curSubsystem = this.ship.subsystems.length - 1;
       } else {
         this.ship.curSubsystem--;
       }
     }
-
-    powerUp(tick: number): void { this.ship.powerUp(); }
-
-    powerDown(tick: number): void { this.ship.powerDown(); }
   }
   Input.register();
 }

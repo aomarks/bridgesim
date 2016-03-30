@@ -49,20 +49,9 @@ namespace Bridgesim.Core {
       this.thrust = Math.min(1, Math.max(0, this.thrust + (.01 * amount)));
     }
 
-    powerUp(): void {
-      let s = this.subsystems[this.curSubsystem];
-      s.level += 1;
-      if (s.level > 100) {
-        s.level = 100;
-      }
-    }
-
-    powerDown(): void {
-      let s = this.subsystems[this.curSubsystem];
-      s.level -= 1;
-      if (s.level < 0) {
-        s.level = 0;
-      }
+    applyPower(amount: number): void {
+      const s = this.subsystems[this.curSubsystem];
+      s.level = Math.min(100, Math.max(0, s.level + amount));
     }
   }
 
