@@ -1,8 +1,8 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/browser.d.ts" />
 ///<reference path="../core/ship.ts" />
+///<reference path="../core/host.ts" />
 ///<reference path="../net/message.ts" />
-///<reference path="../net/host.ts" />
 ///<reference path="../net/webrtc.ts" />
 ///<reference path="../net/loopback.ts" />
 ///<reference path="const.ts" />
@@ -46,7 +46,7 @@ namespace Bridgesim.Client {
     private localOffers: {[key: string]: localOffer};
     private localOfferKey: string;
 
-    private host: Net.Host;
+    private host: Core.Host;
 
     // client -> server
     private conn: Net.Connection;
@@ -93,7 +93,7 @@ namespace Bridgesim.Client {
         const loopback = new Net.Loopback();
         this.conn = loopback.a;
         this.setupConn();
-        this.host = new Net.Host();
+        this.host = new Core.Host();
         this.host.addConnection(loopback.b);
         this.host.start();
         loopback.open();

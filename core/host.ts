@@ -1,20 +1,20 @@
-///<reference path="connection.ts" />
-///<reference path="message.ts" />
+///<reference path="../net/connection.ts" />
+///<reference path="../net/message.ts" />
 
-namespace Bridgesim.Net {
+namespace Bridgesim.Core {
 
   const NET_TICK = 1000 / 30;  // milliseconds per network tick
 
   export class Host {
-    private conns: Connection[] = [];
-    private active: Connection[] = [];
-    private ships: Update[] = [];
-    private conn2ship: {[connId: number]: Update} = {};
-    private players: {[playerId: number]: Player} = {};
+    private conns: Net.Connection[] = [];
+    private active: Net.Connection[] = [];
+    private ships: Net.Update[] = [];
+    private conn2ship: {[connId: number]: Net.Update} = {};
+    private players: {[playerId: number]: Net.Player} = {};
     private timeoutId: number;
     private seq = 0;
 
-    addConnection(conn: Connection) {
+    addConnection(conn: Net.Connection) {
       const connId = this.conns.length;
       this.conns.push(conn);
       conn.onMessage = msg => { this.onMessage(connId, msg); };
@@ -37,7 +37,7 @@ namespace Bridgesim.Net {
       this.conns.forEach(conn => conn.close());
     }
 
-    private broadcast(msg: Message, reliable: boolean) {
+    private broadcast(msg: Net.Message, reliable: boolean) {
       this.active.forEach(conn => { conn.send(msg, reliable); });
     }
 
@@ -53,14 +53,14 @@ namespace Bridgesim.Net {
     }
 
     private broadcastPlayerList() {
-      const players: Player[] = [];
+      const players: Net.Player[] = [];
       for (let id in this.players) {
         players.push(this.players[id]);
       }
       this.broadcast({playerList: {players: players}}, true);
     }
 
-    private onMessage(connId: number, msg: Message) {
+    private onMessage(connId: number, msg: Net.Message) {
       if (msg.hello) {
         this.onHello(connId, msg.hello);
       } else if (msg.sendChat) {
@@ -70,12 +70,12 @@ namespace Bridgesim.Net {
       }
     }
 
-    private onHello(connId: number, hello: Hello) {
+    private onHello(connId: number, hello: Net.Hello) {
       const shipId = this.ships.length;
       const ship = {shipId: shipId, x: 0, y: 0, heading: 0, thrust: 0};
       this.ships.push(ship);
       this.conn2ship[connId] = ship;
-      const welcome: Welcome = {
+      const welcome: Net.Welcome = {
         clientId: connId,
         shipId: shipId,
         updates: this.ships,
@@ -88,8 +88,8 @@ namespace Bridgesim.Net {
       this.announce('player ' + connId + ' joined');
     }
 
-    private onSendChat(connId: number, sendChat: SendChat) {
-      const rc: ReceiveChat = {
+    private onSendChat(connId: number, sendChat: Net.SendChat) {
+      const rc: Net.ReceiveChat = {
         timestamp: Date.now(),
         clientId: connId,
         text: sendChat.text,
@@ -97,7 +97,7 @@ namespace Bridgesim.Net {
       this.broadcast({receiveChat: rc}, true);
     }
 
-    private onUpdate(connId: number, update: Update) {
+    private onUpdate(connId: number, update: Net.Update) {
       const ship = this.conn2ship[connId];
       ship.x = update.x;
       ship.y = update.y;
