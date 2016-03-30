@@ -3,6 +3,8 @@
 namespace Bridgesim.Core {
 
   export class Ship {
+    prevX: number;
+    prevY: number;
     thrust: number;
     engine: Subsystem;
     maneuvering: Subsystem;
@@ -12,6 +14,8 @@ namespace Bridgesim.Core {
 
     constructor(public name: string, public x: number, public y: number,
                 public heading: number) {
+      this.prevX = x;
+      this.prevY = y;
       this.thrust = 0;
       this.engine = new Subsystem('engine');
       this.maneuvering = new Subsystem('maneuvering');
@@ -24,11 +28,17 @@ namespace Bridgesim.Core {
       this.curSubsystem = 0;
     }
 
+    setPos(x: number, y: number): void {
+      this.prevX = this.x;
+      this.prevY = this.y;
+      this.x = x;
+      this.y = y;
+    }
+
     tick(): void {
       let rads = radians(this.heading - 90);
       let t = Math.pow(this.thrust, 2);
-      this.x += t * Math.cos(rads);
-      this.y += t * Math.sin(rads);
+      this.setPos(this.x + (t * Math.cos(rads)), this.y + (t * Math.sin(rads)));
     }
 
     applyYaw(amount: number): void {

@@ -26,7 +26,7 @@ namespace Bridgesim.Client {
       this.shipImage.src = "/images/ship.svg";
     }
 
-    draw(): void {
+    draw(alpha: number): void {
       let ctx = this.ctx;
 
       ctx.clearRect(0, 0, this.can.width, this.can.height);
@@ -43,9 +43,11 @@ namespace Bridgesim.Client {
       ctx.stroke();
 
       for (let s of this.ships) {
+        const lerpX = s.prevX + (alpha * (s.x - s.prevX));
+        const lerpY = s.prevY + (alpha * (s.y - s.prevY));
         ctx.beginPath();
-        let x = s.x * TILE_PX + TILE_PX / 2 + HP;
-        let y = s.y * TILE_PX + TILE_PX / 2 + HP;
+        let x = lerpX * TILE_PX + TILE_PX / 2 + HP;
+        let y = lerpY * TILE_PX + TILE_PX / 2 + HP;
         if (this.ship === s) {
           ctx.save();
           ctx.translate(x, y);

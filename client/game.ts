@@ -269,8 +269,7 @@ namespace Bridgesim.Client {
           ship.thrust = u.thrust;
           this.ships[u.shipId] = ship;
         } else if (u.shipId != this.shipId) {
-          ship.x = u.x;
-          ship.y = u.y;
+          ship.setPos(u.x, u.y);
           ship.heading = u.heading;
           ship.thrust = u.thrust;
         }
@@ -300,7 +299,8 @@ namespace Bridgesim.Client {
 
       const station = this.$.stations.selectedItem;
       if (station) {
-        station.draw();
+        const alpha = this.lag / SIM_TICK;
+        station.draw(alpha);
       }
 
       if (this.netLag >= NET_TICK) {
