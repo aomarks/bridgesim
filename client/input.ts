@@ -48,6 +48,7 @@ namespace Bridgesim.Client {
     ready(): void {
       window.addEventListener('keydown', this.onKeydown.bind(this));
       window.addEventListener('keyup', this.onKeyup.bind(this));
+      window.addEventListener('blur', () => this.keyPressed = {});
     }
 
     onKeydown(event: KeyboardEvent): void {
