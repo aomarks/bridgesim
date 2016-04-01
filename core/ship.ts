@@ -1,4 +1,5 @@
 ///<reference path="util.ts" />
+///<reference path="../net/message.ts" />
 
 namespace Bridgesim.Core {
 
@@ -26,6 +27,12 @@ namespace Bridgesim.Core {
         this.weapons,
       ];
       this.curSubsystem = 0;
+    }
+
+    applyCommands(commands: Net.Commands): void {
+      this.applyYaw(commands.yaw);
+      this.applyThrust(commands.thrust);
+      this.applyPower(commands.power);
     }
 
     setPos(x: number, y: number): void {

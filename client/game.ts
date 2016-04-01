@@ -14,6 +14,8 @@
 
 namespace Bridgesim.Client {
 
+  const TICK_MS = 1000 / 30;  // milliseconds per simulation tick
+
   const RTC_CONFIG: RTCConfiguration = {
     iceServers: [{urls: 'stun:stun.1.google.com:19302'}]
   };
@@ -57,12 +59,11 @@ namespace Bridgesim.Client {
     private shipId: number;
     private players: Net.Player[];
 
-    private latestSync: Net.Sync;
+    private latestSnapshot: Net.Snapshot;
     private latestSeq = -1;
 
     private prevTs: number = 0;
     private lag: number = 0;
-    private netLag: number = 0;
 
     private urlQuery: string;
 
@@ -70,6 +71,7 @@ namespace Bridgesim.Client {
 
     ready(): void {
       this.ships = [];
+
       if (this.urlQuery.indexOf('host') != -1) {
         this.isHost = true;
       } else if (this.urlQuery.indexOf('client') != -1) {
@@ -109,11 +111,10 @@ namespace Bridgesim.Client {
       this.ship = null;
       this.ships = [];
       this.shipId = null;
-      this.latestSync = null;
+      this.latestSnapshot = null;
       this.latestSeq = -1;
       this.prevTs = 0;
       this.lag = 0;
-      this.netLag = 0;
     }
 
     resetNetwork() {
@@ -233,7 +234,7 @@ namespace Bridgesim.Client {
         console.log('welcome', msg.welcome);
         this.clientId = msg.welcome.clientId;
         this.shipId = msg.welcome.shipId;
-        this.applyUpdates(msg.welcome.updates);
+        this.applySnapshot(msg.welcome.snapshot);
         this.ship = this.ships[this.shipId];
         this.frame(0);
         this.$.joinDialog.close();
@@ -245,14 +246,10 @@ namespace Bridgesim.Client {
       } else if (msg.receiveChat) {
         this.$.chat.receiveMsg(msg.receiveChat);
 
-      } else if (msg.sync) {
-        const offset = msg.seq - this.latestSeq;
-        if (offset != 1) {
-          console.log('missed', offset - 1, 'server updates');
-        }
-        if (offset > 0) {
-          this.latestSync = msg.sync;
-          this.latestSeq = msg.seq;
+      } else if (msg.snapshot) {
+        if (msg.snapshot.seq > this.latestSeq) {
+          this.latestSnapshot = msg.snapshot;
+          this.latestSeq = msg.snapshot.seq;
         }
       }
     }
@@ -261,14 +258,14 @@ namespace Bridgesim.Client {
       this.conn.send({sendChat: {text: event.detail.text}}, true);
     }
 
-    applyUpdates(updates: Net.Update[]): void {
-      updates.forEach(u => {
+    applySnapshot(snapshot: Net.Snapshot): void {
+      snapshot.ships.forEach(u => {
         let ship = this.ships[u.shipId];
         if (!ship) {
           ship = new Core.Ship(u.shipId.toString(), u.x, u.y, u.heading);
           ship.thrust = u.thrust;
           this.ships[u.shipId] = ship;
-        } else if (u.shipId != this.shipId) {
+        } else {
           ship.setPos(u.x, u.y);
           ship.heading = u.heading;
           ship.thrust = u.thrust;
@@ -279,39 +276,31 @@ namespace Bridgesim.Client {
     frame(ts: number): void {
       this.animationRequestId = requestAnimationFrame(this.frame.bind(this));
 
-      if (this.latestSync) {
-        this.applyUpdates(this.latestSync.updates);
-        this.latestSync = null;
+      if (this.latestSnapshot) {
+        this.applySnapshot(this.latestSnapshot);
+        this.latestSnapshot = null;
       }
-
-      this.$.input.process();
 
       const elapsed = ts - this.prevTs;
       this.lag += elapsed;
-      this.netLag += elapsed;
 
-      while (this.lag >= SIM_TICK) {
+      let commands: Net.Commands;
+      while (this.lag >= TICK_MS) {
+        commands = this.$.input.process();
+        this.ship.applyCommands(commands);
         for (var i = 0; i < this.ships.length; i++) {
           this.ships[i].tick();
         }
-        this.lag -= SIM_TICK;
+        this.lag -= TICK_MS;
+      }
+      if (commands) {
+        this.conn.send({commands: commands}, false);
       }
 
       const station = this.$.stations.selectedItem;
       if (station) {
-        const alpha = this.lag / SIM_TICK;
+        const alpha = this.lag / TICK_MS;
         station.draw(alpha);
-      }
-
-      if (this.netLag >= NET_TICK) {
-        const update: Net.Update = {
-          x: this.ship.x,
-          y: this.ship.y,
-          heading: this.ship.heading,
-          thrust: this.ship.thrust
-        };
-        this.conn.send({update: update}, false);
-        this.netLag = 0;
       }
 
       this.prevTs = ts;

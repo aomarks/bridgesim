@@ -3,13 +3,14 @@
 
 namespace Bridgesim.Core {
 
-  const NET_TICK = 1000 / 30;  // milliseconds per network tick
+  const TICK_MS = 1000 / 30;  // milliseconds per simulation tick
+  const TICKS_PER_SNAPSHOT = 2;
 
   export class Host {
     private conns: Net.Connection[] = [];
     private active: Net.Connection[] = [];
-    private ships: Net.Update[] = [];
-    private conn2ship: {[connId: number]: Net.Update} = {};
+    private ships: Ship[] = [];
+    private conn2ship: {[connId: number]: Ship} = {};
     private players: {[playerId: number]: Net.Player} = {};
     private timeoutId: number;
     private seq = 0;
@@ -42,8 +43,29 @@ namespace Bridgesim.Core {
     }
 
     private tick() {
-      this.timeoutId = setTimeout(this.tick.bind(this), NET_TICK);
-      this.broadcast({seq: this.seq++, sync: {updates: this.ships}}, false);
+      this.timeoutId = setTimeout(this.tick.bind(this), TICK_MS);
+      for (let ship of this.ships) {
+        ship.tick();
+      }
+      if (!(this.seq % TICKS_PER_SNAPSHOT)) {
+        this.broadcast({snapshot: this.takeSnapshot()}, false);
+      }
+      this.seq++;
+    }
+
+    private takeSnapshot(): Net.Snapshot {
+      const snapshot = {seq: this.seq, ships:<Net.ShipState[]>[]};
+      for (let i = 0; i < this.ships.length; i++) {
+        const ship = this.ships[i];
+        snapshot.ships.push({
+          shipId: i,
+          x: ship.x,
+          y: ship.y,
+          heading: ship.heading,
+          thrust: ship.thrust,
+        });
+      }
+      return snapshot;
     }
 
     private announce(text: string) {
@@ -65,20 +87,20 @@ namespace Bridgesim.Core {
         this.onHello(connId, msg.hello);
       } else if (msg.sendChat) {
         this.onSendChat(connId, msg.sendChat);
-      } else if (msg.update) {
-        this.onUpdate(connId, msg.update);
+      } else if (msg.commands) {
+        this.onCommands(connId, msg.commands);
       }
     }
 
     private onHello(connId: number, hello: Net.Hello) {
       const shipId = this.ships.length;
-      const ship = {shipId: shipId, x: 0, y: 0, heading: 0, thrust: 0};
+      const ship = new Core.Ship(shipId.toString(), 0, 0, 0);
       this.ships.push(ship);
       this.conn2ship[connId] = ship;
       const welcome: Net.Welcome = {
         clientId: connId,
         shipId: shipId,
-        updates: this.ships,
+        snapshot: this.takeSnapshot(),
       };
       const msg = {welcome: welcome};
       this.conns[connId].send(msg, true);
@@ -97,12 +119,9 @@ namespace Bridgesim.Core {
       this.broadcast({receiveChat: rc}, true);
     }
 
-    private onUpdate(connId: number, update: Net.Update) {
+    private onCommands(connId: number, commands: Net.Commands) {
       const ship = this.conn2ship[connId];
-      ship.x = update.x;
-      ship.y = update.y;
-      ship.heading = update.heading;
-      ship.thrust = update.thrust;
+      ship.applyCommands(commands);
     }
   }
 }

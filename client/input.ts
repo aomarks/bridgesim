@@ -1,15 +1,12 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../core/ship.ts" />
+///<reference path="../net/message.ts" />
 
 namespace Bridgesim.Client {
 
   // TODO: Key codes are kind of a mess. This should work for Chrome at least.
   // See http://unixpapa.com/js/key.html
   function keyCode(ch: string): number { return ch.charCodeAt(0); }
-
-  interface Commands {
-    yaw: number, thrust: number, power: number
-  }
 
   @component('bridgesim-input')
   class Input extends polymer.Base {
@@ -24,10 +21,10 @@ namespace Bridgesim.Client {
       }
     };
 
-    private commands: Commands;
+    private commands: Net.Commands;
 
     created() {
-      this.commands = {yaw: 0, thrust: 0, power: 0};
+      this.resetCommands();
       this.keys = {
         [keyCode('W')]: {binding: () => this.commands.thrust = 1, repeat: true},
         [keyCode('S')]:
@@ -40,6 +37,8 @@ namespace Bridgesim.Client {
         [keyCode('L')]: {binding: () => this.nextSubsystem()},
       };
     }
+
+    resetCommands(): void { this.commands = {yaw: 0, thrust: 0, power: 0}; }
 
     ready(): void {
       window.addEventListener('keydown', this.onKeydown.bind(this));
@@ -72,7 +71,7 @@ namespace Bridgesim.Client {
       }
     }
 
-    process(): void {
+    process(): Net.Commands {
       for (let code in this.keys) {
         const key = this.keys[code];
         if (key.repeat && key.down && !key.pressed) {
@@ -96,12 +95,9 @@ namespace Bridgesim.Client {
         }
       }
 
-      this.ship.applyYaw(this.commands.yaw);
-      this.ship.applyThrust(this.commands.thrust);
-      this.ship.applyPower(this.commands.power);
-      this.commands.thrust = 0;
-      this.commands.yaw = 0;
-      this.commands.power = 0;
+      const prev = this.commands;
+      this.resetCommands();
+      return prev;
     }
 
     nextSubsystem(): void {

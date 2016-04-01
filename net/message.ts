@@ -1,15 +1,13 @@
 namespace Bridgesim.Net {
 
   export interface Message {
-    seq?: number;
-
     hello?: Hello;
     welcome?: Welcome;
     playerList?: PlayerList;
     sendChat?: SendChat;
     receiveChat?: ReceiveChat;
-    update?: Update;
-    sync?: Sync;
+    commands?: Commands;
+    snapshot?: Snapshot;
   }
 
   export interface Hello { name: string; }
@@ -17,7 +15,7 @@ namespace Bridgesim.Net {
   export interface Welcome {
     clientId: number;
     shipId: number;
-    updates: Update[];
+    snapshot: Snapshot;
   }
 
   export interface PlayerList { players: Player[]; }
@@ -36,7 +34,9 @@ namespace Bridgesim.Net {
     text: string;
   }
 
-  export interface Update {
+  export interface Commands { yaw: number, thrust: number, power: number }
+
+  export interface ShipState {
     shipId?: number;
     x: number;
     y: number;
@@ -44,5 +44,8 @@ namespace Bridgesim.Net {
     thrust: number;
   }
 
-  export interface Sync { updates: Update[] }
+  export interface Snapshot {
+    seq: number;
+    ships: ShipState[]
+  }
 }
