@@ -16,7 +16,7 @@ namespace Bridgesim.Net {
   function unpack(msg: string): Message { return JSON.parse(msg); }
 
   export class WebRTCConnection implements Connection {
-    onMessage: (msg: Message) => void;
+    onMessage: (msg: Message, reliable?: boolean) => void;
     onOpen: () => void;
     onClose: () => void;
 
@@ -59,8 +59,8 @@ namespace Bridgesim.Net {
       this.reliable = this.peer.createDataChannel('reliable');
       this.unreliable = this.peer.createDataChannel(
           'unreliable', {ordered: false, maxRetransmits: 0});
-      this.setupChan(this.reliable);
-      this.setupChan(this.unreliable);
+      this.setupChan(this.reliable, true);
+      this.setupChan(this.unreliable, false);
 
       return new Promise((resolve, reject) => {
         this.peer.onicecandidate = (ev: RTCIceCandidateEvent) => {
@@ -79,13 +79,14 @@ namespace Bridgesim.Net {
         const chan = ev.channel;
         if (chan.label == 'reliable') {
           this.reliable = chan;
+          this.setupChan(chan, true);
         } else if (chan.label == 'unreliable') {
           this.unreliable = chan;
+          this.setupChan(chan, false);
         } else {
           console.error('unexpected channel:', chan.label);
           return;
         }
-        this.setupChan(chan);
       };
 
       return new Promise((resolve, reject) => {
@@ -108,11 +109,11 @@ namespace Bridgesim.Net {
       });
     }
 
-    private setupChan(chan: RTCDataChannel) {
+    private setupChan(chan: RTCDataChannel, reliable: boolean) {
       chan.onopen = chan.onclose = this.pokeState.bind(this);
       chan.onmessage = (ev: MessageEvent) => {
         if (this.onMessage) {
-          this.onMessage(unpack(ev.data));
+          this.onMessage(unpack(ev.data), reliable);
         }
       }
     }

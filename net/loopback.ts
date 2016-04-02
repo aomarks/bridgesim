@@ -28,7 +28,7 @@ namespace Bridgesim.Net {
   }
 
   class LoopbackConnection implements Connection {
-    onMessage: (msg: Message) => void;
+    onMessage: (msg: Message, reliable?: boolean) => void;
     onOpen: () => void;
     onClose: () => void;
     receiver: LoopbackConnection;
@@ -40,7 +40,7 @@ namespace Bridgesim.Net {
         return;
       }
       if (this.receiver.onMessage) {
-        this.receiver.onMessage(msg);
+        this.receiver.onMessage(msg, reliable);
       }
     }
 

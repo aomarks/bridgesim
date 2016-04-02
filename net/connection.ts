@@ -3,7 +3,7 @@
 namespace Bridgesim.Net {
 
   export interface Connection {
-    onMessage: (msg: Message) => void;
+    onMessage: (msg: Message, reliable?: boolean) => void;
     onOpen: () => void;
     onClose: () => void;
     send(msg: Message, reliable: boolean): void;

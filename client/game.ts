@@ -5,6 +5,7 @@
 ///<reference path="../net/message.ts" />
 ///<reference path="../net/webrtc.ts" />
 ///<reference path="../net/loopback.ts" />
+///<reference path="../net/conditioner.ts" />
 ///<reference path="const.ts" />
 ///<reference path="map.ts" />
 ///<reference path="nav.ts" />
@@ -33,6 +34,10 @@ namespace Bridgesim.Client {
     private isHost: boolean;
 
     @property({value: 'helm', type: String}) station: string;
+
+    // Artificial network conditions.
+    @property({value: 30, type: Number}) fakeLatency: number;
+    @property({value: .001, type: Number}) fakePacketLoss: number;
 
     @computed()
     isClient(isHost: boolean): boolean {
@@ -131,6 +136,15 @@ namespace Bridgesim.Client {
     }
 
     setupConn() {
+      if (this.fakeLatency || this.fakePacketLoss) {
+        console.log('simulating', this.fakeLatency, 'ms latency,',
+                    this.fakePacketLoss, 'packet loss');
+        const conditioner = new Net.Conditioner(this.conn);
+        conditioner.latency = this.fakeLatency;
+        conditioner.packetLoss = this.fakePacketLoss;
+        this.conn = conditioner;
+      }
+
       this.conn.onOpen =
           () => { this.conn.send({hello: {name: 'stranger'}}, true); };
       this.conn.onMessage = this.onMessage.bind(this);
@@ -144,7 +158,6 @@ namespace Bridgesim.Client {
 
     @observe('localOffers')
     onLocalOffers(offers: {[key: string]: localOffer}) {
-      console.log('localOffers:', offers);
       if (!offers) {
         return;
       }
