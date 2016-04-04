@@ -40,7 +40,8 @@ namespace Bridgesim.Net {
         return;
       }
       if (this.receiver.onMessage) {
-        this.receiver.onMessage(msg, reliable);
+        const copy = JSON.parse(JSON.stringify(msg));
+        this.receiver.onMessage(copy, reliable);
       }
     }
 

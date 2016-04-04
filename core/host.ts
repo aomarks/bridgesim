@@ -1,5 +1,6 @@
 ///<reference path="../net/connection.ts" />
 ///<reference path="../net/message.ts" />
+///<reference path="ship.ts" />
 
 namespace Bridgesim.Core {
 
@@ -11,6 +12,7 @@ namespace Bridgesim.Core {
     private active: Net.Connection[] = [];
     private ships: Ship[] = [];
     private conn2ship: {[connId: number]: Ship} = {};
+    private conn2seq: {[connId: number]: number} = {};
     private players: {[playerId: number]: Net.Player} = {};
     private timeoutId: number;
     private seq = 0;
@@ -23,6 +25,7 @@ namespace Bridgesim.Core {
         delete this.conns[connId];
         delete this.active[connId];
         delete this.players[connId];
+        delete this.conn2seq[connId];
         this.broadcastPlayerList();
         this.announce('player ' + connId + ' disconnected');
       };
@@ -48,13 +51,17 @@ namespace Bridgesim.Core {
         ship.tick();
       }
       if (!(this.seq % TICKS_PER_SNAPSHOT)) {
-        this.broadcast({snapshot: this.takeSnapshot()}, false);
+        const snapshot = this.takeSnapshot();
+        this.active.forEach((conn, connId) => {
+          snapshot.seq = this.conn2seq[connId];
+          conn.send({snapshot: snapshot}, false);
+        });
       }
       this.seq++;
     }
 
     private takeSnapshot(): Net.Snapshot {
-      const snapshot = {seq: this.seq, ships:<Net.ShipState[]>[]};
+      const snapshot = {seq: 0, ships:<Net.ShipState[]>[]};
       for (let i = 0; i < this.ships.length; i++) {
         const ship = this.ships[i];
         snapshot.ships.push({
@@ -94,9 +101,10 @@ namespace Bridgesim.Core {
 
     private onHello(connId: number, hello: Net.Hello) {
       const shipId = this.ships.length;
-      const ship = new Core.Ship(shipId.toString(), 0, 0, 0);
+      const ship = new Ship(shipId.toString(), 0, 0, 0);
       this.ships.push(ship);
       this.conn2ship[connId] = ship;
+      this.conn2seq[connId] = 0;
       const welcome: Net.Welcome = {
         clientId: connId,
         shipId: shipId,
@@ -120,8 +128,12 @@ namespace Bridgesim.Core {
     }
 
     private onCommands(connId: number, commands: Net.Commands) {
+      if (commands.seq <= this.conn2seq[connId]) {
+        return;
+      }
       const ship = this.conn2ship[connId];
       ship.applyCommands(commands);
+      this.conn2seq[connId] = commands.seq;
     }
   }
 }

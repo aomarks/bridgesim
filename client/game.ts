@@ -16,6 +16,7 @@
 namespace Bridgesim.Client {
 
   const TICK_MS = 1000 / 30;  // milliseconds per simulation tick
+  const COMMAND_BUFFER_SIZE = 100;
 
   const RTC_CONFIG: RTCConfiguration = {
     iceServers: [{urls: 'stun:stun.1.google.com:19302'}]
@@ -66,6 +67,8 @@ namespace Bridgesim.Client {
 
     private latestSnapshot: Net.Snapshot;
     private latestSeq = -1;
+    private seq: number = 0;
+    private commandBuffer: Net.Commands[] = [];
 
     private prevTs: number = 0;
     private lag: number = 0;
@@ -291,6 +294,14 @@ namespace Bridgesim.Client {
 
       if (this.latestSnapshot) {
         this.applySnapshot(this.latestSnapshot);
+        const offset = this.seq - this.latestSnapshot.seq;
+        const length = this.commandBuffer.length;
+        for (let i = length - offset + 1; i < length; i++) {
+          this.ship.applyCommands(this.commandBuffer[i]);
+          for (var j = 0; j < this.ships.length; j++) {
+            this.ships[j].tick();
+          }
+        }
         this.latestSnapshot = null;
       }
 
@@ -300,11 +311,18 @@ namespace Bridgesim.Client {
       let commands: Net.Commands;
       while (this.lag >= TICK_MS) {
         commands = this.$.input.process();
+        commands.seq = this.seq;
+        if (this.commandBuffer.length === COMMAND_BUFFER_SIZE) {
+          this.commandBuffer.shift();
+        }
+        this.commandBuffer.push(commands);
+
         this.ship.applyCommands(commands);
         for (var i = 0; i < this.ships.length; i++) {
           this.ships[i].tick();
         }
         this.lag -= TICK_MS;
+        this.seq++;
       }
       if (commands) {
         this.conn.send({commands: commands}, false);

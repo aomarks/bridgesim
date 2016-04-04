@@ -34,7 +34,12 @@ namespace Bridgesim.Net {
     text: string;
   }
 
-  export interface Commands { yaw: number, thrust: number, power: number }
+  export interface Commands {
+    seq?: number;
+    yaw: number;
+    thrust: number;
+    power: number;
+  }
 
   export interface ShipState {
     shipId?: number;
