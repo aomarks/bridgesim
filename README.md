@@ -15,5 +15,6 @@ tsc -w
 ### Run
 ```
 python -m SimpleHTTPServer
-google-chrome http://localhost:8000
+google-chrome http://localhost:8000?host
+google-chrome http://localhost:8000?client
 ```
