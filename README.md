@@ -17,4 +17,5 @@ tsc -w
 python -m SimpleHTTPServer
 google-chrome http://localhost:8000?host
 google-chrome http://localhost:8000?client
+WASD to pilot
 ```
