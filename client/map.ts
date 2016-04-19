@@ -26,7 +26,7 @@ namespace Bridgesim.Client {
       this.shipImage.src = "/images/ship.svg";
     }
 
-    draw(alpha: number): void {
+    draw(localAlpha: number, remoteAlpha: number): void {
       let ctx = this.ctx;
 
       ctx.clearRect(0, 0, this.can.width, this.can.height);
@@ -43,6 +43,7 @@ namespace Bridgesim.Client {
       ctx.stroke();
 
       for (let s of this.ships) {
+        const alpha = s === this.ship ? localAlpha : remoteAlpha;
         const lerpX = s.prevX + (alpha * (s.x - s.prevX));
         const lerpY = s.prevY + (alpha * (s.y - s.prevY));
         ctx.beginPath();

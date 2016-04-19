@@ -109,6 +109,7 @@ namespace Bridgesim.Core {
         clientId: connId,
         shipId: shipId,
         snapshot: this.takeSnapshot(),
+        snapshotInterval: TICK_MS * TICKS_PER_SNAPSHOT,
       };
       const msg = {welcome: welcome};
       this.conns[connId].send(msg, true);
