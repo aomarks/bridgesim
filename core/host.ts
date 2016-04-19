@@ -17,6 +17,9 @@ namespace Bridgesim.Core {
     private timeoutId: number;
     private seq = 0;
 
+    private prevTs: number = 0;
+    private lag: number = 0;
+
     addConnection(conn: Net.Connection) {
       const connId = this.conns.length;
       this.conns.push(conn);
@@ -47,17 +50,27 @@ namespace Bridgesim.Core {
 
     private tick() {
       this.timeoutId = setTimeout(this.tick.bind(this), TICK_MS);
-      for (let ship of this.ships) {
-        ship.tick();
+
+      const ts = performance.now();
+      const elapsed = ts - this.prevTs;
+      this.lag += elapsed;
+
+      while (this.lag >= TICK_MS) {
+        for (let ship of this.ships) {
+          ship.tick();
+        }
+        if (!(this.seq % TICKS_PER_SNAPSHOT)) {
+          const snapshot = this.takeSnapshot();
+          this.active.forEach((conn, connId) => {
+            snapshot.seq = this.conn2seq[connId];
+            conn.send({snapshot: snapshot}, false);
+          });
+        }
+        this.lag -= TICK_MS;
+        this.seq++;
       }
-      if (!(this.seq % TICKS_PER_SNAPSHOT)) {
-        const snapshot = this.takeSnapshot();
-        this.active.forEach((conn, connId) => {
-          snapshot.seq = this.conn2seq[connId];
-          conn.send({snapshot: snapshot}, false);
-        });
-      }
-      this.seq++;
+
+      this.prevTs = ts;
     }
 
     private takeSnapshot(): Net.Snapshot {
