@@ -66,12 +66,14 @@ namespace Bridgesim.Client {
     private players: Net.Player[];
 
     private latestSnapshot: Net.Snapshot;
+    private latestSnapshotMs: number = 0;
     private latestSeq = -1;
     private seq: number = 0;
     private commandBuffer: Net.Commands[] = [];
 
     private prevTs: number = 0;
     private lag: number = 0;
+    private snapshotInterval: number = 0;
 
     private urlQuery: string;
 
@@ -248,6 +250,7 @@ namespace Bridgesim.Client {
     onMessage(msg: Net.Message) {
       if (msg.welcome) {
         console.log('welcome', msg.welcome);
+        this.snapshotInterval = msg.welcome.snapshotInterval;
         this.clientId = msg.welcome.clientId;
         this.shipId = msg.welcome.shipId;
         this.applySnapshot(msg.welcome.snapshot);
@@ -266,6 +269,7 @@ namespace Bridgesim.Client {
         if (msg.snapshot.seq > this.latestSeq) {
           this.latestSnapshot = msg.snapshot;
           this.latestSeq = msg.snapshot.seq;
+          this.latestSnapshotMs = Date.now();
         }
       }
     }
@@ -298,11 +302,10 @@ namespace Bridgesim.Client {
         const length = this.commandBuffer.length;
         for (let i = length - offset + 1; i < length; i++) {
           this.ship.applyCommands(this.commandBuffer[i]);
-          for (var j = 0; j < this.ships.length; j++) {
-            this.ships[j].tick();
-          }
+          this.ship.tick();
         }
         this.latestSnapshot = null;
+        this.latestSnapshotMs = ts;
       }
 
       const elapsed = ts - this.prevTs;
@@ -318,9 +321,7 @@ namespace Bridgesim.Client {
         this.commandBuffer.push(commands);
 
         this.ship.applyCommands(commands);
-        for (var i = 0; i < this.ships.length; i++) {
-          this.ships[i].tick();
-        }
+        this.ship.tick();
         this.lag -= TICK_MS;
         this.seq++;
       }
@@ -330,8 +331,10 @@ namespace Bridgesim.Client {
 
       const station = this.$.stations.selectedItem;
       if (station) {
-        const alpha = this.lag / TICK_MS;
-        station.draw(alpha);
+        const localAlpha = this.lag / TICK_MS;
+        const remoteAlpha =
+            Math.min(1, (ts - this.latestSnapshotMs) / this.snapshotInterval);
+        station.draw(localAlpha, remoteAlpha);
       }
 
       this.prevTs = ts;
