@@ -1,6 +1,6 @@
 <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
 
-<link rel="import" href="../bower_components/iron-page-url/iron-page-url.html">
+<link rel="import" href="../bower_components/iron-location/iron-location.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
@@ -24,7 +24,7 @@
 
 <dom-module id="bridgesim-game">
   <template>
-    <iron-page-url query="{{urlQuery}}"></iron-page-url>
+    <iron-location query="{{urlQuery}}"></iron-location>
 
     <iron-localstorage name="local-offers" value="{{localOffers}}"
       on-iron-localstorage-load-empty="initLocalOffers">
