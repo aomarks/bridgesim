@@ -4,10 +4,20 @@
   <template>
     <style>
       :host {
+        display: block;
+        width: 100%;
+      }
+      #renderCanvas {
+        display: block;
+        width: 100%;
+        touch-action: none;
       }
     </style>
     <h1>Coming Soon To a Theater Near You: The Renderer</h1>
+    <canvas id="renderCanvas"></canvas>
   </template>
 
+  <script src="../../bower_components/babylonjs/dist/babylon.2.2.js"></script>
+  <script src="ship.js"></script>
   <script src="renderer.js"></script>
 </dom-module>
