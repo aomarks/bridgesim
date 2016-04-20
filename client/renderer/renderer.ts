@@ -5,6 +5,9 @@
 
 namespace Bridgesim.Client.Renderer {
 
+  const SKYBOX_EXTENSIONS = ["_right1.png", "_top3.png", "_front5.png", "_left2.png",
+    "_bottom4.png", "_back6.png"];
+
   @component('bridgesim-renderer')
   export class Renderer extends polymer.Base {
     private engine: BABYLON.Engine;
@@ -28,6 +31,7 @@ namespace Bridgesim.Client.Renderer {
 
       const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), this.scene);
 
+      // Grid
       const gridMaterial = new BABYLON.StandardMaterial("Grid Material", this.scene);
       gridMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
       gridMaterial.wireframe = true;
@@ -36,6 +40,16 @@ namespace Bridgesim.Client.Renderer {
       grid.material = gridMaterial;
       grid.position.x += trueSize/2 - 0.5;
       grid.position.z += trueSize/2 - 0.5;
+
+      // Skybox
+      const skybox = BABYLON.Mesh.CreateBox("skyBox", 800.0, this.scene);
+      const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", this.scene);
+      skyboxMaterial.backFaceCulling = false;
+      skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/skybox/box", this.scene, SKYBOX_EXTENSIONS);
+      skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+      skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+      skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+      skybox.material = skyboxMaterial;
 
       window.addEventListener('resize', this.resize.bind(this));
     }

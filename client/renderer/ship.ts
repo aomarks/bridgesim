@@ -8,7 +8,9 @@ namespace Bridgesim.Client.Renderer {
 
     constructor(ship: Core.Ship, scene: BABYLON.Scene) {
       this.ship = ship;
-      this.mesh = BABYLON.Mesh.CreateSphere('sphere1', 16, 0.5, scene);
+      this.mesh = BABYLON.Mesh.CreateBox('box', 0.5, scene);
+      this.mesh.scaling.y = 0.5;
+      this.mesh.scaling.x = 0.5;
     }
 
     update(alpha: number) {
@@ -17,6 +19,7 @@ namespace Bridgesim.Client.Renderer {
       const lerpY = s.prevY + (alpha * (s.y - s.prevY));
       this.mesh.position.x = lerpX;
       this.mesh.position.z = lerpY;
+      this.mesh.rotation.y = -Math.PI/180 * s.heading;
     }
   }
 }
