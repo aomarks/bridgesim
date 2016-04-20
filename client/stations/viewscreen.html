@@ -1,0 +1,21 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../renderer/renderer.html">
+
+<dom-module id="viewscreen-station">
+  <template>
+    <style>
+      :host {
+        display: block;
+        @apply(--layout-horizontal);
+        height: 100%;
+      }
+    </style>
+    <!-- Unload resource heavy renderer if not in active use. -->
+    <template is="dom-if" if="[[active]]">
+      <bridgesim-renderer id="renderer" size="[[size]]" ships="[[ships]]" ship="[[ship]]"> </bridgesim-renderer>
+    </template>
+  </template>
+
+  <script src="viewscreen.js"></script>
+</dom-module>
