@@ -7,6 +7,7 @@
 ///<reference path="../net/loopback.ts" />
 ///<reference path="../net/conditioner.ts" />
 ///<reference path="const.ts" />
+///<reference path="settings.ts" />
 ///<reference path="map.ts" />
 ///<reference path="nav.ts" />
 ///<reference path="thrust.ts" />
@@ -14,9 +15,6 @@
 ///<reference path="chat.ts" />
 
 namespace Bridgesim.Client {
-
-  const TICK_MS = 1000 / 30;  // milliseconds per simulation tick
-  const COMMAND_BUFFER_SIZE = 100;
 
   const RTC_CONFIG: RTCConfiguration = {
     iceServers: [{urls: 'stun:stun.1.google.com:19302'}]
@@ -32,13 +30,11 @@ namespace Bridgesim.Client {
   class Game extends polymer.Base {
     @property({type: Number, value: 100}) size: number;
 
+    @property({type: Object}) settings: Settings;
+
     private isHost: boolean;
 
     @property({value: 'helm', type: String}) station: string;
-
-    // Artificial network conditions.
-    @property({value: 30, type: Number}) fakeLatency: number;
-    @property({value: .001, type: Number}) fakePacketLoss: number;
 
     @computed()
     isClient(isHost: boolean): boolean {
@@ -58,6 +54,7 @@ namespace Bridgesim.Client {
 
     // client -> server
     private conn: Net.Connection;
+    private conditioner: Net.Conditioner;
 
     private clientId: number;
     private ship: Core.Ship;
@@ -73,13 +70,23 @@ namespace Bridgesim.Client {
 
     private prevTs: number = 0;
     private lag: number = 0;
-    private snapshotInterval: number = 0;
 
     private urlQuery: string;
 
     private animationRequestId: number;
 
     ready(): void {
+      this.settings = {
+        localPredict: true,
+        localInterpolate: true,
+        remoteInterpolate: true,
+        fakeLatency: 0,
+        fakePacketLoss: 0,
+        tickInterval: 1000 / 30,
+        snapshotInterval: 1000 / 15,
+        commandBufferSize: 100,
+      };
+
       this.ships = [];
 
       if (this.urlQuery.indexOf('host') != -1) {
@@ -90,6 +97,8 @@ namespace Bridgesim.Client {
 
       this.listen(window, 'keydown', 'focusLobby');
     }
+
+    openSettingsDialog(): void { this.$.settingsDialog.open(); }
 
     focusLobby(ev: KeyboardEvent) {
       if (ev.keyCode === 13) {  // enter
@@ -109,6 +118,20 @@ namespace Bridgesim.Client {
         this.host.addConnection(loopback.b);
         this.host.start();
         loopback.open();
+      }
+    }
+
+    @observe('settings.fakeLatency')
+    fakeLatencyChanged(val: number) {
+      if (this.conditioner) {
+        this.conditioner.latency = val;
+      }
+    }
+
+    @observe('settings.fakePacketLoss')
+    fakePacketLossChanged(val: number) {
+      if (this.conditioner) {
+        this.conditioner.packetLoss = val / 100;
       }
     }
 
@@ -141,14 +164,10 @@ namespace Bridgesim.Client {
     }
 
     setupConn() {
-      if (this.fakeLatency || this.fakePacketLoss) {
-        console.log('simulating', this.fakeLatency, 'ms latency,',
-                    this.fakePacketLoss, 'packet loss');
-        const conditioner = new Net.Conditioner(this.conn);
-        conditioner.latency = this.fakeLatency;
-        conditioner.packetLoss = this.fakePacketLoss;
-        this.conn = conditioner;
-      }
+      this.conditioner = new Net.Conditioner(this.conn);
+      this.conditioner.latency = this.settings.fakeLatency;
+      this.conditioner.packetLoss = this.settings.fakePacketLoss;
+      this.conn = this.conditioner;
 
       this.conn.onOpen =
           () => { this.conn.send({hello: {name: 'stranger'}}, true); };
@@ -250,7 +269,7 @@ namespace Bridgesim.Client {
     onMessage(msg: Net.Message) {
       if (msg.welcome) {
         console.log('welcome', msg.welcome);
-        this.snapshotInterval = msg.welcome.snapshotInterval;
+        this.settings.snapshotInterval = msg.welcome.snapshotInterval;
         this.clientId = msg.welcome.clientId;
         this.shipId = msg.welcome.shipId;
         this.applySnapshot(msg.welcome.snapshot);
@@ -267,9 +286,9 @@ namespace Bridgesim.Client {
 
       } else if (msg.snapshot) {
         if (msg.snapshot.seq > this.latestSeq) {
+          this.latestSnapshotMs = performance.now();
           this.latestSnapshot = msg.snapshot;
           this.latestSeq = msg.snapshot.seq;
-          this.latestSnapshotMs = Date.now();
         }
       }
     }
@@ -298,31 +317,34 @@ namespace Bridgesim.Client {
 
       if (this.latestSnapshot) {
         this.applySnapshot(this.latestSnapshot);
-        const offset = this.seq - this.latestSnapshot.seq;
-        const length = this.commandBuffer.length;
-        for (let i = length - offset + 1; i < length; i++) {
-          this.ship.applyCommands(this.commandBuffer[i]);
-          this.ship.tick();
+        if (this.settings.localPredict) {
+          const offset = this.seq - this.latestSnapshot.seq;
+          const length = this.commandBuffer.length;
+          for (let i = length - offset + 1; i < length; i++) {
+            this.ship.applyCommands(this.commandBuffer[i]);
+            this.ship.tick();
+          }
         }
         this.latestSnapshot = null;
-        this.latestSnapshotMs = ts;
       }
 
       const elapsed = ts - this.prevTs;
       this.lag += elapsed;
 
       let commands: Net.Commands;
-      while (this.lag >= TICK_MS) {
+      while (this.lag >= this.settings.tickInterval) {
         commands = this.$.input.process();
         commands.seq = this.seq;
-        if (this.commandBuffer.length === COMMAND_BUFFER_SIZE) {
+        if (this.commandBuffer.length === this.settings.commandBufferSize) {
           this.commandBuffer.shift();
         }
         this.commandBuffer.push(commands);
 
-        this.ship.applyCommands(commands);
-        this.ship.tick();
-        this.lag -= TICK_MS;
+        if (this.settings.localPredict) {
+          this.ship.applyCommands(commands);
+          this.ship.tick();
+        }
+        this.lag -= this.settings.tickInterval;
         this.seq++;
       }
       if (commands) {
@@ -331,9 +353,19 @@ namespace Bridgesim.Client {
 
       const station = this.$.stations.selectedItem;
       if (station) {
-        const localAlpha = this.lag / TICK_MS;
-        const remoteAlpha =
-            Math.min(1, (ts - this.latestSnapshotMs) / this.snapshotInterval);
+        let localAlpha = this.lag / this.settings.tickInterval;
+        let remoteAlpha = Math.min(
+            1, (ts - this.latestSnapshotMs) / this.settings.snapshotInterval);
+
+        if (!this.settings.localInterpolate) {
+          localAlpha = 1;
+        } else if (!this.settings.localPredict) {
+          localAlpha = remoteAlpha;
+        }
+        if (!this.settings.remoteInterpolate) {
+          remoteAlpha = 1;
+        }
+
         station.draw(localAlpha, remoteAlpha);
       }
 

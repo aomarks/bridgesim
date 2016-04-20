@@ -1,0 +1,43 @@
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="deps.html">
+
+<dom-module id="bridgesim-settings-menu">
+  <template>
+    <style>
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      paper-toggle-button {
+        cursor: pointer;
+      }
+      paper-input {
+        width: 100px;
+      }
+    </style>
+
+    <paper-toggle-button checked="{{settings.localPredict}}">
+      Local prediction</paper-toggle-button>
+
+    <paper-toggle-button checked="{{settings.localInterpolate}}">
+      Local interpolation</paper-toggle-button>
+
+    <paper-toggle-button checked="{{settings.remoteInterpolate}}">
+      Remote interpolation</paper-toggle-button>
+
+    <paper-input label="Fake latency"
+                 value="{{settings.fakeLatency}}"
+                 type="number" min="0">
+      <div suffix>ms</div>
+    </paper-input>
+
+    <paper-input label="Fake packet loss"
+                 value="{{settings.fakePacketLoss}}"
+                 type="number" min="0" max="100">
+      <div suffix>%</div>
+    </paper-input>
+  </template>
+
+  <script src="settings-menu.js"></script>
+</dom-module>

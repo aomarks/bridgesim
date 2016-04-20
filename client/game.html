@@ -15,6 +15,7 @@
 <link rel="import" href="./deps.html">
 <link rel="import" href="./input.html">
 <link rel="import" href="./chat.html">
+<link rel="import" href="./settings-menu.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -79,12 +80,21 @@
 
     <section id="header" class="layout horizontal center">
       <h1>BRIDGESIM</h1>
+
+      <paper-button on-tap="openSettingsDialog">Settings</paper-button>
+
       <paper-button disabled$="[[isHost]]" on-tap="joinGame">
         Join Game</paper-button>
       <paper-button disabled$="[[isClient]]" on-tap="invitePlayer">
         Invite Player</paper-button>
+
       <paper-toggle-button checked="{{isHost}}">HOST</paper-toggle-button>
     </section>
+
+    <paper-dialog id="settingsDialog">
+      <bridgesim-settings-menu settings="{{settings}}">
+      </bridgesim-settings-menu>
+    </paper-dialog>
 
     <paper-dialog id="joinDialog" on-iron-overlay-closed="clearTokens">
       <h2>send this offer to the server:</h2>

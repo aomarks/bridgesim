@@ -4,10 +4,20 @@
 
 namespace Bridgesim.Core {
 
-  const TICK_MS = 1000 / 30;  // milliseconds per simulation tick
-  const TICKS_PER_SNAPSHOT = 2;
+  export interface Settings {
+    // Milliseconds between simulation ticks.
+    tickInterval: number;
+
+    // How many ticks between snapshot broadcasts.
+    snapshotTicks: number;
+  }
 
   export class Host {
+    private settings: Settings = {
+      tickInterval: 1000 / 30,
+      snapshotTicks: 2,
+    };
+
     private conns: Net.Connection[] = [];
     private active: Net.Connection[] = [];
     private ships: Ship[] = [];
@@ -49,24 +59,25 @@ namespace Bridgesim.Core {
     }
 
     private tick() {
-      this.timeoutId = setTimeout(this.tick.bind(this), TICK_MS);
+      this.timeoutId =
+          setTimeout(this.tick.bind(this), this.settings.tickInterval);
 
       const ts = performance.now();
       const elapsed = ts - this.prevTs;
       this.lag += elapsed;
 
-      while (this.lag >= TICK_MS) {
+      while (this.lag >= this.settings.tickInterval) {
         for (let ship of this.ships) {
           ship.tick();
         }
-        if (!(this.seq % TICKS_PER_SNAPSHOT)) {
+        if (!(this.seq % this.settings.snapshotTicks)) {
           const snapshot = this.takeSnapshot();
           this.active.forEach((conn, connId) => {
             snapshot.seq = this.conn2seq[connId];
             conn.send({snapshot: snapshot}, false);
           });
         }
-        this.lag -= TICK_MS;
+        this.lag -= this.settings.tickInterval;
         this.seq++;
       }
 
@@ -122,7 +133,8 @@ namespace Bridgesim.Core {
         clientId: connId,
         shipId: shipId,
         snapshot: this.takeSnapshot(),
-        snapshotInterval: TICK_MS * TICKS_PER_SNAPSHOT,
+        snapshotInterval:
+            this.settings.tickInterval * this.settings.snapshotTicks,
       };
       const msg = {welcome: welcome};
       this.conns[connId].send(msg, true);
