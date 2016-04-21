@@ -82,8 +82,8 @@ namespace Bridgesim.Client {
         remoteInterpolate: true,
         fakeLatency: 0,
         fakePacketLoss: 0,
-        tickInterval: 1000 / 30,
-        snapshotInterval: 1000 / 15,
+        tickInterval: 0,      // Server controlled.
+        snapshotInterval: 0,  // Server controlled.
         commandBufferSize: 100,
       };
 
@@ -269,6 +269,7 @@ namespace Bridgesim.Client {
     onMessage(msg: Net.Message) {
       if (msg.welcome) {
         console.log('welcome', msg.welcome);
+        this.settings.tickInterval = msg.welcome.tickInterval;
         this.settings.snapshotInterval = msg.welcome.snapshotInterval;
         this.clientId = msg.welcome.clientId;
         this.shipId = msg.welcome.shipId;

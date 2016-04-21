@@ -17,6 +17,7 @@ namespace Bridgesim.Net {
     shipId: number;
     snapshot: Snapshot;
     snapshotInterval: number;
+    tickInterval: number;
   }
 
   export interface PlayerList { players: Player[]; }

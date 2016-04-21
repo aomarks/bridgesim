@@ -8,27 +8,32 @@ namespace Bridgesim.Core {
     // Milliseconds between simulation ticks.
     tickInterval: number;
 
-    // How many ticks between snapshot broadcasts.
-    snapshotTicks: number;
+    // Milliseconds between snapshot broadcasts.
+    snapshotInterval: number;
+
+    // How many command messages to store per player.
+    commandBufferSize: number;
   }
 
   export class Host {
     private settings: Settings = {
       tickInterval: 1000 / 30,
-      snapshotTicks: 2,
+      snapshotInterval: 1000 / 15,
+      commandBufferSize: 100,
     };
 
     private conns: Net.Connection[] = [];
     private active: Net.Connection[] = [];
     private ships: Ship[] = [];
-    private conn2ship: {[connId: number]: Ship} = {};
     private conn2seq: {[connId: number]: number} = {};
     private players: {[playerId: number]: Net.Player} = {};
+    private conn2commands: {[connId: number]: Net.Commands[]} = {};
     private timeoutId: number;
-    private seq = 0;
 
     private prevTs: number = 0;
-    private lag: number = 0;
+    private tickLag: number = 0;
+    private snapshotLag: number = 0;
+    private snapshotStale: boolean = false;
 
     addConnection(conn: Net.Connection) {
       const connId = this.conns.length;
@@ -39,6 +44,7 @@ namespace Bridgesim.Core {
         delete this.active[connId];
         delete this.players[connId];
         delete this.conn2seq[connId];
+        delete this.conn2commands[connId];
         this.broadcastPlayerList();
         this.announce('player ' + connId + ' disconnected');
       };
@@ -64,21 +70,41 @@ namespace Bridgesim.Core {
 
       const ts = performance.now();
       const elapsed = ts - this.prevTs;
-      this.lag += elapsed;
+      this.tickLag += elapsed;
+      this.snapshotLag += elapsed;
 
-      while (this.lag >= this.settings.tickInterval) {
-        for (let ship of this.ships) {
+      const ticks = Math.floor(this.tickLag / this.settings.tickInterval);
+      for (let i = 0; i < ticks; i++) {
+        for (let shipId in this.ships) {
+          const ship = this.ships[shipId];
+          const buffer = this.conn2commands[shipId];
+          // Try to find the input that corresponded to this tick.
+          const commands = buffer[buffer.length - ticks + i];
+          if (commands) {
+            ship.applyCommands(commands);
+          }
           ship.tick();
         }
-        if (!(this.seq % this.settings.snapshotTicks)) {
-          const snapshot = this.takeSnapshot();
-          this.active.forEach((conn, connId) => {
-            snapshot.seq = this.conn2seq[connId];
-            conn.send({snapshot: snapshot}, false);
-          });
+        this.tickLag -= this.settings.tickInterval;
+        this.snapshotStale = true;
+      }
+
+      if (ticks > 0) {
+        // All useful input has been applied; clear buffers.
+        for (let connId in this.conn2commands) {
+          this.conn2commands[connId] = [];
         }
-        this.lag -= this.settings.tickInterval;
-        this.seq++;
+      }
+
+      if (this.snapshotStale &&
+          this.snapshotLag >= this.settings.snapshotInterval) {
+        const snapshot = this.takeSnapshot();
+        this.active.forEach((conn, connId) => {
+          snapshot.seq = this.conn2seq[connId];
+          conn.send({snapshot: snapshot}, false);
+        });
+        this.snapshotLag = 0;
+        this.snapshotStale = false;
       }
 
       this.prevTs = ts;
@@ -127,14 +153,14 @@ namespace Bridgesim.Core {
       const shipId = this.ships.length;
       const ship = new Ship(shipId.toString(), 0, 0, 0);
       this.ships.push(ship);
-      this.conn2ship[connId] = ship;
       this.conn2seq[connId] = 0;
+      this.conn2commands[connId] = [];
       const welcome: Net.Welcome = {
         clientId: connId,
         shipId: shipId,
         snapshot: this.takeSnapshot(),
-        snapshotInterval:
-            this.settings.tickInterval * this.settings.snapshotTicks,
+        snapshotInterval: this.settings.snapshotInterval,
+        tickInterval: this.settings.tickInterval,
       };
       const msg = {welcome: welcome};
       this.conns[connId].send(msg, true);
@@ -155,10 +181,14 @@ namespace Bridgesim.Core {
 
     private onCommands(connId: number, commands: Net.Commands) {
       if (commands.seq <= this.conn2seq[connId]) {
+        // TODO Commands could legitimately arrive out of order.
         return;
       }
-      const ship = this.conn2ship[connId];
-      ship.applyCommands(commands);
+      const buffer = this.conn2commands[connId];
+      if (buffer.length == this.settings.commandBufferSize) {
+        buffer.shift();
+      }
+      buffer.push(commands);
       this.conn2seq[connId] = commands.seq;
     }
   }
