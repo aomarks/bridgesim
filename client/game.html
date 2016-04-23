@@ -2,7 +2,6 @@
 
 <link rel="import" href="../bower_components/iron-location/iron-location.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
@@ -17,6 +16,7 @@
 <link rel="import" href="./chat.html">
 <link rel="import" href="./settings-menu.html">
 <link rel="import" href="./lobby.html">
+<link rel="import" href="./peer-localstorage.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -29,9 +29,11 @@
   <template>
     <iron-location query="{{urlQuery}}"></iron-location>
 
-    <iron-localstorage name="local-offers" value="{{localOffers}}"
-      on-iron-localstorage-load-empty="initLocalOffers">
-    </iron-localstorage>
+    <bridgesim-peer-localstorage
+      id="peerLocalstorage"
+      is-host="[[isHost]]"
+      on-connection="onConnection">
+    </bridgesim-peer-localstorage>
 
     <bridgesim-input id="input" ship="[[ship]]"></bridgesim-input>
 
