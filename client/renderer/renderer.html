@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../asset-pack.html">
 
 <dom-module id="bridgesim-renderer">
   <template>
@@ -28,6 +29,7 @@
     <paper-card id="controls">
       <paper-toggle-button value="{{followShip}}">Follow Ship</paper-toggle-button>
     </paper-card>
+    <asset-pack manifest="https://rawgit.com/d4l3k/bridgesim-assets/master/manifest.json"></asset-pack>
   </template>
 
   <script src="../../bower_components/babylonjs/dist/babylon.2.2.js"></script>

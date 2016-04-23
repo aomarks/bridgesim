@@ -1,0 +1,19 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="asset-pack">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <iron-ajax
+            auto
+            url="[[manifest]]"
+            handle-as="json"
+            last-response="{{manifestBody}}"></iron-ajax>
+  </template>
+  <script src="asset-pack.js"></script>
+</dom-module>
