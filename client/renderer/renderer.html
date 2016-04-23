@@ -1,4 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
 
 <dom-module id="bridgesim-renderer">
   <template>
@@ -6,14 +8,26 @@
       :host {
         display: block;
         width: 100%;
+        position: relative;
       }
       #renderCanvas {
         display: block;
         width: 100%;
         touch-action: none;
       }
+      #controls {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 10px;
+        padding: 10px;
+        background-color: white;
+      }
     </style>
     <canvas id="renderCanvas"></canvas>
+    <paper-card id="controls">
+      <paper-toggle-button value="{{followShip}}">Follow Ship</paper-toggle-button>
+    </paper-card>
   </template>
 
   <script src="../../bower_components/babylonjs/dist/babylon.2.2.js"></script>

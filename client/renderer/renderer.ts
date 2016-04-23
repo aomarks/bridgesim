@@ -25,8 +25,10 @@ namespace Bridgesim.Client.Renderer {
       this.engine = new BABYLON.Engine(this.$.renderCanvas, true);
       this.scene = new BABYLON.Scene(this.engine);
 
-      this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5,-10), this.scene);
-      this.camera.setTarget(BABYLON.Vector3.Zero());
+      const cameraPosition = new BABYLON.Vector3(0, 0.5, -2);
+      const cameraTarget = new BABYLON.Vector3(0, 0.5, 0);
+      this.camera = new BABYLON.FreeCamera('camera1', cameraPosition, this.scene);
+      this.camera.setTarget(cameraTarget);
       this.camera.attachControl(this.$.renderCanvas, false);
 
       const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), this.scene);
@@ -35,11 +37,12 @@ namespace Bridgesim.Client.Renderer {
       const gridMaterial = new BABYLON.StandardMaterial("Grid Material", this.scene);
       gridMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
       gridMaterial.wireframe = true;
-      var trueSize = this.size/10;
-      const grid = BABYLON.Mesh.CreateGround('ground1', trueSize, trueSize, trueSize, this.scene);
+      var trueSize = this.size;
+      var cellSize = trueSize/10
+      const grid = BABYLON.Mesh.CreateGround('ground1', trueSize, trueSize, cellSize, this.scene);
       grid.material = gridMaterial;
-      grid.position.x += trueSize/2 - 0.5;
-      grid.position.z += trueSize/2 - 0.5;
+      grid.position.x = trueSize/2 - cellSize/2;
+      grid.position.z = -trueSize/2 + cellSize/2;
 
       // Skybox
       const skybox = BABYLON.Mesh.CreateBox("skyBox", 800.0, this.scene);
@@ -60,7 +63,8 @@ namespace Bridgesim.Client.Renderer {
 
     resize() {
       const canvas = this.$.renderCanvas;
-      canvas.setAttribute("height", window.innerHeight - canvas.offsetTop - 10 + 'px');
+      const height = window.innerHeight - this.offsetTop - 10;
+      canvas.setAttribute("height", height + 'px');
       this.engine.resize();
     }
 
@@ -95,6 +99,9 @@ namespace Bridgesim.Client.Renderer {
         }
         return keep;
       });
+
+      // Update camera parent incase it's changed.
+      this.camera.parent = this.shipMap[this.ship.name].mesh;
     }
   }
 

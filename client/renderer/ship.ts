@@ -8,18 +8,20 @@ namespace Bridgesim.Client.Renderer {
 
     constructor(ship: Core.Ship, scene: BABYLON.Scene) {
       this.ship = ship;
-      this.mesh = BABYLON.Mesh.CreateBox('box', 0.5, scene);
-      this.mesh.scaling.y = 0.5;
-      this.mesh.scaling.x = 0.5;
+      this.mesh = new BABYLON.Mesh('ship', scene);
+      const model = BABYLON.Mesh.CreateBox('box', 0.5, scene);
+      model.parent = this.mesh;
+      model.scaling.y = 0.5;
+      model.scaling.x = 0.5;
     }
 
     update(alpha: number) {
       const s = this.ship;
       const lerpX = s.prevX + (alpha * (s.x - s.prevX));
       const lerpY = s.prevY + (alpha * (s.y - s.prevY));
-      this.mesh.position.x = lerpX;
-      this.mesh.position.z = lerpY;
-      this.mesh.rotation.y = -Math.PI/180 * s.heading;
+      this.mesh.position.x = lerpX*10;
+      this.mesh.position.z = -lerpY*10;
+      this.mesh.rotation.y = Math.PI/180 * s.heading;
     }
   }
 }
