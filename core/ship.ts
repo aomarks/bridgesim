@@ -12,9 +12,16 @@ namespace Bridgesim.Core {
     weapons: Subsystem;
     subsystems: Subsystem[];
     curSubsystem: number;
+    crew: Net.Assignment[] = [
+      {station: Net.Station.Helm},
+      {station: Net.Station.Comms},
+      {station: Net.Station.Science},
+      {station: Net.Station.Weapons},
+      {station: Net.Station.Engineering},
+    ];
 
-    constructor(public name: string, public x: number, public y: number,
-                public heading: number) {
+    constructor(public id: number, public name: string, public x: number,
+                public y: number, public heading: number) {
       this.prevX = x;
       this.prevY = y;
       this.thrust = 0;
@@ -27,6 +34,16 @@ namespace Bridgesim.Core {
         this.weapons,
       ];
       this.curSubsystem = 0;
+    }
+
+    findAssignment(station: Net.Station): Net.Assignment {
+      // TODO Probably should have a station -> player map instead.
+      for (let assignment of this.crew) {
+        if (assignment.station == station) {
+          return assignment;
+        }
+      }
+      return null;
     }
 
     applyCommands(commands: Net.Commands): void {

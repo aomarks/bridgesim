@@ -16,6 +16,7 @@
 <link rel="import" href="./input.html">
 <link rel="import" href="./chat.html">
 <link rel="import" href="./settings-menu.html">
+<link rel="import" href="./lobby.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -82,6 +83,7 @@
       <h1>BRIDGESIM</h1>
 
       <paper-button on-tap="openSettingsDialog">Settings</paper-button>
+      <paper-button on-tap="openLobbyDialog">Lobby</paper-button>
 
       <paper-button disabled$="[[isHost]]" on-tap="joinGame">
         Join Game</paper-button>
@@ -94,6 +96,13 @@
     <paper-dialog id="settingsDialog">
       <bridgesim-settings-menu settings="{{settings}}">
       </bridgesim-settings-menu>
+    </paper-dialog>
+
+    <paper-dialog id="lobbyDialog">
+      <bridgesim-lobby roster="[[roster]]"
+                       on-join-crew="joinCrew"
+                       on-create-ship="createShip">
+      </bridgesim-lobby>
     </paper-dialog>
 
     <paper-dialog id="joinDialog" on-iron-overlay-closed="clearTokens">

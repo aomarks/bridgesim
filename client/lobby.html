@@ -1,0 +1,39 @@
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="deps.html">
+
+<dom-module id="bridgesim-lobby">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-toggle-button {
+        cursor: pointer;
+      }
+      #createShip {
+        margin-top: 30px;
+        background-color: var(--paper-blue-500);
+        color: white;
+      }
+    </style>
+
+    <template is="dom-repeat" id="ships"
+              items="[[roster.ships]]" as="ship">
+      <h4>[[ship.name]]</h4>
+      <template is="dom-repeat" items="[[ship.crew]]" as="assignment">
+        <paper-button on-tap="joinCrew" raised
+                      disabled="[[assigned(assignment)]]">
+          [[stationName(assignment.station)]]
+        </paper-button>
+      </template>
+    </template>
+
+    <br>
+
+    <paper-button id="createShip" on-tap="createShip" raised>
+      Create ship
+    </paper-button>
+  </template>
+
+  <script src="lobby.js"></script>
+</dom-module>

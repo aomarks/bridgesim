@@ -31,6 +31,7 @@ namespace Bridgesim.Client {
     @property({type: Number, value: 100}) size: number;
 
     @property({type: Object}) settings: Settings;
+    @property({type: Object}) roster: Net.Roster;
 
     private isHost: boolean;
 
@@ -99,6 +100,8 @@ namespace Bridgesim.Client {
     }
 
     openSettingsDialog(): void { this.$.settingsDialog.open(); }
+
+    openLobbyDialog(): void { this.$.lobbyDialog.open(); }
 
     focusLobby(ev: KeyboardEvent) {
       if (ev.keyCode === 13) {  // enter
@@ -272,15 +275,23 @@ namespace Bridgesim.Client {
         this.settings.tickInterval = msg.welcome.tickInterval;
         this.settings.snapshotInterval = msg.welcome.snapshotInterval;
         this.clientId = msg.welcome.clientId;
-        this.shipId = msg.welcome.shipId;
         this.applySnapshot(msg.welcome.snapshot);
-        this.ship = this.ships[this.shipId];
         this.frame(0);
         this.$.joinDialog.close();
 
-      } else if (msg.playerList) {
-        this.players = msg.playerList.players;
-        console.log('new player list', this.players);
+      } else if (msg.roster) {
+        this.roster = msg.roster;
+        for (let ship of this.roster.ships) {
+          if (!this.ships[ship.id]) {
+            this.ships[ship.id] = new Core.Ship(ship.id, ship.name, 0, 0, 0);
+          }
+          for (let assignment of ship.crew) {
+            if (assignment.playerId == this.clientId) {
+              this.shipId = ship.id;
+              this.ship = this.ships[ship.id];
+            }
+          }
+        }
 
       } else if (msg.receiveChat) {
         this.$.chat.receiveMsg(msg.receiveChat);
@@ -298,18 +309,24 @@ namespace Bridgesim.Client {
       this.conn.send({sendChat: {text: event.detail.text}}, true);
     }
 
+    joinCrew(event: {detail: Net.JoinCrew}): void {
+      this.conn.send({joinCrew: event.detail}, true);
+    }
+
+    createShip(event: {detail: Net.CreateShip}): void {
+      this.conn.send({createShip: {}}, true);
+    }
+
     applySnapshot(snapshot: Net.Snapshot): void {
       snapshot.ships.forEach(u => {
-        let ship = this.ships[u.shipId];
+        const ship = this.ships[u.shipId];
         if (!ship) {
-          ship = new Core.Ship(u.shipId.toString(), u.x, u.y, u.heading);
-          ship.thrust = u.thrust;
-          this.ships[u.shipId] = ship;
-        } else {
-          ship.setPos(u.x, u.y);
-          ship.heading = u.heading;
-          ship.thrust = u.thrust;
+          console.log('unknown ship', u.shipId);
+          return;
         }
+        ship.setPos(u.x, u.y);
+        ship.heading = u.heading;
+        ship.thrust = u.thrust;
       });
     }
 
@@ -318,7 +335,7 @@ namespace Bridgesim.Client {
 
       if (this.latestSnapshot) {
         this.applySnapshot(this.latestSnapshot);
-        if (this.settings.localPredict) {
+        if (this.settings.localPredict && this.shipId != null) {
           const offset = this.seq - this.latestSnapshot.seq;
           const length = this.commandBuffer.length;
           for (let i = length - offset + 1; i < length; i++) {
@@ -341,7 +358,7 @@ namespace Bridgesim.Client {
         }
         this.commandBuffer.push(commands);
 
-        if (this.settings.localPredict) {
+        if (this.settings.localPredict && this.shipId != null) {
           this.ship.applyCommands(commands);
           this.ship.tick();
         }
@@ -353,7 +370,7 @@ namespace Bridgesim.Client {
       }
 
       const station = this.$.stations.selectedItem;
-      if (station) {
+      if (station && this.shipId != null) {
         let localAlpha = this.lag / this.settings.tickInterval;
         let remoteAlpha = Math.min(
             1, (ts - this.latestSnapshotMs) / this.settings.snapshotInterval);

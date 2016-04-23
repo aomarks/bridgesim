@@ -15,21 +15,26 @@ namespace Bridgesim.Core {
     commandBufferSize: number;
   }
 
+  export class Player {
+    shipId: number;
+    station: Net.Station;
+    commands: Net.Commands[] = [];
+    latestSeq: number = 0;
+
+    constructor(public id: number, public name: string,
+                public conn: Net.Connection) {}
+  }
+
   export class Host {
     private settings: Settings = {
       tickInterval: 1000 / 30,
       snapshotInterval: 1000 / 15,
       commandBufferSize: 100,
     };
-
+    private players: Player[] = [];
     private conns: Net.Connection[] = [];
-    private active: Net.Connection[] = [];
     private ships: Ship[] = [];
-    private conn2seq: {[connId: number]: number} = {};
-    private players: {[playerId: number]: Net.Player} = {};
-    private conn2commands: {[connId: number]: Net.Commands[]} = {};
     private timeoutId: number;
-
     private prevTs: number = 0;
     private tickLag: number = 0;
     private snapshotLag: number = 0;
@@ -40,12 +45,14 @@ namespace Bridgesim.Core {
       this.conns.push(conn);
       conn.onMessage = msg => { this.onMessage(connId, msg); };
       conn.onClose = () => {
-        delete this.conns[connId];
-        delete this.active[connId];
+        const player = this.players[connId];
+        if (player.shipId != null && player.station != null) {
+          const ship = this.ships[player.shipId];
+          ship.findAssignment(player.station).playerId = null;
+        }
         delete this.players[connId];
-        delete this.conn2seq[connId];
-        delete this.conn2commands[connId];
-        this.broadcastPlayerList();
+        delete this.conns[connId];
+        this.broadcastRoster();
         this.announce('player ' + connId + ' disconnected');
       };
     }
@@ -61,7 +68,7 @@ namespace Bridgesim.Core {
     }
 
     private broadcast(msg: Net.Message, reliable: boolean) {
-      this.active.forEach(conn => { conn.send(msg, reliable); });
+      this.players.forEach(player => { player.conn.send(msg, reliable); });
     }
 
     private tick() {
@@ -75,14 +82,20 @@ namespace Bridgesim.Core {
 
       const ticks = Math.floor(this.tickLag / this.settings.tickInterval);
       for (let i = 0; i < ticks; i++) {
-        for (let shipId in this.ships) {
-          const ship = this.ships[shipId];
-          const buffer = this.conn2commands[shipId];
+        for (let playerId in this.players) {
+          const player = this.players[playerId];
+          if (player.shipId == null) {
+            continue
+          }
+          const ship = this.ships[player.shipId];
+          const buffer = player.commands;
           // Try to find the input that corresponded to this tick.
           const commands = buffer[buffer.length - ticks + i];
           if (commands) {
             ship.applyCommands(commands);
           }
+        }
+        for (let ship of this.ships) {
           ship.tick();
         }
         this.tickLag -= this.settings.tickInterval;
@@ -91,17 +104,17 @@ namespace Bridgesim.Core {
 
       if (ticks > 0) {
         // All useful input has been applied; clear buffers.
-        for (let connId in this.conn2commands) {
-          this.conn2commands[connId] = [];
+        for (let playerId in this.players) {
+          this.players[playerId].commands = [];
         }
       }
 
       if (this.snapshotStale &&
           this.snapshotLag >= this.settings.snapshotInterval) {
         const snapshot = this.takeSnapshot();
-        this.active.forEach((conn, connId) => {
-          snapshot.seq = this.conn2seq[connId];
-          conn.send({snapshot: snapshot}, false);
+        this.players.forEach(player => {
+          snapshot.seq = player.latestSeq;
+          player.conn.send({snapshot: snapshot}, false);
         });
         this.snapshotLag = 0;
         this.snapshotStale = false;
@@ -131,12 +144,15 @@ namespace Bridgesim.Core {
           true);
     }
 
-    private broadcastPlayerList() {
-      const players: Net.Player[] = [];
-      for (let id in this.players) {
-        players.push(this.players[id]);
-      }
-      this.broadcast({playerList: {players: players}}, true);
+    private broadcastRoster() {
+      const roster: Net.Roster = {players: [], ships: []};
+      this.players.forEach((player: Player) => {
+        roster.players.push({id: player.id, name: player.name});
+      });
+      this.ships.forEach((ship) => {
+        roster.ships.push({id: ship.id, name: ship.name, crew: ship.crew});
+      });
+      this.broadcast({roster: roster}, true);
     }
 
     private onMessage(connId: number, msg: Net.Message) {
@@ -146,28 +162,59 @@ namespace Bridgesim.Core {
         this.onSendChat(connId, msg.sendChat);
       } else if (msg.commands) {
         this.onCommands(connId, msg.commands);
+      } else if (msg.createShip) {
+        this.onCreateShip(connId, msg.createShip);
+      } else if (msg.joinCrew) {
+        this.onJoinCrew(connId, msg.joinCrew);
       }
     }
 
     private onHello(connId: number, hello: Net.Hello) {
-      const shipId = this.ships.length;
-      const ship = new Ship(shipId.toString(), 0, 0, 0);
-      this.ships.push(ship);
-      this.conn2seq[connId] = 0;
-      this.conn2commands[connId] = [];
+      const player = new Player(connId, 'P' + connId, this.conns[connId]);
+      this.players[connId] = player;
       const welcome: Net.Welcome = {
         clientId: connId,
-        shipId: shipId,
         snapshot: this.takeSnapshot(),
         snapshotInterval: this.settings.snapshotInterval,
         tickInterval: this.settings.tickInterval,
       };
-      const msg = {welcome: welcome};
-      this.conns[connId].send(msg, true);
-      this.active[connId] = this.conns[connId];
-      this.players[connId] = {id: connId, name: connId.toString()};
-      this.broadcastPlayerList();
+      player.conn.send({welcome: welcome}, true);
+      this.broadcastRoster();
       this.announce('player ' + connId + ' joined');
+
+      // TODO Don't create a ship for every player once client supports not
+      // being assigned.
+      this.onCreateShip(connId, {});
+      this.onJoinCrew(
+          connId, {shipId: this.ships.length - 1, station: Net.Station.Helm});
+    }
+
+    private onCreateShip(playerId: number, createShip: Net.CreateShip) {
+      const shipId = this.ships.length;
+      this.ships.push(new Ship(shipId, 'S' + shipId, 0, 0, 0));
+      this.broadcastRoster();
+    }
+
+    private onJoinCrew(playerId: number, joinCrew: Net.JoinCrew) {
+      const shipId = joinCrew.shipId;
+      const ship = this.ships[shipId];
+      if (!ship) {
+        return;
+      }
+      const station = joinCrew.station;
+      if (ship.findAssignment(station).playerId != null) {
+        return;  // Station occupied.
+      }
+      const player = this.players[playerId];
+      if (player.shipId != null && player.station != null) {
+        // Unassign existing station.
+        this.ships[player.shipId].findAssignment(player.station).playerId =
+            null;
+      }
+      player.shipId = joinCrew.shipId;
+      player.station = joinCrew.station;
+      ship.findAssignment(station).playerId = playerId;
+      this.broadcastRoster();
     }
 
     private onSendChat(connId: number, sendChat: Net.SendChat) {
@@ -179,17 +226,17 @@ namespace Bridgesim.Core {
       this.broadcast({receiveChat: rc}, true);
     }
 
-    private onCommands(connId: number, commands: Net.Commands) {
-      if (commands.seq <= this.conn2seq[connId]) {
+    private onCommands(playerId: number, commands: Net.Commands) {
+      const player = this.players[playerId];
+      if (commands.seq <= player.latestSeq) {
         // TODO Commands could legitimately arrive out of order.
         return;
       }
-      const buffer = this.conn2commands[connId];
-      if (buffer.length == this.settings.commandBufferSize) {
-        buffer.shift();
+      if (player.commands.length == this.settings.commandBufferSize) {
+        player.commands.shift();
       }
-      buffer.push(commands);
-      this.conn2seq[connId] = commands.seq;
+      player.commands.push(commands);
+      player.latestSeq = commands.seq;
     }
   }
 }
