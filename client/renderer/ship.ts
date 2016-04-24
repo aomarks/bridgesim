@@ -14,7 +14,7 @@ namespace Bridgesim.Client.Renderer {
       console.log(shipAsset);
       assetPack.loadShip(shipAsset).then((mesh: BABYLON.Mesh) => {
         console.log('ship loaded!');
-        const ourMesh = mesh.clone();
+        const ourMesh = mesh.clone('');
         ourMesh.parent = this.mesh;
       });
       /*

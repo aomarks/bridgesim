@@ -29,8 +29,10 @@ namespace Bridgesim.Client.AssetPack {
       return this.urlDir(manifest);
     }
 
-    @computed()
-    ships(manifestBody: Manifest) : Ship[] {
+    @property({type: Object, computed: 'computeShips(manifestBody)'})
+    ships: Ship[];
+
+    computeShips(manifestBody: Manifest) : Ship[] {
       return manifestBody.ships;
     }
 
@@ -70,7 +72,6 @@ namespace Bridgesim.Client.AssetPack {
             for (let m of meshes) {
               m.parent = mesh;
             }
-            console.log('parent', mesh.parent);
             resolve(mesh);
           }, null, (scene: BABYLON.Scene, message: string, exception?: any)  => {
             reject(message);
