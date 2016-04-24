@@ -35,7 +35,20 @@ namespace Bridgesim.Client.Renderer {
       this.camera.attachControl(this.$.renderCanvas, false, false);
       this.camera.maxZ = 10000;
 
-      const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(1,0,0), this.scene);
+      var hdr = new BABYLON.HDRRenderingPipeline("hdr", this.scene, 1.0, [this.camera]);
+      hdr.brightThreshold = 0.7; // Minimum luminance needed to compute HDR
+      hdr.gaussCoeff = 0.5; // Gaussian coefficient = gaussCoeff * theEffectOutput;
+      hdr.gaussMean = 1; // The Gaussian blur mean
+      hdr.gaussStandDev = 5; // Standard Deviation of the gaussian blur.
+      hdr.exposure = 1.0;
+      hdr.minimumLuminance = 0.2;
+      hdr.maximumLuminance = 1e20;
+      hdr.luminanceDecreaseRate = 0.3; // Decrease rate: darkness to light
+      hdr.luminanceIncreaserate = 0.5; // Increase rate: light to darkness
+      hdr.gaussMultiplier = 4.0; // Increase the blur intensity
+
+      const light = new BABYLON.DirectionalLight('light1', new BABYLON.Vector3(1,-0.3,0), this.scene);
+      light.intensity = 3;
 
       // Grid
       const gridMaterial = new BABYLON.StandardMaterial("Grid Material", this.scene);
@@ -60,6 +73,19 @@ namespace Bridgesim.Client.Renderer {
       skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
       skybox.material = skyboxMaterial;
       this.skybox = skybox;
+
+      const sun = BABYLON.Mesh.CreateSphere('sun', 16, 10, this.scene);
+      const sunMaterial = new BABYLON.StandardMaterial("sun", this.scene);
+      sun.material = sunMaterial;
+      sun.position = (new BABYLON.Vector3(-1, 0.3, 0)).normalize().scale(250);
+
+      const lensFlareSystem = new BABYLON.LensFlareSystem("lensFlareSystem", sun, this.scene);
+      const flare01 = new BABYLON.LensFlare(0.5, 0.2, new BABYLON.Color3(0.5, 0.5, 1), "textures/Flare.png", lensFlareSystem);
+      const flare02 = new BABYLON.LensFlare(0.2, 1.0, new BABYLON.Color3(1, 1, 1), "textures/Flare.png", lensFlareSystem);
+      const flare03 = new BABYLON.LensFlare(0.4, 0.4, new BABYLON.Color3(1, 0.5, 1), "textures/Flare.png", lensFlareSystem);
+      const flare04 = new BABYLON.LensFlare(0.1, 0.6, new BABYLON.Color3(1, 1, 1), "textures/Flare.png", lensFlareSystem);
+      const flare05 = new BABYLON.LensFlare(0.3, 0.8, new BABYLON.Color3(1, 1, 1), "textures/Flare.png", lensFlareSystem);
+
 
       window.addEventListener('resize', this.resize.bind(this));
     }
