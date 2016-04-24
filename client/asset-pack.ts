@@ -69,6 +69,7 @@ namespace Bridgesim.Client.AssetPack {
         BABYLON.SceneLoader.ImportMesh("", rootURL, baseURL, this.scene,
           (meshes: BABYLON.AbstractMesh[], particleSystems: BABYLON.ParticleSystem[], skeletons: BABYLON.Skeleton[]) => {
             const mesh = new BABYLON.Mesh(model, this.scene);
+            mesh.setEnabled(false);
             for (let m of meshes) {
               m.parent = mesh;
             }

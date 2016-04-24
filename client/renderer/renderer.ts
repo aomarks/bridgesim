@@ -31,7 +31,7 @@ namespace Bridgesim.Client.Renderer {
       this.assetsManager = new BABYLON.AssetsManager(this.scene);
       this.assetsManager.useDefaultLoadingScreen = false;
 
-      this.camera = new BABYLON.ArcRotateCamera('camera1', -Math.PI/2, Math.PI/2, 2, new BABYLON.Vector3(0, 0.5, 0), this.scene);
+      this.camera = new BABYLON.ArcRotateCamera('camera1', -Math.PI/2, Math.PI/2, 2, new BABYLON.Vector3(0, 0.0, 0.45), this.scene);
       this.camera.attachControl(this.$.renderCanvas, false, false);
       this.camera.maxZ = 10000;
 
