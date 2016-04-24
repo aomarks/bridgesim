@@ -47,12 +47,13 @@ namespace Bridgesim.Client.Renderer {
       hdr.luminanceIncreaserate = 0.5; // Increase rate: light to darkness
       hdr.gaussMultiplier = 4.0; // Increase the blur intensity
 
-      const light = new BABYLON.DirectionalLight('light1', new BABYLON.Vector3(1,-0.3,0), this.scene);
+      const light = new BABYLON.DirectionalLight('light1', new BABYLON.Vector3(1,0,0), this.scene);
       light.intensity = 3;
 
       // Grid
       const gridMaterial = new BABYLON.StandardMaterial("Grid Material", this.scene);
       gridMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
+      gridMaterial.emissiveColor = new BABYLON.Color3(0,1,0);
       gridMaterial.wireframe = true;
 
       const trueSize = this.size*10;
@@ -74,10 +75,30 @@ namespace Bridgesim.Client.Renderer {
       skybox.material = skyboxMaterial;
       this.skybox = skybox;
 
-      const sun = BABYLON.Mesh.CreateSphere('sun', 16, 10, this.scene);
+      /*const sun = BABYLON.Mesh.CreateSphere('sun', 16, 10, this.scene);
       const sunMaterial = new BABYLON.StandardMaterial("sun", this.scene);
+      sun.material = sunMaterial;*/
+
+      const sunMaterial = new BABYLON.StandardMaterial('', this.scene);
+      sunMaterial.diffuseTexture = new BABYLON.Texture('textures/sun.png', this.scene);
+      sunMaterial.diffuseTexture.hasAlpha = true;
+      sunMaterial.emissiveColor = new BABYLON.Color3(1,1,1);
+      sunMaterial.backFaceCulling = false;
+      sunMaterial.useAlphaFromDiffuseTexture = true;
+
+      const sun = BABYLON.Mesh.CreatePlane('sun',70, this.scene);
       sun.material = sunMaterial;
-      sun.position = (new BABYLON.Vector3(-1, 0.3, 0)).normalize().scale(250);
+      sun.position = (new BABYLON.Vector3(-1, 0, 0)).normalize().scale(225);
+      sun.billboardMode = 7
+      sun.parent = skybox;
+
+      const sunBlur = BABYLON.Mesh.CreatePlane('sun',50, this.scene);
+      sunBlur.scaling.x = 5;
+      sunBlur.scaling.y = 0.05;
+      sunBlur.material = sunMaterial;
+      sunBlur.position = (new BABYLON.Vector3(-1, 0, 0)).normalize().scale(100);
+      sunBlur.billboardMode = 7
+      sunBlur.parent = skybox;
 
       const lensFlareSystem = new BABYLON.LensFlareSystem("lensFlareSystem", sun, this.scene);
       const flare01 = new BABYLON.LensFlare(0.5, 0.2, new BABYLON.Color3(0.5, 0.5, 1), "textures/Flare.png", lensFlareSystem);
