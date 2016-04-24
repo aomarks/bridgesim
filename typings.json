@@ -1,7 +1,10 @@
 {
   "ambientDependencies": {
-    "RTCPeerConnection": "github:DefinitelyTyped/DefinitelyTyped/webrtc/RTCPeerConnection.d.ts#bc92442c075929849ec41d28ab618892ba493504",
     "MediaStream": "github:DefinitelyTyped/DefinitelyTyped/webrtc/MediaStream.d.ts#b59563b811042b592581868b4c015e91d1db1096",
+    "RTCPeerConnection": "github:DefinitelyTyped/DefinitelyTyped/webrtc/RTCPeerConnection.d.ts#bc92442c075929849ec41d28ab618892ba493504",
     "es6-promise": "github:DefinitelyTyped/DefinitelyTyped/es6-promise/es6-promise.d.ts#e1699c41087960df7678f413312213fb1f980307"
+  },
+  "dependencies": {
+    "es6-promise": "registry:npm/es6-promise#3.0.0+20160211003958"
   }
 }

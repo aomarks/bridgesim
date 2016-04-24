@@ -12,10 +12,13 @@ namespace Bridgesim.Client.Renderer {
   export class Renderer extends polymer.Base {
     private engine: BABYLON.Engine;
     private scene: BABYLON.Scene;
+    private assetsManager: BABYLON.AssetsManager;
     private camera: BABYLON.FreeCamera;
 
     private renderShips: Ship[] = [];
     private shipMap: { [shipName: string]: Ship; } = {};
+
+    @property({type: Boolean}) assetsLoaded: boolean = false;
 
     @property({type: Number}) size: number;
     @property({type: Array}) ships: Core.Ship[];
@@ -24,6 +27,8 @@ namespace Bridgesim.Client.Renderer {
     ready() {
       this.engine = new BABYLON.Engine(this.$.renderCanvas, true);
       this.scene = new BABYLON.Scene(this.engine);
+      this.assetsManager = new BABYLON.AssetsManager(this.scene);
+      this.assetsManager.useDefaultLoadingScreen = false;
 
       const cameraPosition = new BABYLON.Vector3(0, 0.5, -2);
       const cameraTarget = new BABYLON.Vector3(0, 0.5, 0);
@@ -74,13 +79,16 @@ namespace Bridgesim.Client.Renderer {
     }
 
     updateShips(localAlpha: number, remoteAlpha: number) {
+      if (!this.assetsLoaded) {
+        return;
+      }
       const touched: { [shipName: string]: boolean; } = {};
 
       // Update each Renderer.Ship
       for (let coreShip of this.ships) {
         let ship = this.shipMap[coreShip.name];
         if (!ship) {
-          ship = new Ship(coreShip, this.scene);
+          ship = new Ship(coreShip, this.scene, this.$.assets);
           this.renderShips.push(ship);
           this.shipMap[coreShip.name] = ship;
         }

@@ -29,10 +29,13 @@
     <paper-card id="controls">
       <paper-toggle-button value="{{followShip}}">Follow Ship</paper-toggle-button>
     </paper-card>
-    <asset-pack manifest="https://rawgit.com/d4l3k/bridgesim-assets/master/manifest.json"></asset-pack>
+    <asset-pack id="assets" manifest="https://rawgit.com/d4l3k/bridgesim-assets/master/manifest.json"
+                scene="{{scene}}"
+                loaded="{{assetsLoaded}}"></asset-pack>
   </template>
 
   <script src="../../bower_components/babylonjs/dist/babylon.2.2.js"></script>
+  <script src="../../bower_components/babylonjs/loaders/OBJ/babylon.objFileLoader.js"></script>
   <script src="ship.js"></script>
   <script src="renderer.js"></script>
 </dom-module>
