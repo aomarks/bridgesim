@@ -5,7 +5,6 @@
 namespace Bridgesim.Client.Renderer {
   export class Ship {
     public mesh: BABYLON.Mesh;
-    public shieldEnabled: boolean = false;
 
     private formFittingShield:boolean = false;
     private shield: BABYLON.Mesh;
@@ -46,6 +45,7 @@ namespace Bridgesim.Client.Renderer {
           this.shield = mesh.clone('');
           this.shield.setEnabled(true);
           this.shield.parent = this.mesh;
+          this.shield.rotation = this.visualMesh.rotation;
 
           for (let n of this.shield.getDescendants()) {
             if (n instanceof BABYLON.Mesh) {
@@ -105,7 +105,7 @@ namespace Bridgesim.Client.Renderer {
       }
       // visual scaling effect when going fast
       this.mesh.scaling.z = 1/((Math.pow(s.thrust,4)*19)+1)
-      this.shield.setEnabled(this.shieldEnabled);
+      this.shield.setEnabled(this.ship.shieldEnabled);
     }
 
     walk(mesh: BABYLON.Node, cb: (node: BABYLON.Node)=>void) {

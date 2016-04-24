@@ -8,6 +8,7 @@ namespace Bridgesim.Core {
     prevY: number;
     roll: number = 0;
     thrust: number;
+    shieldEnabled: boolean = false;
     engine: Subsystem;
     maneuvering: Subsystem;
     weapons: Subsystem;
