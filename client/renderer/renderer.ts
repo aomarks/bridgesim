@@ -13,7 +13,7 @@ namespace Bridgesim.Client.Renderer {
     private engine: BABYLON.Engine;
     private scene: BABYLON.Scene;
     private assetsManager: BABYLON.AssetsManager;
-    private camera: BABYLON.FreeCamera;
+    private camera: BABYLON.ArcRotateCamera;
 
     private renderShips: Ship[] = [];
     private shipMap: { [shipName: string]: Ship; } = {};
@@ -30,13 +30,10 @@ namespace Bridgesim.Client.Renderer {
       this.assetsManager = new BABYLON.AssetsManager(this.scene);
       this.assetsManager.useDefaultLoadingScreen = false;
 
-      const cameraPosition = new BABYLON.Vector3(0, 0.5, -2);
-      const cameraTarget = new BABYLON.Vector3(0, 0.5, 0);
-      this.camera = new BABYLON.FreeCamera('camera1', cameraPosition, this.scene);
-      this.camera.setTarget(cameraTarget);
-      this.camera.attachControl(this.$.renderCanvas, false);
+      this.camera = new BABYLON.ArcRotateCamera('camera1', -Math.PI/2, Math.PI/2, 2, new BABYLON.Vector3(0, 0.5, 0), this.scene);
+      this.camera.attachControl(this.$.renderCanvas, false, false);
 
-      const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), this.scene);
+      const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(1,0,0), this.scene);
 
       // Grid
       const gridMaterial = new BABYLON.StandardMaterial("Grid Material", this.scene);
