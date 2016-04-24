@@ -12,6 +12,7 @@ namespace Bridgesim.Client.AssetPack {
     class: string
     faction: string
     model: string
+    scale: number
   }
 
   @component('asset-pack')
@@ -46,16 +47,21 @@ namespace Bridgesim.Client.AssetPack {
     }
 
     loadShip(ship: Ship) : Promise<BABYLON.Mesh> {
-      return this.loadModel(this.baseURL + ship.model);
+      return this.loadModel(this.baseURL + ship.model).then((mesh: BABYLON.Mesh) : BABYLON.Mesh => {
+        const scaling = ship.scale ? ship.scale : 1;
+        mesh.scaling.x = scaling;
+        mesh.scaling.y = scaling;
+        mesh.scaling.z = scaling;
+        return mesh;
+      });
     }
 
     loadModel(model: string) : Promise<BABYLON.Mesh> {
-      console.log('model requested', model);
       if (this.modelPromises[model]) {
         return this.modelPromises[model];
       }
+
       const promise = new Promise((resolve: (mesh: BABYLON.Mesh) => void, reject: (reason: any) => void) => {
-        console.log('loading model', model);
         const rootURL = this.urlDir(model);
         const baseURL = this.urlBase(model);
         BABYLON.SceneLoader.ImportMesh("", rootURL, baseURL, this.scene,
@@ -64,9 +70,9 @@ namespace Bridgesim.Client.AssetPack {
             for (let m of meshes) {
               m.parent = mesh;
             }
+            console.log('parent', mesh.parent);
             resolve(mesh);
           }, null, (scene: BABYLON.Scene, message: string, exception?: any)  => {
-            debugger;
             reject(message);
           });
       });
