@@ -24,13 +24,15 @@ namespace Bridgesim.Client.Renderer {
       const s = this.ship;
       const lerpX = s.prevX + (alpha * (s.x - s.prevX));
       const lerpY = s.prevY + (alpha * (s.y - s.prevY));
-      this.mesh.position.x = lerpX*10;
-      this.mesh.position.z = -lerpY*10;
+      this.mesh.position.x = lerpX*100;
+      this.mesh.position.z = -lerpY*100;
       this.mesh.rotation.y = Math.PI/180 * s.heading;
       if (this.visualMesh) {
         this.visualMesh.rotation.x = -(s.roll*s.roll)/4;
         this.visualMesh.rotation.z = s.roll;
       }
+      // visual scaling effect when going fast
+      this.mesh.scaling.z = 1/((Math.pow(s.thrust,4)*19)+1)
     }
   }
 }

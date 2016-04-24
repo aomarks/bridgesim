@@ -17,6 +17,7 @@ namespace Bridgesim.Client.Renderer {
 
     private renderShips: Ship[] = [];
     private shipMap: { [shipName: string]: Ship; } = {};
+    private skybox: BABYLON.Mesh;
 
     @property({type: Boolean}) assetsLoaded: boolean = false;
 
@@ -32,6 +33,7 @@ namespace Bridgesim.Client.Renderer {
 
       this.camera = new BABYLON.ArcRotateCamera('camera1', -Math.PI/2, Math.PI/2, 2, new BABYLON.Vector3(0, 0.5, 0), this.scene);
       this.camera.attachControl(this.$.renderCanvas, false, false);
+      this.camera.maxZ = 10000;
 
       const light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(1,0,0), this.scene);
 
@@ -39,16 +41,17 @@ namespace Bridgesim.Client.Renderer {
       const gridMaterial = new BABYLON.StandardMaterial("Grid Material", this.scene);
       gridMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
       gridMaterial.wireframe = true;
-      var trueSize = this.size;
-      var cellSize = trueSize/10
-      const grid = BABYLON.Mesh.CreateGround('ground1', trueSize, trueSize, cellSize, this.scene);
+
+      const trueSize = this.size*10;
+      const cellSize = trueSize/10;
+      const grid = BABYLON.Mesh.CreateGround('ground1', trueSize, trueSize, 10, this.scene);
       grid.material = gridMaterial;
       grid.position.x = trueSize/2 - cellSize/2;
       grid.position.z = -trueSize/2 + cellSize/2;
       grid.position.y = -1;
 
       // Skybox
-      const skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, this.scene);
+      const skybox = BABYLON.Mesh.CreateBox("skyBox", 500.0, this.scene);
       const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", this.scene);
       skyboxMaterial.backFaceCulling = false;
       skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/skybox/box", this.scene, SKYBOX_EXTENSIONS);
@@ -56,6 +59,7 @@ namespace Bridgesim.Client.Renderer {
       skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
       skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
       skybox.material = skyboxMaterial;
+      this.skybox = skybox;
 
       window.addEventListener('resize', this.resize.bind(this));
     }
@@ -107,7 +111,9 @@ namespace Bridgesim.Client.Renderer {
       });
 
       // Update camera parent incase it's changed.
-      this.camera.parent = this.shipMap[this.ship.name].mesh;
+      const currentShip = this.shipMap[this.ship.name];
+      this.camera.parent = currentShip.mesh;
+      this.skybox.position = currentShip.mesh.position;
     }
   }
 
