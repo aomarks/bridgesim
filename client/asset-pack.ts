@@ -41,28 +41,33 @@ namespace Bridgesim.Client.AssetPack {
       return url.substring(0, Math.max(url.lastIndexOf("/"), url.lastIndexOf("\\"))) + '/';
     }
 
-    loadShip(ship: Ship) : Promise<BABYLON.Mesh> {
-      return this.loadModel(ship.class, this.baseURL + ship.model);
+    urlBase(url: string) : string {
+      return url.substring(url.lastIndexOf("/")+1);
     }
 
-    loadModel(name: string, model: string) : Promise<BABYLON.Mesh> {
+    loadShip(ship: Ship) : Promise<BABYLON.Mesh> {
+      return this.loadModel(this.baseURL + ship.model);
+    }
+
+    loadModel(model: string) : Promise<BABYLON.Mesh> {
       console.log('model requested', model);
       if (this.modelPromises[model]) {
         return this.modelPromises[model];
       }
       const promise = new Promise((resolve: (mesh: BABYLON.Mesh) => void, reject: (reason: any) => void) => {
         console.log('loading model', model);
-        BABYLON.SceneLoader.ImportMesh(name, "", model, this.scene,
+        const rootURL = this.urlDir(model);
+        const baseURL = this.urlBase(model);
+        BABYLON.SceneLoader.ImportMesh("", rootURL, baseURL, this.scene,
           (meshes: BABYLON.AbstractMesh[], particleSystems: BABYLON.ParticleSystem[], skeletons: BABYLON.Skeleton[]) => {
-            console.log('loaded!',model);
-            if (meshes.length === 0 || meshes.length > 1) {
-              reject('mesh has none/multiple meshes in it');
-            } else {
-              resolve(meshes[0] as BABYLON.Mesh);
+            const mesh = new BABYLON.Mesh(model, this.scene);
+            for (let m of meshes) {
+              m.parent = mesh;
             }
+            resolve(mesh);
           }, null, (scene: BABYLON.Scene, message: string, exception?: any)  => {
             debugger;
-            reject('mesh failed to load: '+model);
+            reject(message);
           });
       });
       this.modelPromises[model] = promise;
