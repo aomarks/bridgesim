@@ -48,9 +48,10 @@ namespace Bridgesim.Client.Renderer {
       grid.material = gridMaterial;
       grid.position.x = trueSize/2 - cellSize/2;
       grid.position.z = -trueSize/2 + cellSize/2;
+      grid.position.y = -1;
 
       // Skybox
-      const skybox = BABYLON.Mesh.CreateBox("skyBox", 800.0, this.scene);
+      const skybox = BABYLON.Mesh.CreateBox("skyBox", 10000.0, this.scene);
       const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", this.scene);
       skyboxMaterial.backFaceCulling = false;
       skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/skybox/box", this.scene, SKYBOX_EXTENSIONS);

@@ -7,22 +7,17 @@ namespace Bridgesim.Client.Renderer {
     public ship: Core.Ship;
     public mesh: BABYLON.Mesh;
 
+    private visualMesh: BABYLON.Mesh;
+
     constructor(ship: Core.Ship, scene: BABYLON.Scene, assetPack: AssetPack.AssetPack) {
       this.ship = ship;
       this.mesh = new BABYLON.Mesh('ship', scene);
       const shipAsset = assetPack.ships[0];
       console.log(shipAsset);
       assetPack.loadShip(shipAsset).then((mesh: BABYLON.Mesh) => {
-        console.log('ship loaded!');
-        const ourMesh = mesh.clone('');
-        ourMesh.parent = this.mesh;
+        this.visualMesh = mesh.clone('');
+        this.visualMesh.parent = this.mesh;
       });
-      /*
-      const model = BABYLON.Mesh.CreateBox('box', 0.5, scene);
-      model.parent = this.mesh;
-      model.scaling.y = 0.5;
-      model.scaling.x = 0.5;
-      */
     }
 
     update(alpha: number) {
@@ -32,6 +27,10 @@ namespace Bridgesim.Client.Renderer {
       this.mesh.position.x = lerpX*10;
       this.mesh.position.z = -lerpY*10;
       this.mesh.rotation.y = Math.PI/180 * s.heading;
+      if (this.visualMesh) {
+        this.visualMesh.rotation.x = -(s.roll*s.roll)/4;
+        this.visualMesh.rotation.z = s.roll;
+      }
     }
   }
 }
