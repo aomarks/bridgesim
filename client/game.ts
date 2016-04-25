@@ -1,6 +1,5 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/browser.d.ts" />
-///<reference path="../core/collision/collision-system.ts" />
 ///<reference path="../core/ship.ts" />
 ///<reference path="../core/host.ts" />
 ///<reference path="../net/message.ts" />
@@ -47,8 +46,6 @@ namespace Bridgesim.Client {
     private conn: Net.Connection;
     private conditioner: Net.Conditioner;
 
-    private collisionSystem: Core.Collision.CollisionSystem;
-
     private clientId: number;
     private ship: Core.Ship;
     private ships: Core.Ship[];
@@ -79,8 +76,6 @@ namespace Bridgesim.Client {
         snapshotInterval: 0,  // Server controlled.
         commandBufferSize: 100,
       };
-
-      this.collisionSystem = new Core.Collision.CollisionSystem();
 
       this.ships = [];
 
@@ -324,8 +319,6 @@ namespace Bridgesim.Client {
         }
         this.lag -= this.settings.tickInterval;
         this.seq++;
-        // Uncomment to turn on collision system
-        //this.collisionSystem.resolveCollisions(this.ships);
       }
       if (commands) {
         this.conn.send({commands: commands}, false);
