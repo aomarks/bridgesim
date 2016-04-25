@@ -12,11 +12,9 @@ namespace Bridgesim.Core.Collision {
           let aBox = new BoxCollider(a.x, a.y, 0.3, 0.3, 10);
           let bBox = new BoxCollider(b.x, b.y, 0.3, 0.3, 10);
           if (aBox.isOverlap(bBox)) {
-            console.log("Before", a, b);
             aBox.resolveCollision(bBox);
             a.setPos(aBox.x, aBox.y);
             b.setPos(bBox.x, bBox.y);
-            console.log("After:", a, b);
           }
         }
       }
