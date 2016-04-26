@@ -1,6 +1,6 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../bower_components/babylonjs/dist/babylon.2.2.d.ts" />
-///<reference path="../typings/browser/ambient/es6-promise/index.d.ts" />
+///<reference path="../typings/browser.d.ts" />
 
 namespace Bridgesim.Client.AssetPack {
 

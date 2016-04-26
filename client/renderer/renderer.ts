@@ -35,7 +35,7 @@ namespace Bridgesim.Client.Renderer {
       this.camera.attachControl(this.$.renderCanvas, false, false);
       this.camera.maxZ = 10000;
 
-      var hdr = new BABYLON.HDRRenderingPipeline("hdr", this.scene, 1.0, [this.camera]);
+      var hdr = new BABYLON.HDRRenderingPipeline("hdr", this.scene, 1.0, null, [this.camera]);
       hdr.brightThreshold = 0.7; // Minimum luminance needed to compute HDR
       hdr.gaussCoeff = 0.5; // Gaussian coefficient = gaussCoeff * theEffectOutput;
       hdr.gaussMean = 1; // The Gaussian blur mean
@@ -45,7 +45,7 @@ namespace Bridgesim.Client.Renderer {
       hdr.maximumLuminance = 1e20;
       hdr.luminanceDecreaseRate = 0.3; // Decrease rate: darkness to light
       hdr.luminanceIncreaserate = 0.5; // Increase rate: light to darkness
-      hdr.gaussMultiplier = 4.0; // Increase the blur intensity
+      //hdr.gaussMultiplier = 4.0; // Increase the blur intensity
 
       const light = new BABYLON.DirectionalLight('light1', new BABYLON.Vector3(1,0,0), this.scene);
       light.intensity = 3;
