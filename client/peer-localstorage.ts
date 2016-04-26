@@ -66,10 +66,14 @@ namespace Bridgesim.Client {
     checkIfAccepted(): void {
       const handshake = this.handshakes[this.key];
       if (handshake && handshake.answer) {
-        this.conn.takeAnswer(new RTCSessionDescription(handshake.answer));
-        this.fire('connection', this.conn);
-        this.key = null;
+        const conn = this.conn;
+        conn.onOpen = () => {
+          conn.onOpen = null;
+          this.fire('connection', conn);
+        };
+        conn.takeAnswer(new RTCSessionDescription(handshake.answer));
         this.conn = null;
+        this.key = null;
         // TODO delete offer from localstorage
       }
     }

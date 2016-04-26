@@ -33,16 +33,7 @@ namespace Bridgesim.Client {
       return !isHost;
     }
 
-    // WebRTC token signalling
-    private pendingConn: Net.WebRTCConnection;
-    private copyOffer: string;
-    private copyAnswer: string;
-    private pasteOffer: string;
-    private pasteAnswer: string;
-
     private host: Core.Host;
-
-    // client -> server
     private conn: Net.Connection;
     private conditioner: Net.Conditioner;
 
@@ -170,59 +161,17 @@ namespace Bridgesim.Client {
       this.conditioner.packetLoss = this.settings.fakePacketLoss;
       this.conn = this.conditioner;
 
-      this.conn.onOpen =
-          () => { this.conn.send({hello: {name: 'stranger'}}, true); };
       this.conn.onMessage = this.onMessage.bind(this);
       this.conn.onClose = () => {
         console.log('disconnected');
         this.resetSimulation();
-      }
-    }
-
-    joinGame(): void {
-      this.$.joinDialog.open();
-      this.conn = this.pendingConn = new Net.WebRTCConnection(RTC_CONFIG);
-      this.setupConn();
-      this.pendingConn.makeOffer().then(
-          offer => { this.copyOffer = Net.encodeRSD(offer); });
-    }
-
-    invitePlayer(): void { this.$.inviteDialog.open(); }
-
-    @observe('pasteOffer')
-    onPasteOffer(offer: string): void {
-      if (!offer) {
-        return;
-      }
-      this.pendingConn = new Net.WebRTCConnection(RTC_CONFIG);
-      this.pendingConn.onOpen = () => {
-        this.host.addConnection(this.pendingConn);
-        this.$.inviteDialog.close();
       };
-      this.pendingConn.takeOffer(Net.decodeRSD(offer))
-          .then(answer => { this.copyAnswer = Net.encodeRSD(answer); });
+
+      this.conn.send({hello: {name: 'stranger'}}, true);
     }
 
-    @observe('pasteAnswer')
-    onPasteAnswer(answer: string): void {
-      if (!answer) {
-        return;
-      }
-      this.pendingConn.takeAnswer(Net.decodeRSD(answer));
-    }
-
-    clearTokens(): void {
-      this.pendingConn = null;
-      this.copyOffer = '';
-      this.copyAnswer = '';
-      this.pasteOffer = '';
-      this.pasteAnswer = '';
-    }
-
-    selectAndCopy(event: Event): void {
-      (<HTMLTextAreaElement>event.target).select();
-      document.execCommand('copy');
-    }
+    joinGame(): void { this.$.peerCopypaste.openClientDialog(); }
+    invitePlayer(): void { this.$.peerCopypaste.openHostDialog(); }
 
     onMessage(msg: Net.Message) {
       if (msg.welcome) {
@@ -232,7 +181,6 @@ namespace Bridgesim.Client {
         this.clientId = msg.welcome.clientId;
         this.applySnapshot(msg.welcome.snapshot);
         this.frame(0);
-        this.$.joinDialog.close();
 
       } else if (msg.roster) {
         this.roster = msg.roster;

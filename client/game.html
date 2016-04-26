@@ -17,6 +17,7 @@
 <link rel="import" href="./settings-menu.html">
 <link rel="import" href="./lobby.html">
 <link rel="import" href="./peer-localstorage.html">
+<link rel="import" href="./peer-copypaste.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -34,6 +35,11 @@
       is-host="[[isHost]]"
       on-connection="onConnection">
     </bridgesim-peer-localstorage>
+
+    <bridgesim-peer-copypaste
+      id="peerCopypaste"
+      on-connection="onConnection">
+    </bridgesim-peer-copypaste>
 
     <bridgesim-input id="input" ship="[[ship]]"></bridgesim-input>
 
@@ -57,16 +63,6 @@
       }
       paper-toggle-button {
         cursor: pointer;
-      }
-      .token {
-        border: 1px solid #ccc;
-        word-wrap: break-word;
-        padding: 5px;
-        margin: 20px;
-        width: 500px;
-        height: 50px;
-        cursor: pointer;
-        resize: none;
       }
       bridgesim-chat {
         margin: 0 !important;
@@ -105,20 +101,6 @@
                        on-join-crew="joinCrew"
                        on-create-ship="createShip">
       </bridgesim-lobby>
-    </paper-dialog>
-
-    <paper-dialog id="joinDialog" on-iron-overlay-closed="clearTokens">
-      <h2>send this offer to the server:</h2>
-      <textarea class="token" on-tap="selectAndCopy">[[copyOffer]]</textarea>
-      <h2>paste the answer here:</h2>
-      <textarea class="token" value="{{pasteAnswer::input}}"></textarea>
-    </paper-dialog>
-
-    <paper-dialog id="inviteDialog" on-iron-overlay-closed="clearTokens">
-      <h2>paste the player's offer here:</h2>
-      <textarea class="token" value="{{pasteOffer::input}}"></textarea>
-      <h2>send back this answer:</h2>
-      <textarea class="token" on-tap="selectAndCopy">[[copyAnswer]]</textarea>
     </paper-dialog>
 
     <section id="panels" class="layout vertical">
