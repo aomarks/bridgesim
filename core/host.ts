@@ -1,3 +1,4 @@
+///<reference path="../core/collision/collision-system.ts" />
 ///<reference path="../net/connection.ts" />
 ///<reference path="../net/message.ts" />
 ///<reference path="ship.ts" />
@@ -31,6 +32,7 @@ namespace Bridgesim.Core {
       snapshotInterval: 1000 / 15,
       commandBufferSize: 100,
     };
+    private collisionSystem: Core.Collision.CollisionSystem = new Core.Collision.CollisionSystem();
     private players: Player[] = [];
     private conns: Net.Connection[] = [];
     private ships: Ship[] = [];
@@ -98,6 +100,7 @@ namespace Bridgesim.Core {
         for (let ship of this.ships) {
           ship.tick();
         }
+        this.collisionSystem.resolveCollisions(this.ships);
         this.tickLag -= this.settings.tickInterval;
         this.snapshotStale = true;
       }

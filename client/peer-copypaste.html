@@ -1,0 +1,35 @@
+<link rel="import" href="deps.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+<dom-module id="bridgesim-peer-copypaste">
+  <template>
+    <style>
+      .token {
+        border: 1px solid #ccc;
+        word-wrap: break-word;
+        padding: 5px;
+        margin: 20px;
+        width: 500px;
+        height: 50px;
+        cursor: pointer;
+        resize: none;
+      }
+    </style>
+
+    <paper-dialog id="clientDialog" on-iron-overlay-closed="clear">
+      <div>send this offer to the server:</div>
+      <textarea class="token" on-tap="selectAndCopy">[[copyOffer]]</textarea>
+      <div>paste the answer here:</div>
+      <textarea class="token" value="{{pasteAnswer::input}}"></textarea>
+    </paper-dialog>
+
+    <paper-dialog id="hostDialog" on-iron-overlay-closed="clear">
+      <div>paste the player's offer here:</div>
+      <textarea class="token" value="{{pasteOffer::input}}"></textarea>
+      <div>send back this answer:</div>
+      <textarea class="token" on-tap="selectAndCopy">[[copyAnswer]]</textarea>
+    </paper-dialog>
+  </template>
+
+  <script src="peer-copypaste.js"></script>
+</dom-module>

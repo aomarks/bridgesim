@@ -1,4 +1,4 @@
-<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'>
 
 <link rel="import" href="../bower_components/iron-location/iron-location.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
@@ -17,6 +17,7 @@
 <link rel="import" href="./settings-menu.html">
 <link rel="import" href="./lobby.html">
 <link rel="import" href="./peer-localstorage.html">
+<link rel="import" href="./peer-copypaste.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -35,15 +36,45 @@
       on-connection="onConnection">
     </bridgesim-peer-localstorage>
 
+    <bridgesim-peer-copypaste
+      id="peerCopypaste"
+      on-connection="onConnection">
+    </bridgesim-peer-copypaste>
+
     <bridgesim-input id="input" ship="[[ship]]"></bridgesim-input>
 
     <style include="iron-flex iron-flex-alignment"></style>
     <style>
       :host {
         display: block;
-        font-family: roboto;
         background-color: #000;
-        color: white;
+        color: #fff;
+
+        --bridgesim-font: {
+          font-family: 'Share Tech Mono';
+        };
+        @apply(--bridgesim-font);
+        --paper-font-common-base: {
+          @apply(--bridgesim-font);
+        };
+        --paper-button: {
+          @apply(--bridgesim-font);
+        }
+        --paper-dialog: {
+          @apply(--bridgesim-font);
+        }
+        --paper-input-container: {
+          @apply(--bridgesim-font);
+        }
+        --paper-input-container-label: {
+          @apply(--bridgesim-font);
+        }
+        --paper-input-suffix: {
+          @apply(--bridgesim-font);
+        }
+
+        --paper-tab-ink: #7FDBFF;
+        --paper-tabs-selection-bar-color: #7FDBFF;
       }
       #header {
         color: black;
@@ -58,26 +89,9 @@
       paper-toggle-button {
         cursor: pointer;
       }
-      .token {
-        border: 1px solid #ccc;
-        word-wrap: break-word;
-        padding: 5px;
-        margin: 20px;
-        width: 500px;
-        height: 50px;
-        cursor: pointer;
-        resize: none;
-      }
       bridgesim-chat {
         margin: 0 !important;
         height: 98px;
-      }
-      paper-tabs {
-        color: white;
-        --paper-tabs-selection-bar-color: #7FDBFF;
-      }
-      paper-tab {
-        --paper-tab-ink: #7FDBFF;
       }
     </style>
 
@@ -105,20 +119,6 @@
                        on-join-crew="joinCrew"
                        on-create-ship="createShip">
       </bridgesim-lobby>
-    </paper-dialog>
-
-    <paper-dialog id="joinDialog" on-iron-overlay-closed="clearTokens">
-      <h2>send this offer to the server:</h2>
-      <textarea class="token" on-tap="selectAndCopy">[[copyOffer]]</textarea>
-      <h2>paste the answer here:</h2>
-      <textarea class="token" value="{{pasteAnswer::input}}"></textarea>
-    </paper-dialog>
-
-    <paper-dialog id="inviteDialog" on-iron-overlay-closed="clearTokens">
-      <h2>paste the player's offer here:</h2>
-      <textarea class="token" value="{{pasteOffer::input}}"></textarea>
-      <h2>send back this answer:</h2>
-      <textarea class="token" on-tap="selectAndCopy">[[copyAnswer]]</textarea>
     </paper-dialog>
 
     <section id="panels" class="layout vertical">
