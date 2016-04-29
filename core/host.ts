@@ -52,10 +52,10 @@ namespace Bridgesim.Core {
       const mean = new Ship(this.ships.length, 'Mean', 0, 0, 0);
       this.ships.push(mean);
       this.tickables.push(new ShipAI(mean, -1, this.ships));
-      const neutral = new Ship(this.ships.length, 'Neutral', 0, 0, 0);
+      const neutral = new Ship(this.ships.length, 'Neutral', 1, 1, 0);
       this.ships.push(neutral);
       this.tickables.push(new ShipAI(neutral, 0, this.ships));
-      const friendly = new Ship(this.ships.length, 'Friendly', 0, 0, 0);
+      const friendly = new Ship(this.ships.length, 'Friendly', 2, 2, 0);
       this.ships.push(friendly);
       this.tickables.push(new ShipAI(friendly, 1, this.ships));
       this.broadcastRoster();
