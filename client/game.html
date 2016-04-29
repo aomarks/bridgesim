@@ -1,14 +1,16 @@
 <link href='https://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'>
 
-<link rel="import" href="../bower_components/iron-location/iron-location.html">
+<link rel="import" href="../bower_components/carbon-route/carbon-location.html">
+<link rel="import" href="../bower_components/carbon-route/carbon-route.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/iron-location/iron-location.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <link rel="import" href="./deps.html">
@@ -23,8 +25,8 @@
 <link rel="import" href="./stations/engineering.html">
 <link rel="import" href="./stations/helm.html">
 <link rel="import" href="./stations/science.html">
-<link rel="import" href="./stations/weapons.html">
 <link rel="import" href="./stations/viewscreen.html">
+<link rel="import" href="./stations/weapons.html">
 
 <dom-module id="bridgesim-game">
   <template>
@@ -123,7 +125,7 @@
 
     <section id="panels" class="layout vertical">
       <bridgesim-chat id="chat" on-send-chat="sendChat"></bridgesim-chat>
-      <paper-tabs selected="{{station}}" attr-for-selected='name'>
+      <paper-tabs selected="{{routeData.station}}" attr-for-selected='name'>
         <paper-tab name='helm'>Helm</paper-tab>
         <paper-tab name='comms'>Comms</paper-tab>
         <paper-tab name='science'>Science</paper-tab>
@@ -132,7 +134,7 @@
         <paper-tab name='viewscreen'>Viewscreen</paper-tab>
       </paper-tabs>
 
-      <iron-pages id='stations' selected="[[station]]" attr-for-selected='name'>
+      <iron-pages id='stations' selected="[[routeData.station]]" attr-for-selected='name'>
         <helm-station name='helm' ship="[[ship]]" ships="[[ships]]" size="[[size]]">
         </helm-station>
         <comms-station name='comms' ship="[[ship]]">
@@ -147,6 +149,9 @@
         </viewscreen-station>
       </iron-pages>
     </section>
+
+    <carbon-location route="{{route}}" use-hash-as-path></carbon-location>
+    <carbon-route route="{{route}}" pattern="/station/:station" data="{{routeData}}"></carbon-route>
   </template>
 
   <script src="game.js"></script>
