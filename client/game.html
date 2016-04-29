@@ -127,7 +127,7 @@
       </div>
 
       <div main id="panels" class="layout vertical">
-        <div class="layout horizontal center">
+        <div class="layout horizontal center flex-none">
           <paper-icon-button icon="menu"
                              paper-drawer-toggle>
           </paper-icon-button>
@@ -144,7 +144,10 @@
           </paper-tabs>
         </div>
 
-        <bridgesim-chat id="chat" on-send-chat="sendChat"></bridgesim-chat>
+        <bridgesim-chat id="chat"
+                        on-send-chat="sendChat"
+                        class="flex-none">
+        </bridgesim-chat>
 
         <iron-pages id='stations' selected="[[routeData.station]]" attr-for-selected='name'>
           <helm-station name='helm' ship="[[ship]]" ships="[[ships]]" size="[[size]]">
