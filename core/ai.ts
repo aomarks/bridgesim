@@ -7,7 +7,7 @@ namespace Bridgesim.Core {
     }
     tick() {
       // basic swarm logic, move towards/away nearest ship.
-      let nearest = null;
+      let nearest: Ship = null;
       let nearestDist = 0;
       for (let ship of this.ships) {
         if (ship === this.ship) {

@@ -28,7 +28,7 @@ namespace Bridgesim.Core {
   }
 
   export interface Tickable {
-    tick();
+    tick(): void;
   }
 
   export class Host {
