@@ -9,8 +9,8 @@ namespace Bridgesim.Core.Collision {
         for (let j = i + 1; j < ships.length; j++) {
           let a = ships[i];
           let b = ships[j];
-          let aBox = new BoxCollider(a.x, a.y, 0.3, 0.3, 10);
-          let bBox = new BoxCollider(b.x, b.y, 0.3, 0.3, 10);
+          let aBox = new BoxCollider(a.x, a.y, 0.01, 0.01, 10);
+          let bBox = new BoxCollider(b.x, b.y, 0.01, 0.01, 10);
           if (aBox.isOverlap(bBox)) {
             aBox.resolveCollision(bBox);
             a.setPos(aBox.x, aBox.y);
