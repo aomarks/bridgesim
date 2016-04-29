@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-location/iron-location.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
@@ -12,6 +13,8 @@
 <link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="./deps.html">
 <link rel="import" href="./input.html">
@@ -45,7 +48,9 @@
 
     <bridgesim-input id="input" ship="[[ship]]"></bridgesim-input>
 
-    <style include="iron-flex iron-flex-alignment"></style>
+    <style include="iron-flex iron-flex-alignment iron-flex-factors">
+    </style>
+
     <style>
       :host {
         display: block;
@@ -78,14 +83,11 @@
         --paper-tab-ink: #7FDBFF;
         --paper-tabs-selection-bar-color: #7FDBFF;
       }
-      #header {
+      [drawer] {
         color: black;
         background-color: #fff;
       }
-      #header * {
-        margin: 10px;
-      }
-      #panels > * {
+      [drawer] > * {
         margin: 10px;
       }
       paper-toggle-button {
@@ -96,20 +98,6 @@
         height: 98px;
       }
     </style>
-
-    <section id="header" class="layout horizontal center">
-      <h1>BRIDGESIM</h1>
-
-      <paper-button on-tap="openSettingsDialog">Settings</paper-button>
-      <paper-button on-tap="openLobbyDialog">Lobby</paper-button>
-
-      <paper-button disabled$="[[isHost]]" on-tap="joinGame">
-        Join Game</paper-button>
-      <paper-button disabled$="[[isClient]]" on-tap="invitePlayer">
-        Invite Player</paper-button>
-
-      <paper-toggle-button checked="{{isHost}}">HOST</paper-toggle-button>
-    </section>
 
     <paper-dialog id="settingsDialog">
       <bridgesim-settings-menu settings="{{settings}}">
@@ -123,32 +111,57 @@
       </bridgesim-lobby>
     </paper-dialog>
 
-    <section id="panels" class="layout vertical">
-      <bridgesim-chat id="chat" on-send-chat="sendChat"></bridgesim-chat>
-      <paper-tabs selected="{{routeData.station}}" attr-for-selected='name'>
-        <paper-tab name='helm'>Helm</paper-tab>
-        <paper-tab name='comms'>Comms</paper-tab>
-        <paper-tab name='science'>Science</paper-tab>
-        <paper-tab name='weapons'>Weapons</paper-tab>
-        <paper-tab name='engineering'>Engineering</paper-tab>
-        <paper-tab name='viewscreen'>Viewscreen</paper-tab>
-      </paper-tabs>
+    <paper-drawer-panel force-narrow>
+      <div drawer class="layout vertical center">
+        <h1>BRIDGESIM</h1>
 
-      <iron-pages id='stations' selected="[[routeData.station]]" attr-for-selected='name'>
-        <helm-station name='helm' ship="[[ship]]" ships="[[ships]]" size="[[size]]">
-        </helm-station>
-        <comms-station name='comms' ship="[[ship]]">
-        </comms-station>
-        <science-station name='science' ship="[[ship]]">
-        </science-station>
-        <weapons-station name='weapons' ship="[[ship]]">
-        </weapons-station>
-        <engineering-station name='engineering' ship="[[ship]]">
-        </engineering-station>
-        <viewscreen-station name='viewscreen' ship="[[ship]]" ships="[[ships]]" size="[[size]]">
-        </viewscreen-station>
-      </iron-pages>
-    </section>
+        <paper-button on-tap="openSettingsDialog">Settings</paper-button>
+        <paper-button on-tap="openLobbyDialog">Lobby</paper-button>
+
+        <paper-button disabled$="[[isHost]]" on-tap="joinGame">
+          Join Game</paper-button>
+        <paper-button disabled$="[[isClient]]" on-tap="invitePlayer">
+          Invite Player</paper-button>
+
+        <paper-toggle-button checked="{{isHost}}">HOST</paper-toggle-button>
+      </div>
+
+      <div main id="panels" class="layout vertical">
+        <div class="layout horizontal center">
+          <paper-icon-button icon="menu"
+                             paper-drawer-toggle>
+          </paper-icon-button>
+
+          <paper-tabs selected="{{routeData.station}}"
+                      attr-for-selected="name"
+                      class="flex-2">
+            <paper-tab name='helm'>Helm</paper-tab>
+            <paper-tab name='comms'>Comms</paper-tab>
+            <paper-tab name='science'>Science</paper-tab>
+            <paper-tab name='weapons'>Weapons</paper-tab>
+            <paper-tab name='engineering'>Engineering</paper-tab>
+            <paper-tab name='viewscreen'>Viewscreen</paper-tab>
+          </paper-tabs>
+        </div>
+
+        <bridgesim-chat id="chat" on-send-chat="sendChat"></bridgesim-chat>
+
+        <iron-pages id='stations' selected="[[routeData.station]]" attr-for-selected='name'>
+          <helm-station name='helm' ship="[[ship]]" ships="[[ships]]" size="[[size]]">
+          </helm-station>
+          <comms-station name='comms' ship="[[ship]]">
+          </comms-station>
+          <science-station name='science' ship="[[ship]]">
+          </science-station>
+          <weapons-station name='weapons' ship="[[ship]]">
+          </weapons-station>
+          <engineering-station name='engineering' ship="[[ship]]">
+          </engineering-station>
+          <viewscreen-station name='viewscreen' ship="[[ship]]" ships="[[ships]]" size="[[size]]">
+          </viewscreen-station>
+        </iron-pages>
+      </div>
+    </paper-drawer-panel>
 
     <carbon-location route="{{route}}" use-hash-as-path></carbon-location>
     <carbon-route route="{{route}}" pattern="/station/:station" data="{{routeData}}"></carbon-route>
