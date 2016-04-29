@@ -46,13 +46,15 @@ namespace Bridgesim.Client {
         const alpha = s === this.ship ? localAlpha : remoteAlpha;
         const lerpX = s.prevX + (alpha * (s.x - s.prevX));
         const lerpY = s.prevY + (alpha * (s.y - s.prevY));
+        const lerpHeading =
+            s.prevHeading + (alpha * (s.heading - s.prevHeading));
         ctx.beginPath();
         let x = lerpX * TILE_PX + TILE_PX / 2 + HP;
         let y = lerpY * TILE_PX + TILE_PX / 2 + HP;
         if (this.ship === s) {
           ctx.save();
           ctx.translate(x, y);
-          ctx.rotate(this.ship.heading * Math.PI / 180);
+          ctx.rotate(lerpHeading * Math.PI / 180);
           const shipWidth = 34 / 3;
           const shipHeight = 59 / 3;
           ctx.drawImage(this.shipImage, -shipWidth / 2, -shipHeight / 2,

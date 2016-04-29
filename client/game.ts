@@ -228,7 +228,7 @@ namespace Bridgesim.Client {
           return;
         }
         ship.setPos(u.x, u.y);
-        ship.heading = u.heading;
+        ship.setHeading(u.heading);
         ship.thrust = u.thrust;
       });
     }

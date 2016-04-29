@@ -96,9 +96,10 @@ namespace Bridgesim.Client.Renderer {
       const s = this.ship;
       const lerpX = s.prevX + (alpha * (s.x - s.prevX));
       const lerpY = s.prevY + (alpha * (s.y - s.prevY));
+      const lerpHeading = s.prevHeading + (alpha * (s.heading - s.prevHeading));
       this.mesh.position.x = lerpX*100;
       this.mesh.position.z = -lerpY*100;
-      this.mesh.rotation.y = Math.PI/180 * s.heading;
+      this.mesh.rotation.y = Math.PI/180 * lerpHeading;
       if (this.visualMesh) {
         this.visualMesh.rotation.x = -(s.roll*s.roll)/4;
         this.visualMesh.rotation.z = s.roll;

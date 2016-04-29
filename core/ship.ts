@@ -6,6 +6,7 @@ namespace Bridgesim.Core {
   export class Ship {
     prevX: number;
     prevY: number;
+    prevHeading: number;
     roll: number = 0;
     thrust: number;
     shieldEnabled: boolean = false;
@@ -26,6 +27,7 @@ namespace Bridgesim.Core {
                 public y: number, public heading: number) {
       this.prevX = x;
       this.prevY = y;
+      this.prevHeading = heading;
       this.thrust = 0;
       this.engine = new Subsystem('engine');
       this.maneuvering = new Subsystem('maneuvering');
@@ -61,6 +63,11 @@ namespace Bridgesim.Core {
       this.y = y;
     }
 
+    setHeading(heading: number): void {
+      this.prevHeading = this.heading;
+      this.heading = heading;
+    }
+
     tick(): void {
       let rads = radians(this.heading - 90);
       let t = Math.pow(this.thrust, 2);
@@ -70,8 +77,8 @@ namespace Bridgesim.Core {
 
     applyYaw(amount: number): void {
       const delta = (this.maneuvering.level / 20) * amount;
-      this.heading += delta;
-      this.roll -= delta/180*Math.PI/2;
+      this.setHeading(this.heading + delta);
+      this.roll -= delta / 180 * Math.PI / 2;
     }
 
     applyThrust(amount: number): void {
