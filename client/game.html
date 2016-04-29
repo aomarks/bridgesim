@@ -1,4 +1,4 @@
-<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'>
 
 <link rel="import" href="../bower_components/iron-location/iron-location.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
@@ -47,9 +47,34 @@
     <style>
       :host {
         display: block;
-        font-family: roboto;
         background-color: #000;
-        color: white;
+        color: #fff;
+
+        --bridgesim-font: {
+          font-family: 'Share Tech Mono';
+        };
+        @apply(--bridgesim-font);
+        --paper-font-common-base: {
+          @apply(--bridgesim-font);
+        };
+        --paper-button: {
+          @apply(--bridgesim-font);
+        }
+        --paper-dialog: {
+          @apply(--bridgesim-font);
+        }
+        --paper-input-container: {
+          @apply(--bridgesim-font);
+        }
+        --paper-input-container-label: {
+          @apply(--bridgesim-font);
+        }
+        --paper-input-suffix: {
+          @apply(--bridgesim-font);
+        }
+
+        --paper-tab-ink: #7FDBFF;
+        --paper-tabs-selection-bar-color: #7FDBFF;
       }
       #header {
         color: black;
@@ -67,13 +92,6 @@
       bridgesim-chat {
         margin: 0 !important;
         height: 98px;
-      }
-      paper-tabs {
-        color: white;
-        --paper-tabs-selection-bar-color: #7FDBFF;
-      }
-      paper-tab {
-        --paper-tab-ink: #7FDBFF;
       }
     </style>
 

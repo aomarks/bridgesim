@@ -17,16 +17,16 @@
     </style>
 
     <paper-dialog id="clientDialog" on-iron-overlay-closed="clear">
-      <h2>send this offer to the server:</h2>
+      <div>send this offer to the server:</div>
       <textarea class="token" on-tap="selectAndCopy">[[copyOffer]]</textarea>
-      <h2>paste the answer here:</h2>
+      <div>paste the answer here:</div>
       <textarea class="token" value="{{pasteAnswer::input}}"></textarea>
     </paper-dialog>
 
     <paper-dialog id="hostDialog" on-iron-overlay-closed="clear">
-      <h2>paste the player's offer here:</h2>
+      <div>paste the player's offer here:</div>
       <textarea class="token" value="{{pasteOffer::input}}"></textarea>
-      <h2>send back this answer:</h2>
+      <div>send back this answer:</div>
       <textarea class="token" on-tap="selectAndCopy">[[copyAnswer]]</textarea>
     </paper-dialog>
   </template>

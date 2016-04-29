@@ -21,7 +21,7 @@ namespace Bridgesim.Client {
     ready(): void {
       this.can = this.$.canvas;
       this.ctx = this.can.getContext('2d');
-      this.ctx.font = '12px roboto mono';
+      this.ctx.font = '12px Share Tech Mono';
       this.shipImage = new Image();
       this.shipImage.src = "/images/ship.svg";
     }
