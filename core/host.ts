@@ -2,6 +2,7 @@
 ///<reference path="../net/connection.ts" />
 ///<reference path="../net/message.ts" />
 ///<reference path="ship.ts" />
+///<reference path="ai.ts" />
 
 namespace Bridgesim.Core {
 
@@ -26,6 +27,10 @@ namespace Bridgesim.Core {
                 public conn: Net.Connection) {}
   }
 
+  export interface Tickable {
+    tick();
+  }
+
   export class Host {
     private settings: Settings = {
       tickInterval: 1000 / 30,
@@ -36,11 +41,25 @@ namespace Bridgesim.Core {
     private players: Player[] = [];
     private conns: Net.Connection[] = [];
     private ships: Ship[] = [];
+    private tickables: Tickable[] = [];
     private timeoutId: number;
     private prevTs: number = 0;
     private tickLag: number = 0;
     private snapshotLag: number = 0;
     private snapshotStale: boolean = false;
+
+    constructor() {
+      const mean = new Ship(this.ships.length, 'Mean', 0, 0, 0);
+      this.ships.push(mean);
+      this.tickables.push(new ShipAI(mean, -1, this.ships));
+      const neutral = new Ship(this.ships.length, 'Neutral', 0, 0, 0);
+      this.ships.push(neutral);
+      this.tickables.push(new ShipAI(neutral, 0, this.ships));
+      const friendly = new Ship(this.ships.length, 'Friendly', 0, 0, 0);
+      this.ships.push(friendly);
+      this.tickables.push(new ShipAI(friendly, 1, this.ships));
+      this.broadcastRoster();
+    }
 
     addConnection(conn: Net.Connection) {
       const connId = this.conns.length;
@@ -96,6 +115,9 @@ namespace Bridgesim.Core {
           if (commands) {
             ship.applyCommands(commands);
           }
+        }
+        for (let tickable of this.tickables) {
+          tickable.tick();
         }
         for (let ship of this.ships) {
           ship.tick();
