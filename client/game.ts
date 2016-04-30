@@ -76,19 +76,11 @@ namespace Bridgesim.Client {
         // TODO Is there some smarter way to do this using the route?
         window.location.hash = '/station/helm';
       }
-
-      this.listen(window, 'keydown', 'focusLobby');
     }
 
     openSettingsDialog(): void { this.$.settingsDialog.open(); }
 
     openLobbyDialog(): void { this.$.lobbyDialog.open(); }
-
-    focusLobby(ev: KeyboardEvent) {
-      if (ev.keyCode === 13) {  // enter
-        (<Chat>this.$$('bridgesim-chat')).focus();
-      }
-    }
 
     @observe('isHost')
     isHostChanged(isHost: boolean): void {

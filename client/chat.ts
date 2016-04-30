@@ -5,18 +5,24 @@ namespace Bridgesim.Client {
 
   export interface ChatEvent { text: string }
 
+  const TOGGLE_KEY = 192;  // backquote
+
   @component('bridgesim-chat')
   export class Chat extends polymer.Base {
-    private input: HTMLElement;
     private text: string = '';
     private log: Net.ReceiveChat[];
 
     ready(): void {
-      this.input = this.$.input;
       this.log = [];
+      this.listen(window, 'keydown', 'open');
     }
 
-    send(): void {
+    detached(): void {
+      // TODO PolymerTS typings is missing unlisten()
+      (this as any).unlisten(window, 'keydown', 'open');
+    }
+
+    private send(): void {
       if (!this.text.trim()) {
         return;
       }
@@ -26,15 +32,31 @@ namespace Bridgesim.Client {
 
     receiveMsg(chat: Net.ReceiveChat): void { this.unshift('log', chat); }
 
-    @listen('keydown')
-    @listen('keyup')
-    swallowKeyboardEvents(ev: KeyboardEvent): void {
-      ev.cancelBubble = true;
+    private open(ev: KeyboardEvent): void {
+      if (ev.keyCode === TOGGLE_KEY) {
+        this.toggle();
+        ev.preventDefault();
+        ev.stopPropagation();
+      }
     }
 
-    focus(): void { this.input.focus(); }
+    @listen('keydown')
+    private swallowOrClose(ev: KeyboardEvent): void {
+      if (ev.keyCode === TOGGLE_KEY && !ev.repeat) {
+        this.toggle();
+        ev.preventDefault();
+      }
+      ev.stopPropagation();
+    }
 
-    formatTimestamp(millis: number): string {
+    private toggle(): void {
+      this.hidden = !this.hidden;
+      if (!this.hidden) {
+        this.$.input.focus();
+      }
+    }
+
+    private formatTimestamp(millis: number): string {
       const d = new Date(millis);
       return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' +
              pad(d.getSeconds());
