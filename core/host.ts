@@ -116,7 +116,8 @@ namespace Bridgesim.Core {
           if (commands) {
             ship.applyCommands(commands);
             if (commands.fire) {
-              const projectile = new Projectile(ship.x, ship.y, ship.heading);
+              const projectile =
+                  new Projectile(ship.body.x, ship.body.y, ship.body.yaw);
               this.projectiles.push(projectile);
               this.tickables.push(projectile);
             }
@@ -164,16 +165,16 @@ namespace Bridgesim.Core {
         const ship = this.ships[i];
         snapshot.ships.push({
           shipId: i,
-          x: ship.x,
-          y: ship.y,
-          heading: ship.heading,
+          x: ship.body.x,
+          y: ship.body.y,
+          yaw: ship.body.yaw,
           thrust: ship.thrust,
         });
       }
       for (let i = 0; i < this.projectiles.length; i++) {
-        const proj = this.projectiles[i];
+        const proj = this.projectiles[i].body;
         snapshot.projectiles.push(
-            {x: proj.x, y: proj.y, heading: proj.heading, thrust: 0});
+            {x: proj.x, y: proj.y, yaw: proj.yaw, thrust: 0});
       }
       return snapshot;
     }

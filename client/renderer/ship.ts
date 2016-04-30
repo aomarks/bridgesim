@@ -94,15 +94,13 @@ namespace Bridgesim.Client.Renderer {
 
     update(alpha: number) {
       const s = this.ship;
-      const lerpX = s.prevX + (alpha * (s.x - s.prevX));
-      const lerpY = s.prevY + (alpha * (s.y - s.prevY));
-      const lerpHeading = s.prevHeading + (alpha * (s.heading - s.prevHeading));
-      this.mesh.position.x = lerpX*100;
-      this.mesh.position.z = -lerpY*100;
-      this.mesh.rotation.y = Math.PI/180 * lerpHeading;
+      this.mesh.position.x = s.body.lerpX(alpha)*100;
+      this.mesh.position.z = -s.body.lerpY(alpha)*100;
+      this.mesh.rotation.y = Math.PI/180 * s.body.lerpYaw(alpha)
+      const roll = this.ship.body.lerpRoll(alpha);
       if (this.visualMesh) {
-        this.visualMesh.rotation.x = -(s.roll*s.roll)/4;
-        this.visualMesh.rotation.z = s.roll;
+        this.visualMesh.rotation.x = -(roll*roll)/4;
+        this.visualMesh.rotation.z = roll;
       }
       // visual scaling effect when going fast
       this.mesh.scaling.z = 1/((Math.pow(s.thrust,4)*19)+1)

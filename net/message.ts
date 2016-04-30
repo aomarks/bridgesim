@@ -61,7 +61,7 @@ namespace Bridgesim.Net {
 
   export interface Commands {
     seq?: number;
-    yaw: number;
+    turn: number;
     thrust: number;
     power: number;
     fire?: boolean;
@@ -71,7 +71,7 @@ namespace Bridgesim.Net {
     shipId?: number;
     x: number;
     y: number;
-    heading: number;
+    yaw: number;
     thrust: number;
   }
 

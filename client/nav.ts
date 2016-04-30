@@ -18,7 +18,7 @@ namespace Bridgesim.Client {
       this.ctx = this.can.getContext('2d');
     }
 
-    draw(): void {
+    draw(alpha: number): void {
       const ctx = this.ctx;
 
       let w = this.can.width;
@@ -36,7 +36,7 @@ namespace Bridgesim.Client {
       this.drawDegreeLabels(w / 2, h / 2, w / 2 - 22, 30);
 
       // Draw heading
-      let angle = Bridgesim.Core.radians(this.ship.heading - 90);
+      let angle = Bridgesim.Core.radians(this.ship.body.lerpYaw(alpha) - 90);
       ctx.beginPath();
       ctx.moveTo(w / 2 + HP, w / 2 + HP);
       ctx.lineTo(Math.cos(angle) * (w / 2 - 27) + w / 2 + HP,

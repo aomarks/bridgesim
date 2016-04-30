@@ -1,13 +1,11 @@
+///<reference path="body.ts" />
 ///<reference path="util.ts" />
 ///<reference path="../net/message.ts" />
 
 namespace Bridgesim.Core {
 
   export class Ship {
-    prevX: number;
-    prevY: number;
-    prevHeading: number;
-    roll: number = 0;
+    body: Body;
     thrust: number;
     shieldEnabled: boolean = false;
     engine: Subsystem;
@@ -23,11 +21,9 @@ namespace Bridgesim.Core {
       {station: Net.Station.Engineering},
     ];
 
-    constructor(public id: number, public name: string, public x: number,
-                public y: number, public heading: number) {
-      this.prevX = x;
-      this.prevY = y;
-      this.prevHeading = heading;
+    constructor(public id: number, public name: string, x: number, y: number,
+                yaw: number) {
+      this.body = new Body(x, y, yaw, 0);
       this.thrust = 0;
       this.engine = new Subsystem('engine');
       this.maneuvering = new Subsystem('maneuvering');
@@ -51,34 +47,23 @@ namespace Bridgesim.Core {
     }
 
     applyCommands(commands: Net.Commands): void {
-      this.applyYaw(commands.yaw);
+      this.applyTurn(commands.turn);
       this.applyThrust(commands.thrust);
       this.applyPower(commands.power);
     }
 
-    setPos(x: number, y: number): void {
-      this.prevX = this.x;
-      this.prevY = this.y;
-      this.x = x;
-      this.y = y;
-    }
-
-    setHeading(heading: number): void {
-      this.prevHeading = this.heading;
-      this.heading = heading;
-    }
-
     tick(): void {
-      let rads = radians(this.heading - 90);
+      let rads = radians(this.body.yaw - 90);
       let t = Math.pow(this.thrust, 2);
-      this.setPos(this.x + (t * Math.cos(rads)), this.y + (t * Math.sin(rads)));
-      this.roll *= 0.95;
+      this.body.setX(this.body.x + (t * Math.cos(rads)));
+      this.body.setY(this.body.y + (t * Math.sin(rads)));
+      this.body.setRoll(this.body.roll * 0.95);
     }
 
-    applyYaw(amount: number): void {
+    applyTurn(amount: number): void {
       const delta = (this.maneuvering.level / 20) * amount;
-      this.setHeading(this.heading + delta);
-      this.roll -= delta / 180 * Math.PI / 2;
+      this.body.setYaw(this.body.yaw + delta);
+      this.body.setRoll(this.body.roll - (delta / 180 * Math.PI / 2));
     }
 
     applyThrust(amount: number): void {

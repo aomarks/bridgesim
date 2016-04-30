@@ -29,8 +29,8 @@ namespace Bridgesim.Client {
         [keyCode('W')]: {binding: () => this.commands.thrust = 1, repeat: true},
         [keyCode('S')]:
             {binding: () => this.commands.thrust = -1, repeat: true},
-        [keyCode('A')]: {binding: () => this.commands.yaw = -1, repeat: true},
-        [keyCode('D')]: {binding: () => this.commands.yaw = 1, repeat: true},
+        [keyCode('A')]: {binding: () => this.commands.turn = -1, repeat: true},
+        [keyCode('D')]: {binding: () => this.commands.turn = 1, repeat: true},
         [keyCode('K')]: {binding: () => this.commands.power = 1, repeat: true},
         [keyCode('J')]: {binding: () => this.commands.power = -1, repeat: true},
         [keyCode('H')]: {binding: () => this.prevSubsystem()},
@@ -39,7 +39,7 @@ namespace Bridgesim.Client {
       };
     }
 
-    resetCommands(): void { this.commands = {yaw: 0, thrust: 0, power: 0}; }
+    resetCommands(): void { this.commands = {turn: 0, thrust: 0, power: 0}; }
 
     ready(): void {
       window.addEventListener('keydown', this.onKeydown.bind(this));
@@ -84,10 +84,10 @@ namespace Bridgesim.Client {
       const gamepad = window.navigator.getGamepads()[0];
       const deadZone = 0.25;
       if (gamepad) {
-        if (this.commands.yaw === 0) {
-          const yaw = gamepad.axes[0];
-          if (Math.abs(yaw) > deadZone) {
-            this.commands.yaw = yaw;
+        if (this.commands.turn === 0) {
+          const turn = gamepad.axes[0];
+          if (Math.abs(turn) > deadZone) {
+            this.commands.turn = turn;
           }
         }
         if (this.commands.thrust === 0) {

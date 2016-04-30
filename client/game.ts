@@ -221,13 +221,14 @@ namespace Bridgesim.Client {
           console.log('unknown ship', u.shipId);
           return;
         }
-        ship.setPos(u.x, u.y);
-        ship.setHeading(u.heading);
+        ship.body.setX(u.x);
+        ship.body.setY(u.y);
+        ship.body.setYaw(u.yaw);
         ship.thrust = u.thrust;
       });
       this.projectiles = [];
       snapshot.projectiles.forEach(p => {
-        const proj = new Core.Ship(0, 'x', p.x, p.y, p.heading);
+        const proj = new Core.Ship(0, 'x', p.x, p.y, p.yaw);
         this.projectiles.push(proj);
       });
     }

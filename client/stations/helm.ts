@@ -3,7 +3,7 @@ namespace Bridgesim.Client.Stations {
   class Helm extends polymer.Base {
     draw(localAlpha: number, remoteAlpha: number) {
       this.$.map.draw(localAlpha, remoteAlpha);
-      this.$.nav.draw();
+      this.$.nav.draw(localAlpha);
       this.$.thrust.draw();
     }
   }

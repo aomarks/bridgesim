@@ -2,13 +2,17 @@
 namespace Bridgesim.Core {
 
   export class Projectile implements Tickable {
+    body: Body;
     private velocity = .1;
-    constructor(public x: number, public y: number, public heading: number) {}
+
+    constructor(x: number, y: number, yaw: number) {
+      this.body = new Body(x, y, yaw, 0);
+    }
 
     tick() {
-      let rads = radians(this.heading - 90);
-      this.x += this.velocity * Math.cos(rads);
-      this.y += this.velocity * Math.sin(rads);
+      let rads = radians(this.body.yaw - 90);
+      this.body.setX(this.body.x + (this.velocity * Math.cos(rads)));
+      this.body.setY(this.body.y + (this.velocity * Math.sin(rads)));
     }
   }
 }

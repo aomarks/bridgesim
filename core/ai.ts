@@ -11,9 +11,10 @@ namespace Bridgesim.Core {
       let nearestDist = 0;
       for (let ship of this.ships) {
         if (ship === this.ship) {
-          continue
+          continue;
         }
-        const dist = Math.sqrt(Math.pow(ship.x-this.ship.x, 2) + Math.pow(ship.y-this.ship.y, 2));
+        const dist = Math.sqrt(Math.pow(ship.body.x-this.ship.body.x, 2) +
+                               Math.pow(ship.body.y-this.ship.body.y, 2));
         if (nearest === null || nearestDist > dist) {
           nearest = ship;
           nearestDist = dist;
@@ -23,9 +24,10 @@ namespace Bridgesim.Core {
         this.ship.thrust = 0;
         return;
       }
-      const theta_radians = Math.atan2(nearest.y - this.ship.y, nearest.x - this.ship.x);
+      const theta_radians = Math.atan2(nearest.body.y - this.ship.body.y,
+                                       nearest.body.x - this.ship.body.x);
       const theta_degrees = (theta_radians + Math.PI * (this.friendliness/2 + 0.5)) * 360.0 / (2.0 * Math.PI);
-      this.ship.heading = (this.ship.heading*(59/60) + theta_degrees*(1/60));
+      this.ship.body.setYaw(this.ship.body.yaw*(59/60) + theta_degrees*(1/60));
       this.ship.thrust = 0.1;
     }
   }

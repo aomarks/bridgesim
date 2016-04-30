@@ -45,17 +45,13 @@ namespace Bridgesim.Client {
 
       for (let s of this.ships) {
         const alpha = s === this.ship ? localAlpha : remoteAlpha;
-        const lerpX = s.prevX + (alpha * (s.x - s.prevX));
-        const lerpY = s.prevY + (alpha * (s.y - s.prevY));
-        const lerpHeading =
-            s.prevHeading + (alpha * (s.heading - s.prevHeading));
         ctx.beginPath();
-        let x = lerpX * TILE_PX + TILE_PX / 2 + HP;
-        let y = lerpY * TILE_PX + TILE_PX / 2 + HP;
+        let x = s.body.lerpX(alpha) * TILE_PX + TILE_PX / 2 + HP;
+        let y = s.body.lerpY(alpha) * TILE_PX + TILE_PX / 2 + HP;
         if (this.ship === s) {
           ctx.save();
           ctx.translate(x, y);
-          ctx.rotate(lerpHeading * Math.PI / 180);
+          ctx.rotate(s.body.lerpYaw(alpha) * Math.PI / 180);
           const shipWidth = 34 / 3;
           const shipHeight = 59 / 3;
           ctx.drawImage(this.shipImage, -shipWidth / 2, -shipHeight / 2,
@@ -76,10 +72,10 @@ namespace Bridgesim.Client {
       }
 
       for (let p of this.projectiles) {
-        let rads = Core.radians(p.heading - 90);
+        let rads = Core.radians(p.body.lerpYaw(remoteAlpha) - 90);
         ctx.beginPath();
-        let x = p.x * TILE_PX + TILE_PX / 2 + HP;
-        let y = p.y * TILE_PX + TILE_PX / 2 + HP;
+        let x = p.body.lerpX(remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
+        let y = p.body.lerpY(remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
         ctx.moveTo(x, y);
         ctx.lineTo(x + Math.cos(rads) * 20, y + Math.sin(rads) * 20);
         ctx.strokeStyle = '#F00';
