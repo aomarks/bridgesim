@@ -48,6 +48,7 @@ namespace Bridgesim.Core {
     private tickLag: number = 0;
     private snapshotLag: number = 0;
     private snapshotStale: boolean = false;
+    private nextProjectileId: number = 0;
 
     constructor() {
       const mean = new Ship(this.ships.length, 'Mean', 0, 0, 0);
@@ -117,9 +118,9 @@ namespace Bridgesim.Core {
             ship.applyCommands(commands);
             if (commands.fire) {
               const projectile =
-                  new Projectile(ship.body.x, ship.body.y, ship.body.yaw);
+                  new Projectile(this.nextProjectileId++, ship.body.x,
+                                 ship.body.y, ship.body.yaw);
               this.projectiles.push(projectile);
-              this.tickables.push(projectile);
             }
           }
         }
@@ -128,6 +129,13 @@ namespace Bridgesim.Core {
         }
         for (let ship of this.ships) {
           ship.tick();
+        }
+        for (let i = this.projectiles.length - 1; i >= 0; i--) {
+          const proj = this.projectiles[i];
+          proj.tick();
+          if (proj.dead) {
+            this.projectiles.splice(i, 1);
+          }
         }
         this.collisionSystem.resolveCollisions(this.ships);
         this.tickLag -= this.settings.tickInterval;
@@ -172,9 +180,14 @@ namespace Bridgesim.Core {
         });
       }
       for (let i = 0; i < this.projectiles.length; i++) {
-        const proj = this.projectiles[i].body;
-        snapshot.projectiles.push(
-            {x: proj.x, y: proj.y, yaw: proj.yaw, thrust: 0});
+        const proj = this.projectiles[i];
+        snapshot.projectiles.push({
+          shipId: proj.id,
+          x: proj.body.x,
+          y: proj.body.y,
+          yaw: proj.body.yaw,
+          thrust: 0,
+        });
       }
       return snapshot;
     }

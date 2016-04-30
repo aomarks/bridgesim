@@ -1,5 +1,6 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../core/ship.ts" />
+///<reference path="../core/projectile.ts" />
 ///<reference path="const.ts" />
 ///<reference path="colors.ts" />
 
@@ -12,7 +13,7 @@ namespace Bridgesim.Client {
   export class Map extends polymer.Base {
     @property({type: Number}) size: number;
     @property({type: Array}) ships: Core.Ship[];
-    @property({type: Array}) projectiles: Core.Ship[];
+    @property({type: Object}) projectiles: {[id: number]: Core.Projectile};
     @property({type: Object}) ship: Core.Ship;
 
     private can: HTMLCanvasElement;
@@ -71,7 +72,8 @@ namespace Bridgesim.Client {
         ctx.fillText(s.name, x + 10, y + 5);
       }
 
-      for (let p of this.projectiles) {
+      for (let id in this.projectiles) {
+        const p = this.projectiles[id];
         let rads = Core.radians(p.body.lerpYaw(remoteAlpha) - 90);
         ctx.beginPath();
         let x = p.body.lerpX(remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;

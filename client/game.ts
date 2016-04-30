@@ -2,6 +2,7 @@
 ///<reference path="../typings/browser.d.ts" />
 ///<reference path="../core/ship.ts" />
 ///<reference path="../core/host.ts" />
+///<reference path="../core/projectile.ts" />
 ///<reference path="../net/message.ts" />
 ///<reference path="../net/webrtc.ts" />
 ///<reference path="../net/loopback.ts" />
@@ -35,7 +36,7 @@ namespace Bridgesim.Client {
     private clientId: number;
     private ship: Core.Ship;
     private ships: Core.Ship[];
-    private projectiles: Core.Ship[];
+    private projectiles: {[id: number]: Core.Projectile};
     private shipId: number;
     private players: Net.Player[];
 
@@ -226,11 +227,21 @@ namespace Bridgesim.Client {
         ship.body.setYaw(u.yaw);
         ship.thrust = u.thrust;
       });
-      this.projectiles = [];
+
+      // TODO Memory inefficient.
+      const newProjectiles: {[id: number]: Core.Projectile} = {};
       snapshot.projectiles.forEach(p => {
-        const proj = new Core.Ship(0, 'x', p.x, p.y, p.yaw);
-        this.projectiles.push(proj);
+        let proj = this.projectiles[p.shipId];
+        if (proj) {
+          proj.body.setX(p.x);
+          proj.body.setY(p.y);
+          proj.body.setYaw(p.yaw);
+        } else {
+          proj = new Core.Projectile(p.shipId, p.x, p.y, p.yaw);
+        }
+        newProjectiles[proj.id] = proj;
       });
+      this.projectiles = newProjectiles;
     }
 
     frame(ts: number): void {

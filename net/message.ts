@@ -68,7 +68,7 @@ namespace Bridgesim.Net {
   }
 
   export interface ShipState {
-    shipId?: number;
+    shipId: number;
     x: number;
     y: number;
     yaw: number;
