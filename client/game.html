@@ -120,7 +120,7 @@
 
         <paper-button disabled$="[[isHost]]" on-tap="joinGame">
           Join Game</paper-button>
-        <paper-button disabled$="[[isClient]]" on-tap="invitePlayer">
+        <paper-button disabled$="[[!isHost]]" on-tap="invitePlayer">
           Invite Player</paper-button>
 
         <paper-toggle-button checked="{{isHost}}">HOST</paper-toggle-button>

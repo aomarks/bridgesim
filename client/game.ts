@@ -28,11 +28,6 @@ namespace Bridgesim.Client {
     @property({type: Object}) routeData: {station: string};
     @property({type: Boolean, value: false}) isHost: boolean;
 
-    @computed()
-    isClient(isHost: boolean): boolean {
-      return !isHost;
-    }
-
     private host: Core.Host;
     private conn: Net.Connection;
     private conditioner: Net.Conditioner;
