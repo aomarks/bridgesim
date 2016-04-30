@@ -35,6 +35,7 @@ namespace Bridgesim.Client {
     private clientId: number;
     private ship: Core.Ship;
     private ships: Core.Ship[];
+    private projectiles: Core.Ship[];
     private shipId: number;
     private players: Net.Player[];
 
@@ -223,6 +224,11 @@ namespace Bridgesim.Client {
         ship.setPos(u.x, u.y);
         ship.setHeading(u.heading);
         ship.thrust = u.thrust;
+      });
+      this.projectiles = [];
+      snapshot.projectiles.forEach(p => {
+        const proj = new Core.Ship(0, 'x', p.x, p.y, p.heading);
+        this.projectiles.push(proj);
       });
     }
 

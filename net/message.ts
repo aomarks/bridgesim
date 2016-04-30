@@ -64,6 +64,7 @@ namespace Bridgesim.Net {
     yaw: number;
     thrust: number;
     power: number;
+    fire?: boolean;
   }
 
   export interface ShipState {
@@ -76,7 +77,9 @@ namespace Bridgesim.Net {
 
   export interface Snapshot {
     seq: number;
-    ships: ShipState[]
+    ships: ShipState[];
+    // TODO Clean up. Projectiles are not ships.
+    projectiles?: ShipState[];
   }
 
   export interface CreateShip {}

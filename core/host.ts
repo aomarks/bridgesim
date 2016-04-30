@@ -3,6 +3,7 @@
 ///<reference path="../net/message.ts" />
 ///<reference path="ship.ts" />
 ///<reference path="ai.ts" />
+///<reference path="projectile.ts" />
 
 namespace Bridgesim.Core {
 
@@ -27,9 +28,7 @@ namespace Bridgesim.Core {
                 public conn: Net.Connection) {}
   }
 
-  export interface Tickable {
-    tick(): void;
-  }
+  export interface Tickable { tick(): void; }
 
   export class Host {
     private settings: Settings = {
@@ -37,11 +36,13 @@ namespace Bridgesim.Core {
       snapshotInterval: 1000 / 15,
       commandBufferSize: 100,
     };
-    private collisionSystem: Core.Collision.CollisionSystem = new Core.Collision.CollisionSystem();
+    private collisionSystem: Core.Collision.CollisionSystem =
+        new Core.Collision.CollisionSystem();
     private players: Player[] = [];
     private conns: Net.Connection[] = [];
     private ships: Ship[] = [];
     private tickables: Tickable[] = [];
+    private projectiles: Projectile[] = [];
     private timeoutId: number;
     private prevTs: number = 0;
     private tickLag: number = 0;
@@ -114,6 +115,11 @@ namespace Bridgesim.Core {
           const commands = buffer[buffer.length - ticks + i];
           if (commands) {
             ship.applyCommands(commands);
+            if (commands.fire) {
+              const projectile = new Projectile(ship.x, ship.y, ship.heading);
+              this.projectiles.push(projectile);
+              this.tickables.push(projectile);
+            }
           }
         }
         for (let tickable of this.tickables) {
@@ -149,7 +155,11 @@ namespace Bridgesim.Core {
     }
 
     private takeSnapshot(): Net.Snapshot {
-      const snapshot = {seq: 0, ships:<Net.ShipState[]>[]};
+      const snapshot = {
+        seq: 0,
+        ships:<Net.ShipState[]>[],
+        projectiles:<Net.ShipState[]>[],
+      };
       for (let i = 0; i < this.ships.length; i++) {
         const ship = this.ships[i];
         snapshot.ships.push({
@@ -159,6 +169,11 @@ namespace Bridgesim.Core {
           heading: ship.heading,
           thrust: ship.thrust,
         });
+      }
+      for (let i = 0; i < this.projectiles.length; i++) {
+        const proj = this.projectiles[i];
+        snapshot.projectiles.push(
+            {x: proj.x, y: proj.y, heading: proj.heading, thrust: 0});
       }
       return snapshot;
     }

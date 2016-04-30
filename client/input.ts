@@ -35,6 +35,7 @@ namespace Bridgesim.Client {
         [keyCode('J')]: {binding: () => this.commands.power = -1, repeat: true},
         [keyCode('H')]: {binding: () => this.prevSubsystem()},
         [keyCode('L')]: {binding: () => this.nextSubsystem()},
+        [keyCode(' ')]: {binding: () => this.commands.fire = true},
       };
     }
 

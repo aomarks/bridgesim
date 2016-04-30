@@ -12,6 +12,7 @@ namespace Bridgesim.Client {
   export class Map extends polymer.Base {
     @property({type: Number}) size: number;
     @property({type: Array}) ships: Core.Ship[];
+    @property({type: Array}) projectiles: Core.Ship[];
     @property({type: Object}) ship: Core.Ship;
 
     private can: HTMLCanvasElement;
@@ -72,6 +73,18 @@ namespace Bridgesim.Client {
         ctx.lineWidth = 3;
         ctx.strokeText(s.name, x + 10, y + 5);
         ctx.fillText(s.name, x + 10, y + 5);
+      }
+
+      for (let p of this.projectiles) {
+        let rads = Core.radians(p.heading - 90);
+        ctx.beginPath();
+        let x = p.x * TILE_PX + TILE_PX / 2 + HP;
+        let y = p.y * TILE_PX + TILE_PX / 2 + HP;
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + Math.cos(rads) * 20, y + Math.sin(rads) * 20);
+        ctx.strokeStyle = '#F00';
+        ctx.lineWidth = 2;
+        ctx.stroke();
       }
     }
   }
