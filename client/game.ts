@@ -25,8 +25,8 @@ namespace Bridgesim.Client {
     @property({type: Number, value: 100}) size: number;
     @property({type: Object}) settings: Settings;
     @property({type: Object}) roster: Net.Roster;
+    @property({type: Object}) routeData: {station: string};
     @property({type: Boolean, value: false}) isHost: boolean;
-    @property({value: 'helm', type: String}) station: string;
 
     @computed()
     isClient(isHost: boolean): boolean {
@@ -74,6 +74,12 @@ namespace Bridgesim.Client {
         this.isHost = true;
       } else if (this.urlQuery.indexOf('client') != -1) {
         this.$.peerLocalstorage.makeOffer();
+      }
+
+      if (!this.routeData.station) {
+        // TODO Why doesn't iron-location hash binding work?
+        // TODO Is there some smarter way to do this using the route?
+        window.location.hash = '/station/helm';
       }
 
       this.listen(window, 'keydown', 'focusLobby');
