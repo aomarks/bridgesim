@@ -24,6 +24,7 @@ namespace Bridgesim.Net {
 
   export interface Welcome {
     clientId: number;
+    roster: Roster;
     snapshot: Snapshot;
     snapshotInterval: number;
     tickInterval: number;

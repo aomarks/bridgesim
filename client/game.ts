@@ -52,6 +52,7 @@ namespace Bridgesim.Client {
     private urlQuery: string;
 
     private animationRequestId: number;
+    private welcomed: boolean;
 
     ready(): void {
       this.settings = {
@@ -89,12 +90,14 @@ namespace Bridgesim.Client {
       this.resetSimulation();
       this.resetNetwork();
       if (isHost) {
+        this.host = new Core.Host();
+        this.host.start();
+
         const loopback = new Net.Loopback();
         this.conn = loopback.a;
         this.setupConn();
-        this.host = new Core.Host();
         this.host.addConnection(loopback.b);
-        this.host.start();
+        console.log('game: opening loopback connection');
         loopback.open();
       }
     }
@@ -114,7 +117,6 @@ namespace Bridgesim.Client {
     }
 
     resetSimulation() {
-      console.log('reset simulation');
       if (this.animationRequestId != null) {
         cancelAnimationFrame(this.animationRequestId);
         this.animationRequestId = null;
@@ -126,10 +128,11 @@ namespace Bridgesim.Client {
       this.latestSeq = -1;
       this.prevTs = 0;
       this.lag = 0;
+      this.welcomed = false;
+      console.log('game: reset simulation');
     }
 
     resetNetwork() {
-      console.log('reset network');
       if (this.conn) {
         this.conn.close();
         this.conn = null;
@@ -139,6 +142,7 @@ namespace Bridgesim.Client {
         this.host = null;
       }
       this.clientId = null;
+      console.log('game: reset network');
     }
 
     onConnection(event: {detail: Net.Connection}): void {
@@ -158,10 +162,11 @@ namespace Bridgesim.Client {
 
       this.conn.onMessage = this.onMessage.bind(this);
       this.conn.onClose = () => {
-        console.log('disconnected');
+        console.log('game: disconnected from host');
         this.resetSimulation();
       };
 
+      console.log('game: sending hello');
       this.conn.send({hello: {name: 'stranger'}}, true);
     }
 
@@ -170,26 +175,21 @@ namespace Bridgesim.Client {
 
     onMessage(msg: Net.Message) {
       if (msg.welcome) {
-        console.log('welcome', msg.welcome);
+        console.log('game: got welcome', msg.welcome.clientId);
         this.settings.tickInterval = msg.welcome.tickInterval;
         this.settings.snapshotInterval = msg.welcome.snapshotInterval;
         this.clientId = msg.welcome.clientId;
+        this.applyRoster(msg.welcome.roster);
         this.applySnapshot(msg.welcome.snapshot);
+        this.welcomed = true;
         this.frame(0);
 
+      } else if (!this.welcomed) {
+        return;
+
       } else if (msg.roster) {
-        this.roster = msg.roster;
-        for (let ship of this.roster.ships) {
-          if (!this.ships[ship.id]) {
-            this.ships[ship.id] = new Core.Ship(ship.id, ship.name, 0, 0, 0);
-          }
-          for (let assignment of ship.crew) {
-            if (assignment.playerId == this.clientId) {
-              this.shipId = ship.id;
-              this.ship = this.ships[ship.id];
-            }
-          }
-        }
+        console.log('game: got roster');
+        this.applyRoster(msg.roster);
 
       } else if (msg.receiveChat) {
         this.$.chat.receiveMsg(msg.receiveChat);
@@ -199,6 +199,21 @@ namespace Bridgesim.Client {
           this.latestSnapshotMs = performance.now();
           this.latestSnapshot = msg.snapshot;
           this.latestSeq = msg.snapshot.seq;
+        }
+      }
+    }
+
+    applyRoster(roster: Net.Roster) {
+      this.roster = roster;
+      for (let ship of this.roster.ships) {
+        if (!this.ships[ship.id]) {
+          this.ships[ship.id] = new Core.Ship(ship.id, ship.name, 0, 0, 0);
+        }
+        for (let assignment of ship.crew) {
+          if (assignment.playerId == this.clientId) {
+            this.shipId = ship.id;
+            this.ship = this.ships[ship.id];
+          }
         }
       }
     }
@@ -219,7 +234,7 @@ namespace Bridgesim.Client {
       snapshot.ships.forEach(u => {
         const ship = this.ships[u.shipId];
         if (!ship) {
-          console.log('unknown ship', u.shipId);
+          console.warn('game: unknown ship', u.shipId);
           return;
         }
         ship.body.setX(u.x);
@@ -254,7 +269,10 @@ namespace Bridgesim.Client {
           const offset = this.seq - this.latestSnapshot.seq;
           const length = this.commandBuffer.length;
           for (let i = length - offset + 1; i < length; i++) {
-            this.ship.applyCommands(this.commandBuffer[i]);
+            const commands = this.commandBuffer[i];
+            if (commands) {
+              this.ship.applyCommands(commands);
+            }
             this.ship.tick();
           }
         }

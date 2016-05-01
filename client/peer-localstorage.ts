@@ -27,8 +27,10 @@ namespace Bridgesim.Client {
       }
       this.key = Math.floor(Math.random() * 10000).toString();
       this.conn = new Net.WebRTCConnection(RTC_CONFIG);
-      this.conn.makeOffer().then(
-          offer => { this.set('handshakes.' + this.key, {offer: offer}); });
+      this.conn.makeOffer().then(offer => {
+        this.set('handshakes.' + this.key, {offer: offer});
+        console.log('localstorage: sent offer', this.key);
+      });
     }
 
     @observe('handshakes')
@@ -50,15 +52,18 @@ namespace Bridgesim.Client {
         if (handshake.accepted) {
           continue;
         }
+        console.log('localstorage: found offer', key);
         handshake.accepted = true;
         const conn = new Net.WebRTCConnection(RTC_CONFIG);
         conn.onOpen = () => {
+          console.log('localstorage: connection to client open', key);
           conn.onOpen = null;
           this.fire('connection', conn);
         };
         conn.takeOffer(new RTCSessionDescription(handshake.offer))
             .then(answer => {
               this.set('handshakes.' + key + '.answer', answer);
+              console.log('localstorage: set answer', key);
             });
       }
     }
@@ -66,8 +71,11 @@ namespace Bridgesim.Client {
     checkIfAccepted(): void {
       const handshake = this.handshakes[this.key];
       if (handshake && handshake.answer) {
+        console.log('localstorage: got answer', this.key);
         const conn = this.conn;
+        const key = this.key;
         conn.onOpen = () => {
+          console.log('localstorage: connection to host open', key);
           conn.onOpen = null;
           this.fire('connection', conn);
         };

@@ -60,14 +60,15 @@ namespace Bridgesim.Core {
       const friendly = new Ship(this.ships.length, 'Friendly', 2, 2, 0);
       this.ships.push(friendly);
       this.tickables.push(new ShipAI(friendly, 1, this.ships));
-      this.broadcastRoster();
     }
 
     addConnection(conn: Net.Connection) {
       const connId = this.conns.length;
       this.conns.push(conn);
+      console.log('host: connection added', connId);
       conn.onMessage = msg => { this.onMessage(connId, msg); };
       conn.onClose = () => {
+        console.log('host: connection closed', connId);
         const player = this.players[connId];
         if (player.shipId != null && player.station != null) {
           const ship = this.ships[player.shipId];
@@ -80,7 +81,10 @@ namespace Bridgesim.Core {
       };
     }
 
-    start() { this.tick(); }
+    start() {
+      console.log('host: starting');
+      this.tick();
+    }
 
     stop() {
       if (this.timeoutId != null) {
@@ -88,6 +92,7 @@ namespace Bridgesim.Core {
         this.timeoutId = null;
       }
       this.conns.forEach(conn => conn.close());
+      console.log('host: stopped');
     }
 
     private broadcast(msg: Net.Message, reliable: boolean) {
@@ -202,6 +207,10 @@ namespace Bridgesim.Core {
     }
 
     private broadcastRoster() {
+      this.broadcast({roster: this.makeRoster()}, true);
+    }
+
+    private makeRoster(): Net.Roster {
       const roster: Net.Roster = {players: [], ships: []};
       this.players.forEach((player: Player) => {
         roster.players.push({id: player.id, name: player.name});
@@ -209,7 +218,7 @@ namespace Bridgesim.Core {
       this.ships.forEach((ship) => {
         roster.ships.push({id: ship.id, name: ship.name, crew: ship.crew});
       });
-      this.broadcast({roster: roster}, true);
+      return roster;
     }
 
     private onMessage(connId: number, msg: Net.Message) {
@@ -232,9 +241,11 @@ namespace Bridgesim.Core {
       const welcome: Net.Welcome = {
         clientId: connId,
         snapshot: this.takeSnapshot(),
+        roster: this.makeRoster(),
         snapshotInterval: this.settings.snapshotInterval,
         tickInterval: this.settings.tickInterval,
       };
+      console.log('host: sending welcome', player.id);
       player.conn.send({welcome: welcome}, true);
       this.broadcastRoster();
       this.announce('player ' + connId + ' joined');
