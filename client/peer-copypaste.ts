@@ -28,6 +28,20 @@ namespace Bridgesim.Client {
           offer => { this.copyOffer = Net.encodeRSD(offer); });
     }
 
+    connect(e: any): void {
+      const id = e.model.item.ID;
+      let password = '';
+      if (e.model.item.RequiresPassword) {
+        password = prompt('Server Password');
+      }
+      const lobbyList = (this.querySelector('#lobbyList') as any);
+      lobbyList.connect(id, this.copyOffer, password).then((resp: {Answer: string}) => {
+        this.pasteAnswer = resp.Answer;
+      });
+    }
+
+    refreshList(): void { (this.querySelector('#lobbyList') as any).refresh(); }
+
     openHostDialog(): void { this.$.hostDialog.open(); }
 
     @observe('pasteOffer')
@@ -35,14 +49,20 @@ namespace Bridgesim.Client {
       if (!offer) {
         return;
       }
+      this.handleOffer(offer);
+    }
+
+    handleOffer(offer: string): Promise<string> {
       const conn = new Net.WebRTCConnection(RTC_CONFIG);
       conn.onOpen = () => {
         conn.onOpen = null;
         this.fire('connection', conn);
         this.$.hostDialog.close();
       };
-      conn.takeOffer(Net.decodeRSD(offer))
-          .then(answer => { this.copyAnswer = Net.encodeRSD(answer); });
+      return conn.takeOffer(Net.decodeRSD(offer)) .then(answer => {
+        this.copyAnswer = Net.encodeRSD(answer);
+        return this.copyAnswer;
+      });
     }
 
     @observe('pasteAnswer')

@@ -28,6 +28,7 @@ namespace Bridgesim.Client {
     @property({type: Object}) roster: Net.Roster;
     @property({type: Object}) routeData: {station: string};
     @property({type: Boolean, value: false}) isHost: boolean;
+    @property({type: Boolean, value: true}) serverHidden: boolean;
 
     private host: Core.Host;
     private conn: Net.Connection;
@@ -99,6 +100,10 @@ namespace Bridgesim.Client {
         this.host.addConnection(loopback.b);
         console.log('game: opening loopback connection');
         loopback.open();
+
+        setTimeout(()=>{
+          (this.querySelector('#lobbyHost') as any).offer = this.offer.bind(this);
+        },1);
       }
     }
 
@@ -172,6 +177,11 @@ namespace Bridgesim.Client {
 
     joinGame(): void { this.$.peerCopypaste.openClientDialog(); }
     invitePlayer(): void { this.$.peerCopypaste.openHostDialog(); }
+    offer(offer: any, resolve: (resp: any)=>void): void {
+      this.$.peerCopypaste.handleOffer(offer.Offer).then((answer: string) => {
+        resolve({Answer: answer});
+      });
+    }
 
     onMessage(msg: Net.Message) {
       if (msg.welcome) {

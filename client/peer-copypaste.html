@@ -1,5 +1,6 @@
 <link rel="import" href="deps.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/webrtc-lobby-elements/webrtc-lobby-elements.html">
 
 <dom-module id="bridgesim-peer-copypaste">
   <template>
@@ -21,6 +22,38 @@
       <textarea class="token" on-tap="selectAndCopy">[[copyOffer]]</textarea>
       <div>paste the answer here:</div>
       <textarea class="token" value="{{pasteAnswer::input}}"></textarea>
+
+      <div><paper-toggle-button checked="{{showPublicLobbies}}">Public Lobbies</paper-toggle-button></div>
+      <template is="dom-if" if="[[showPublicLobbies]]">
+        <paper-button on-tap="refreshList">Refresh</paper-button>
+        <table>
+          <thead>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Creator</th>
+            <th>RequiresPassword</th>
+            <th>Distance</th>
+            <th>Size</th>
+            <th></th>
+          </thead>
+          <tbody>
+            <template is="dom-repeat" items="{{lobbies}}">
+              <tr>
+                <td>{{item.ID}}</td>
+                <td>{{item.Name}}</td>
+                <td>{{item.Creator}}</td>
+                <td>{{item.RequiresPassword}}</td>
+                <td>{{item.Distance}}</td>
+                <td>
+                  <span>{{item.People}}</span> / <span>{{item.Capacity}}</span>
+                </td>
+                <td><paper-button on-tap="connect">Connect</paper-button></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+        <webrtc-lobby-list id="lobbyList" url="wss://fn.lc/lobby" lobbies="{{lobbies}}" service="bridgesim"></webrtc-lobby-list>
+      </template>
     </paper-dialog>
 
     <paper-dialog id="hostDialog" on-iron-overlay-closed="clear">
@@ -29,6 +62,7 @@
       <div>send back this answer:</div>
       <textarea class="token" on-tap="selectAndCopy">[[copyAnswer]]</textarea>
     </paper-dialog>
+
   </template>
 
   <script src="peer-copypaste.js"></script>
