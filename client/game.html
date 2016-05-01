@@ -79,9 +79,14 @@
         --paper-input-suffix: {
           @apply(--bridgesim-font);
         }
-
-        --paper-tab-ink: #7FDBFF;
-        --paper-tabs-selection-bar-color: #7FDBFF;
+      }
+      paper-tab {
+        font-size: 16px;
+        --paper-tab-ink: #ccc;
+      }
+      paper-tab.iron-selected {
+        color: #FFA700;
+        text-shadow: 0 0 5px #FFA700;
       }
       [drawer] {
         color: black;
@@ -133,14 +138,15 @@
           </paper-icon-button>
 
           <paper-tabs selected="{{routeData.station}}"
+                      no-bar
                       attr-for-selected="name"
                       class="flex-2">
-            <paper-tab name='helm'>Helm</paper-tab>
-            <paper-tab name='comms'>Comms</paper-tab>
-            <paper-tab name='science'>Science</paper-tab>
-            <paper-tab name='weapons'>Weapons</paper-tab>
-            <paper-tab name='engineering'>Engineering</paper-tab>
-            <paper-tab name='viewscreen'>Viewscreen</paper-tab>
+            <paper-tab name='helm'>HLM</paper-tab>
+            <paper-tab name='comms'>COM</paper-tab>
+            <paper-tab name='science'>SCI</paper-tab>
+            <paper-tab name='weapons'>WEP</paper-tab>
+            <paper-tab name='engineering'>ENG</paper-tab>
+            <paper-tab name='viewscreen'>EXT</paper-tab>
           </paper-tabs>
         </div>
 
