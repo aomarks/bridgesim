@@ -13,6 +13,7 @@ namespace Bridgesim.Core {
     engine: Subsystem;
     maneuvering: Subsystem;
     weapons: Subsystem;
+    sensors: Subsystem;
     subsystems: Subsystem[];
     curSubsystem: number;
     crew: Net.Assignment[] = [
@@ -29,10 +30,12 @@ namespace Bridgesim.Core {
       this.engine = new Subsystem('engine');
       this.maneuvering = new Subsystem('maneuvering');
       this.weapons = new Subsystem('weapons');
+      this.sensors = new Subsystem('sensors');
       this.subsystems = [
         this.engine,
         this.maneuvering,
         this.weapons,
+        this.sensors,
       ];
       this.curSubsystem = 0;
     }

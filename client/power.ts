@@ -1,6 +1,7 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../core/ship.ts" />
 ///<reference path="const.ts" />
+///<reference path="colors.ts" />
 ///<reference path="util.ts" />
 
 namespace Bridgesim.Client {
@@ -36,17 +37,8 @@ namespace Bridgesim.Client {
         let s = this.ship.subsystems[i];
         ctx.fillRect((i * BAR_W) + PAD + HP, h - PAD + HP, BAR_W - PAD,
                      snap(-((s.level / 100) * (h - PAD2))));
-        switch (i) {
-          case 0:
-            this.drawLabel("Engine", h / 2, (i + 0.5) * BAR_W + PAD);
-            break;
-          case 1:
-            this.drawLabel("Manuevering", h / 2, (i + 0.5) * BAR_W + PAD);
-            break;
-          case 2:
-            this.drawLabel("Weapons", h / 2, (i + 0.5) * BAR_W + PAD);
-            break;
-        }
+
+       this.drawLabel(s.name.toUpperCase(), h / 2, (i + 0.5) * BAR_W + PAD);
       }
 
       ctx.strokeStyle = '#F00';
