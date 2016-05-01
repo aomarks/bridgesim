@@ -3,7 +3,8 @@
     "target": "ES5",
     "experimentalDecorators": true,
     "noImplicitReturns": true,
-    "noImplicitAny": true,
+    // TODO babylon.2.3.d.ts has a couple noImplicitAny errors
+    "noImplicitAny": false,
     "pretty": true
   },
   "exclude": [
