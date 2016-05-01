@@ -1,4 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
 <dom-module id="science-station">
   <template>
@@ -7,7 +9,12 @@
         display: block;
       }
     </style>
-    science station placeholder
+    Long Range Sensors
+    <paper-menu>
+      <template is="dom-repeat" items="[[ships]]">
+        <paper-item>Ducks</paper-item>
+      </template>
+    </paper-menu>
   </template>
   <script src="science.js"></script>
 </dom-module>
