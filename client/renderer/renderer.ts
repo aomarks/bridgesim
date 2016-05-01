@@ -28,12 +28,15 @@ namespace Bridgesim.Client.Renderer {
     ready() {
       this.engine = new BABYLON.Engine(this.$.renderCanvas, true);
       this.scene = new BABYLON.Scene(this.engine);
+      this.scene.clearColor = new BABYLON.Color4(0,0,0,1);
       this.assetsManager = new BABYLON.AssetsManager(this.scene);
       this.assetsManager.useDefaultLoadingScreen = false;
 
       this.camera = new BABYLON.ArcRotateCamera('camera1', -Math.PI/2, Math.PI/2, 2, new BABYLON.Vector3(0, 0.0, 0.45), this.scene);
       this.camera.attachControl(this.$.renderCanvas, false, false);
       this.camera.maxZ = 10000;
+      this.camera.lowerRadiusLimit = 1.5;
+      this.camera.upperRadiusLimit = 50;
 
       var hdr = new BABYLON.HDRRenderingPipeline("hdr", this.scene, 1.0, null, [this.camera]);
       hdr.brightThreshold = 0.7; // Minimum luminance needed to compute HDR
@@ -48,7 +51,7 @@ namespace Bridgesim.Client.Renderer {
       //hdr.gaussMultiplier = 4.0; // Increase the blur intensity
 
       const light = new BABYLON.DirectionalLight('light1', new BABYLON.Vector3(1,0,0), this.scene);
-      light.intensity = 3;
+      light.intensity = 1;
 
       // Grid
       const gridMaterial = new BABYLON.StandardMaterial("Grid Material", this.scene);
@@ -117,7 +120,7 @@ namespace Bridgesim.Client.Renderer {
 
     resize() {
       const canvas = this.$.renderCanvas;
-      const height = window.innerHeight - this.offsetTop - 10;
+      const height = window.innerHeight - this.offsetTop;
       canvas.setAttribute("height", height + 'px');
       this.engine.resize();
     }

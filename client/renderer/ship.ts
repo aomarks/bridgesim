@@ -19,6 +19,7 @@ namespace Bridgesim.Client.Renderer {
 
       const reflectionTexture = new BABYLON.CubeTexture("textures/skybox/box", scene, SKYBOX_EXTENSIONS);
 
+
       assetPack.loadShip(shipAsset).then((mesh: BABYLON.Mesh) => {
         this.visualMesh = mesh.clone('');
         this.visualMesh.setEnabled(true);
