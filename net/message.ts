@@ -73,6 +73,7 @@ namespace Bridgesim.Net {
     y: number;
     yaw: number;
     thrust: number;
+    hp?: number;
   }
 
   export interface Snapshot {

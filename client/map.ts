@@ -23,7 +23,7 @@ namespace Bridgesim.Client {
     ready(): void {
       this.can = this.$.canvas;
       this.ctx = this.can.getContext('2d');
-      this.ctx.font = '12px Share Tech Mono';
+      this.ctx.font = '11px Share Tech Mono';
       this.shipImage = new Image();
       this.shipImage.src = "/images/ship.svg";
     }
@@ -70,6 +70,9 @@ namespace Bridgesim.Client {
         ctx.lineWidth = 3;
         ctx.strokeText(s.name, x + 10, y + 5);
         ctx.fillText(s.name, x + 10, y + 5);
+
+        ctx.strokeText(s.hp.toString(), x + 10, y + 20);
+        ctx.fillText(s.hp.toString(), x + 10, y + 20);
       }
 
       for (let id in this.projectiles) {

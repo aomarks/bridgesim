@@ -137,7 +137,9 @@ namespace Bridgesim.Core {
             this.projectiles.splice(i, 1);
           }
         }
-        this.collisionSystem.resolveCollisions(this.ships);
+        // TODO This is dumb.
+        this.collisionSystem.resolveCollisions(
+            [].concat(this.ships, this.projectiles));
         this.tickLag -= this.settings.tickInterval;
         this.snapshotStale = true;
       }
@@ -177,6 +179,7 @@ namespace Bridgesim.Core {
           y: ship.body.y,
           yaw: ship.body.yaw,
           thrust: ship.thrust,
+          hp: ship.hp,
         });
       }
       for (let i = 0; i < this.projectiles.length; i++) {

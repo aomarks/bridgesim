@@ -226,6 +226,7 @@ namespace Bridgesim.Client {
         ship.body.setY(u.y);
         ship.body.setYaw(u.yaw);
         ship.thrust = u.thrust;
+        ship.hp = u.hp;
       });
 
       // TODO Memory inefficient.

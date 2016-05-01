@@ -6,7 +6,9 @@ namespace Bridgesim.Core {
 
   export class Ship {
     body: Body;
-    thrust: number;
+    size: number = .03;
+    hp: number = 100;
+    thrust: number = 0;
     shieldEnabled: boolean = false;
     engine: Subsystem;
     maneuvering: Subsystem;
@@ -24,7 +26,6 @@ namespace Bridgesim.Core {
     constructor(public id: number, public name: string, x: number, y: number,
                 yaw: number) {
       this.body = new Body(x, y, yaw, 0);
-      this.thrust = 0;
       this.engine = new Subsystem('engine');
       this.maneuvering = new Subsystem('maneuvering');
       this.weapons = new Subsystem('weapons');
@@ -74,6 +75,10 @@ namespace Bridgesim.Core {
       const s = this.subsystems[this.curSubsystem];
       s.level = Math.min(100, Math.max(0, s.level + amount));
     }
+
+    giveDamage(): number { return 10; }
+
+    takeDamage(dmg: number): void { this.hp = Math.max(0, this.hp - dmg); }
   }
 
   export class Subsystem {
