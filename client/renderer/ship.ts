@@ -1,6 +1,7 @@
-///<reference path="../../bower_components/babylonjs/dist/babylon.2.2.d.ts" />
+///<reference path="../../bower_components/babylonjs/dist/babylon.2.3.d.ts" />
 ///<reference path="../../core/ship.ts" />
 ///<reference path="../asset-pack.ts" />
+///<reference path="./renderer.ts" />
 
 namespace Bridgesim.Client.Renderer {
   export class Ship {
@@ -16,7 +17,7 @@ namespace Bridgesim.Client.Renderer {
       const shipAsset = assetPack.ships[0];
       console.log(shipAsset);
 
-      const reflectionTexture = new BABYLON.CubeTexture("textures/skybox/box", scene);
+      const reflectionTexture = new BABYLON.CubeTexture("textures/skybox/box", scene, SKYBOX_EXTENSIONS);
 
       assetPack.loadShip(shipAsset).then((mesh: BABYLON.Mesh) => {
         this.visualMesh = mesh.clone('');

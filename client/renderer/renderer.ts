@@ -1,11 +1,11 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../../bower_components/babylonjs/dist/babylon.2.2.d.ts" />
+///<reference path="../../bower_components/babylonjs/dist/babylon.2.3.d.ts" />
 ///<reference path="../../core/ship.ts" />
 ///<reference path="./ship.ts" />
 
 namespace Bridgesim.Client.Renderer {
 
-  const SKYBOX_EXTENSIONS = ["_right1.png", "_top3.png", "_front5.png", "_left2.png",
+  export const SKYBOX_EXTENSIONS = ["_right1.png", "_top3.png", "_front5.png", "_left2.png",
     "_bottom4.png", "_back6.png"];
 
   @component('bridgesim-renderer')
