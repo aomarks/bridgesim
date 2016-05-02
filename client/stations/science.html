@@ -7,14 +7,30 @@
     <style>
       :host {
         display: block;
+        position: relative;
+      }
+      paper-drawer-panel {
+        position: static;
+      }
+      div[drawer] {
+        background-color: transparent;
       }
     </style>
-    Long Range Sensors
-    <paper-menu>
-      <template is="dom-repeat" items="[[ships]]">
-        <paper-item>Ducks</paper-item>
-      </template>
-    </paper-menu>
+    <paper-drawer-panel>
+      <div drawer>
+        <h3>Long Range Sensors</h3>
+        <paper-menu selected-item="{{sel}}">
+          <template is="dom-repeat" items="[[ships]]">
+            <paper-item ship="{{item}}">[[item.name]]</paper-item>
+          </template>
+        </paper-menu>
+      </div>
+      <div main>
+        <h1>[[sel.ship.name]]</h1>
+        <p>HP: <span>[[sel.ship.hp]]</span></p>
+        <p>Shields: <span>[[sel.ship.shieldEnabled]]</span></p>
+      </div>
+    </paper-drawer-panel>
   </template>
   <script src="science.js"></script>
 </dom-module>

@@ -29,14 +29,14 @@ namespace Bridgesim.Client {
     @property({type: Object}) routeData: {station: string};
     @property({type: Boolean, value: false}) isHost: boolean;
     @property({type: Boolean, value: true}) serverHidden: boolean;
+    @property({type: Object}) ship: Core.Ship;
+    @property({type: Array}) ships: Core.Ship[];
 
     private host: Core.Host;
     private conn: Net.Connection;
     private conditioner: Net.Conditioner;
 
     private clientId: number;
-    private ship: Core.Ship;
-    private ships: Core.Ship[];
     private projectiles: {[id: number]: Core.Projectile};
     private shipId: number;
     private players: Net.Player[];
@@ -218,6 +218,9 @@ namespace Bridgesim.Client {
       for (let ship of this.roster.ships) {
         if (!this.ships[ship.id]) {
           this.ships[ship.id] = new Core.Ship(ship.id, ship.name, 0, 0, 0);
+          this.notifySplices('ships', [
+            { index: ship.id, removed: [], addedCount: 1, object: this.ships, type: 'splice' },
+          ]);
         }
         for (let assignment of ship.crew) {
           if (assignment.playerId == this.clientId) {
