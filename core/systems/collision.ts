@@ -38,7 +38,7 @@ namespace Bridgesim.Core.Systems {
             if (healthB) {
               healthB.hp -= aCol.damage;
             }
-            // console.log('new collision', a, b);
+            console.log('collision:', a, b);
           }
         }
       }

@@ -1,6 +1,7 @@
 ///<reference path="../components.ts" />
 ///<reference path="../entity/db.ts" />
 ///<reference path="../entity/laser.ts" />
+///<reference path="../entity/missile.ts" />
 ///<reference path="../../net/message.ts" />
 
 namespace Bridgesim.Core.Systems {
@@ -46,8 +47,13 @@ namespace Bridgesim.Core.Systems {
         pos.roll -= (delta / 180 * Math.PI / 2);
       }
 
-      if (input.fire && pos && spawn) {
-        Entity.SpawnLaser(this.db, id, pos.x, pos.y, pos.yaw);
+      if (spawn && pos) {
+        if (input.fireLaser) {
+          Entity.SpawnLaser(this.db, id, pos.x, pos.y, pos.yaw);
+        }
+        if (input.fireMissile) {
+          Entity.SpawnMissile(this.db, id, pos.x, pos.y, pos.yaw);
+        }
       }
     }
   }

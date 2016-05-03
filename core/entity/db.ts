@@ -11,6 +11,7 @@ namespace Bridgesim.Core.Entity {
     collidables: {[id: string]: Components.Collidable} = {};
     healths: {[id: string]: Components.Health} = {};
     inputs: {[id: string]: Net.Commands[]} = {};
+    missiles: {[id: string]: boolean} = {};
     lasers: {[id: string]: boolean} = {};
     names: {[id: string]: string} = {};
     odometers: {[id: string]: number} = {};
@@ -29,6 +30,7 @@ namespace Bridgesim.Core.Entity {
       delete this.healths[id];
       delete this.inputs[id];
       delete this.lasers[id];
+      delete this.missiles[id];
       delete this.names[id];
       delete this.odometers[id];
       delete this.players[id];

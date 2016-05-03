@@ -233,6 +233,7 @@ namespace Bridgesim.Client {
     applySnapshot(snapshot: Net.Snapshot): void {
       this.set('db.healths', snapshot.healths);
       this.db.lasers = snapshot.lasers;
+      this.db.missiles = snapshot.missiles;
       this.db.prevPositions = this.db.positions;
       this.db.positions = snapshot.positions;
       this.db.velocities = snapshot.velocities;

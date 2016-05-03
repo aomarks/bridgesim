@@ -52,12 +52,14 @@ namespace Bridgesim.Net {
     turn: number;
     thrust: number;
     power: Core.Components.Power;
-    fire: boolean;
+    fireLaser: boolean;
+    fireMissile: boolean;
   }
 
   export interface Snapshot {
     seq: number;
     lasers: {[id: string]: boolean};
+    missiles: {[id: string]: boolean};
     positions: {[id: string]: Core.Components.Position};
     velocities: {[id: string]: number};
     healths: {[id: string]: Core.Components.Health};

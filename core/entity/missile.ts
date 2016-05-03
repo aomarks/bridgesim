@@ -2,18 +2,18 @@
 
 namespace Bridgesim.Core.Entity {
 
-  export function SpawnLaser(db: Db, origin: string, x: number, y: number,
-                             yaw: number) {
+  export function SpawnMissile(db: Db, origin: string, x: number, y: number,
+                               yaw: number) {
     const id = db.spawn();
-    db.lasers[id] = true;
+    db.missiles[id] = true;
     db.positions[id] = {x: x, y: y, yaw: yaw, roll: 0};
     db.prevPositions[id] = {x: x, y: y, yaw: yaw, roll: 0};
-    db.velocities[id] = .5;
+    db.velocities[id] = .1;
     db.odometers[id] = 0;
     db.healths[id] = {hp: 0, shields: false};
     db.collidables[id] =
-        {length: .2, width: .2, mass: 0, damage: 1, ignore: origin};
-    console.log('entity.laser: spawned laser', id);
+        {length: 1, width: 1, mass: 0, damage: 20, ignore: origin};
+    console.log('entity.missile: spawned missile', id);
     return id;
   }
 }

@@ -40,7 +40,8 @@ namespace Bridgesim.Client {
         },
         [keyCode('H')]: {binding: () => this.prevSubsystem()},
         [keyCode('L')]: {binding: () => this.nextSubsystem()},
-        [keyCode(' ')]: {binding: () => this.commands.fire = true},
+        [keyCode(' ')]: {binding: () => this.commands.fireLaser = true},
+        [keyCode('M')]: {binding: () => this.commands.fireMissile = true},
       };
     }
 
@@ -49,7 +50,8 @@ namespace Bridgesim.Client {
         turn: 0,
         thrust: 0,
         power:<Core.Components.Power>{},
-        fire: false,
+        fireLaser: false,
+        fireMissile: false,
       };
     }
 

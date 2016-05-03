@@ -103,6 +103,23 @@ namespace Bridgesim.Client {
         ctx.lineWidth = 2;
         ctx.stroke();
       }
+
+      for (let id in this.db.missiles) {
+        const pos = this.db.positions[id];
+        let prev = this.db.prevPositions[id];
+        if (!prev) {
+          prev = pos;
+        }
+        let rads = Core.radians(lerp(pos.yaw, prev.yaw, remoteAlpha) - 90);
+        ctx.beginPath();
+        let x = lerp(pos.x, prev.x, remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
+        let y = lerp(pos.y, prev.y, remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + Math.cos(rads) * 5, y + Math.sin(rads) * 5);
+        ctx.strokeStyle = AQUA;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
     }
   }
   Map.register();
