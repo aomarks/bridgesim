@@ -1,5 +1,5 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../core/ship.ts" />
+///<reference path="../core/entity/db.ts" />
 ///<reference path="const.ts" />
 ///<reference path="colors.ts" />
 ///<reference path="util.ts" />
@@ -12,7 +12,9 @@ namespace Bridgesim.Client {
 
   @component('bridgesim-power')
   export class Power extends polymer.Base {
-    @property({type: Object}) ship: Core.Ship;
+    @property({type: Object}) db: Core.Entity.Db;
+    @property({type: String}) shipId: string;
+    @property({type: String}) curSubsystem: string;
 
     private can: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
@@ -33,17 +35,27 @@ namespace Bridgesim.Client {
       ctx.strokeRect(HP, HP, w, h);
 
       ctx.fillStyle = '#00F';
-      for (let i = 0; i < this.ship.subsystems.length; i++) {
-        let s = this.ship.subsystems[i];
+      const power = this.db.power[this.shipId];
+      if (!power) {
+        return;
+      }
+      const names = Object.keys(power);
+      names.sort();
+      for (let i = 0; i < names.length; i++) {
+        const name = names[i];
+        const level = power[name];
         ctx.fillRect((i * BAR_W) + PAD + HP, h - PAD + HP, BAR_W - PAD,
-                     snap(-((s.level / 100) * (h - PAD2))));
+                     snap(-((level / 100) * (h - PAD2))));
 
-       this.drawLabel(s.name.toUpperCase(), h / 2, (i + 0.5) * BAR_W + PAD);
+        this.drawLabel(name.toUpperCase(), h / 2, (i + 0.5) * BAR_W + PAD);
       }
 
-      ctx.strokeStyle = '#F00';
-      ctx.strokeRect((this.ship.curSubsystem * BAR_W) + PAD + HP, PAD + HP,
-                     BAR_W - PAD, h - PAD2);
+      const cur = names.indexOf(this.curSubsystem);
+      if (cur != -1) {
+        ctx.strokeStyle = '#F00';
+        ctx.strokeRect((cur * BAR_W) + PAD + HP, PAD + HP, BAR_W - PAD,
+                       h - PAD2);
+      }
     }
 
     // Draw |text| centered at (|centerX|, |centerY|)

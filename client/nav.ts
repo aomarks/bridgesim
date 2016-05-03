@@ -1,14 +1,16 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../core/ship.ts" />
+///<reference path="../core/entity/db.ts" />
 ///<reference path="../core/util.ts" />
 ///<reference path="colors.ts" />
 ///<reference path="const.ts" />
+///<reference path="util.ts" />
 
 namespace Bridgesim.Client {
 
   @component('bridgesim-nav')
   export class Nav extends polymer.Base {
-    @property({type: Object}) ship: Core.Ship;
+    @property({type: Object}) db: Core.Entity.Db;
+    @property({type: String}) shipId: string;
 
     private can: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
@@ -36,7 +38,16 @@ namespace Bridgesim.Client {
       this.drawDegreeLabels(w / 2, h / 2, w / 2 - 22, 30);
 
       // Draw heading
-      let angle = Bridgesim.Core.radians(this.ship.body.lerpYaw(alpha) - 90);
+      const pos = this.db.positions[this.shipId];
+      if (!pos) {
+        return;
+      }
+      let prev = this.db.prevPositions[this.shipId];
+      if (!prev) {
+        prev = pos;
+      }
+      const yaw = lerp(pos.yaw, prev.yaw, alpha);
+      let angle = Bridgesim.Core.radians(yaw - 90);
       ctx.beginPath();
       ctx.moveTo(w / 2 + HP, w / 2 + HP);
       ctx.lineTo(Math.cos(angle) * (w / 2 - 27) + w / 2 + HP,

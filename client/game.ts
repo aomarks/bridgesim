@@ -1,8 +1,9 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/browser.d.ts" />
-///<reference path="../core/ship.ts" />
 ///<reference path="../core/host.ts" />
-///<reference path="../core/projectile.ts" />
+///<reference path="../core/entity/db.ts" />
+///<reference path="../core/systems/motion.ts" />
+///<reference path="../core/systems/input.ts" />
 ///<reference path="../net/message.ts" />
 ///<reference path="../net/webrtc.ts" />
 ///<reference path="../net/loopback.ts" />
@@ -25,33 +26,27 @@ namespace Bridgesim.Client {
   class Game extends polymer.Base {
     @property({type: Number, value: 100}) size: number;
     @property({type: Object}) settings: Settings;
-    @property({type: Object}) roster: Net.Roster;
     @property({type: Object}) routeData: {station: string};
+    @property({type: Object}) db: Core.Entity.Db;
     @property({type: Boolean, value: false}) isHost: boolean;
     @property({type: Boolean, value: true}) serverHidden: boolean;
-    @property({type: Object}) ship: Core.Ship;
-    @property({type: Array}) ships: Core.Ship[];
+    @property({type: String}) playerId: string;
+    @property({type: String}) shipId: string;
+    @property({type: String, value: 'engine'}) curSubsystem: string;
 
     private host: Core.Host;
     private conn: Net.Connection;
     private conditioner: Net.Conditioner;
-
-    private clientId: number;
-    private projectiles: {[id: number]: Core.Projectile};
-    private shipId: number;
-    private players: Net.Player[];
-
+    private motion: Core.Systems.Motion;
+    private input: Core.Systems.Input;
     private latestSnapshot: Net.Snapshot;
     private latestSnapshotMs: number = 0;
     private latestSeq = -1;
     private seq: number = 0;
     private commandBuffer: Net.Commands[] = [];
-
     private prevTs: number = 0;
     private lag: number = 0;
-
     private urlQuery: string;
-
     private animationRequestId: number;
     private welcomed: boolean;
 
@@ -66,8 +61,6 @@ namespace Bridgesim.Client {
         snapshotInterval: 0,  // Server controlled.
         commandBufferSize: 100,
       };
-
-      this.ships = [];
 
       if (this.urlQuery.indexOf('host') != -1) {
         this.isHost = true;
@@ -101,9 +94,10 @@ namespace Bridgesim.Client {
         console.log('game: opening loopback connection');
         loopback.open();
 
-        setTimeout(()=>{
-          (this.querySelector('#lobbyHost') as any).offer = this.offer.bind(this);
-        },1);
+        setTimeout(() => {
+          (this.querySelector('#lobbyHost') as any).offer =
+              this.offer.bind(this);
+        }, 1);
       }
     }
 
@@ -126,14 +120,15 @@ namespace Bridgesim.Client {
         cancelAnimationFrame(this.animationRequestId);
         this.animationRequestId = null;
       }
-      this.ship = null;
-      this.ships = [];
       this.shipId = null;
       this.latestSnapshot = null;
       this.latestSeq = -1;
       this.prevTs = 0;
       this.lag = 0;
       this.welcomed = false;
+      this.db = new Core.Entity.Db();
+      this.motion = new Core.Systems.Motion(this.db);
+      this.input = new Core.Systems.Input(this.db);
       console.log('game: reset simulation');
     }
 
@@ -146,7 +141,7 @@ namespace Bridgesim.Client {
         this.host.stop();
         this.host = null;
       }
-      this.clientId = null;
+      this.playerId = null;
       console.log('game: reset network');
     }
 
@@ -177,18 +172,17 @@ namespace Bridgesim.Client {
 
     joinGame(): void { this.$.peerCopypaste.openClientDialog(); }
     invitePlayer(): void { this.$.peerCopypaste.openHostDialog(); }
-    offer(offer: any, resolve: (resp: any)=>void): void {
-      this.$.peerCopypaste.handleOffer(offer.Offer).then((answer: string) => {
-        resolve({Answer: answer});
-      });
+    offer(offer: any, resolve: (resp: any) => void): void {
+      this.$.peerCopypaste.handleOffer(offer.Offer)
+          .then((answer: string) => { resolve({Answer: answer}); });
     }
 
     onMessage(msg: Net.Message) {
       if (msg.welcome) {
-        console.log('game: got welcome', msg.welcome.clientId);
+        console.log('game: got welcome', msg.welcome.playerId);
         this.settings.tickInterval = msg.welcome.tickInterval;
         this.settings.snapshotInterval = msg.welcome.snapshotInterval;
-        this.clientId = msg.welcome.clientId;
+        this.playerId = msg.welcome.playerId;
         this.applyRoster(msg.welcome.roster);
         this.applySnapshot(msg.welcome.snapshot);
         this.welcomed = true;
@@ -214,19 +208,12 @@ namespace Bridgesim.Client {
     }
 
     applyRoster(roster: Net.Roster) {
-      this.roster = roster;
-      for (let ship of this.roster.ships) {
-        if (!this.ships[ship.id]) {
-          this.ships[ship.id] = new Core.Ship(ship.id, ship.name, 0, 0, 0);
-          this.notifySplices('ships', [
-            { index: ship.id, removed: [], addedCount: 1, object: this.ships, type: 'splice' },
-          ]);
-        }
-        for (let assignment of ship.crew) {
-          if (assignment.playerId == this.clientId) {
-            this.shipId = ship.id;
-            this.ship = this.ships[ship.id];
-          }
+      this.set('db.ships', roster.ships);
+      this.set('db.names', roster.names);
+      this.set('db.players', roster.players);
+      for (let playerId in this.db.players) {
+        if (playerId === this.playerId) {
+          this.shipId = this.db.players[playerId].shipId;
         }
       }
     }
@@ -244,33 +231,12 @@ namespace Bridgesim.Client {
     }
 
     applySnapshot(snapshot: Net.Snapshot): void {
-      snapshot.ships.forEach(u => {
-        const ship = this.ships[u.shipId];
-        if (!ship) {
-          console.warn('game: unknown ship', u.shipId);
-          return;
-        }
-        ship.body.setX(u.x);
-        ship.body.setY(u.y);
-        ship.body.setYaw(u.yaw);
-        ship.thrust = u.thrust;
-        ship.hp = u.hp;
-      });
-
-      // TODO Memory inefficient.
-      const newProjectiles: {[id: number]: Core.Projectile} = {};
-      snapshot.projectiles.forEach(p => {
-        let proj = this.projectiles[p.shipId];
-        if (proj) {
-          proj.body.setX(p.x);
-          proj.body.setY(p.y);
-          proj.body.setYaw(p.yaw);
-        } else {
-          proj = new Core.Projectile(p.shipId, p.x, p.y, p.yaw);
-        }
-        newProjectiles[proj.id] = proj;
-      });
-      this.projectiles = newProjectiles;
+      this.set('db.healths', snapshot.healths);
+      this.db.lasers = snapshot.lasers;
+      this.db.prevPositions = this.db.positions;
+      this.db.positions = snapshot.positions;
+      this.db.velocities = snapshot.velocities;
+      this.db.power = snapshot.power;
     }
 
     frame(ts: number): void {
@@ -284,9 +250,9 @@ namespace Bridgesim.Client {
           for (let i = length - offset + 1; i < length; i++) {
             const commands = this.commandBuffer[i];
             if (commands) {
-              this.ship.applyCommands(commands);
+              this.input.apply(this.shipId, commands, false);
             }
-            this.ship.tick();
+            this.motion.tickOne(this.shipId);
           }
         }
         this.latestSnapshot = null;
@@ -305,8 +271,8 @@ namespace Bridgesim.Client {
         this.commandBuffer.push(commands);
 
         if (this.settings.localPredict && this.shipId != null) {
-          this.ship.applyCommands(commands);
-          this.ship.tick();
+          this.input.apply(this.shipId, commands, false);
+          this.motion.tickOne(this.shipId);
         }
         this.lag -= this.settings.tickInterval;
         this.seq++;

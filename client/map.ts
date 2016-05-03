@@ -1,8 +1,8 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../core/ship.ts" />
-///<reference path="../core/projectile.ts" />
+///<reference path="../core/entity/db.ts" />
 ///<reference path="const.ts" />
 ///<reference path="colors.ts" />
+///<reference path="util.ts" />
 
 namespace Bridgesim.Client {
 
@@ -12,9 +12,8 @@ namespace Bridgesim.Client {
   @component('bridgesim-map')
   export class Map extends polymer.Base {
     @property({type: Number}) size: number;
-    @property({type: Array}) ships: Core.Ship[];
-    @property({type: Object}) projectiles: {[id: number]: Core.Projectile};
-    @property({type: Object}) ship: Core.Ship;
+    @property({type: Object}) db: Core.Entity.Db;
+    @property({type: String}) shipId: string;
 
     private can: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
@@ -44,15 +43,24 @@ namespace Bridgesim.Client {
       ctx.strokeStyle = GREEN;
       ctx.stroke();
 
-      for (let s of this.ships) {
-        const alpha = s === this.ship ? localAlpha : remoteAlpha;
+      for (let shipId in this.db.ships) {
+        const alpha = shipId === this.shipId ? localAlpha : remoteAlpha;
+        const pos = this.db.positions[shipId];
+        if (!pos) {
+          continue;
+        }
+        let prev = this.db.prevPositions[shipId];
+        if (!prev) {
+          prev = pos;
+        }
         ctx.beginPath();
-        let x = s.body.lerpX(alpha) * TILE_PX + TILE_PX / 2 + HP;
-        let y = s.body.lerpY(alpha) * TILE_PX + TILE_PX / 2 + HP;
-        if (this.ship === s) {
+        let x = lerp(pos.x, prev.x, alpha) * TILE_PX + TILE_PX / 2 + HP;
+        let y = lerp(pos.y, prev.y, alpha) * TILE_PX + TILE_PX / 2 + HP;
+        if (shipId === this.shipId) {
           ctx.save();
           ctx.translate(x, y);
-          ctx.rotate(s.body.lerpYaw(alpha) * Math.PI / 180);
+          const yaw = lerp(pos.yaw, prev.yaw, alpha);
+          ctx.rotate(yaw * Math.PI / 180);
           const shipWidth = 34 / 3;
           const shipHeight = 59 / 3;
           ctx.drawImage(this.shipImage, -shipWidth / 2, -shipHeight / 2,
@@ -68,19 +76,27 @@ namespace Bridgesim.Client {
         ctx.fillStyle = '#FFF';
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 3;
-        ctx.strokeText(s.name, x + 10, y + 5);
-        ctx.fillText(s.name, x + 10, y + 5);
+        const name = this.db.names[shipId];
+        ctx.strokeText(name, x + 10, y + 5);
+        ctx.fillText(name, x + 10, y + 5);
 
-        ctx.strokeText(s.hp.toString(), x + 10, y + 20);
-        ctx.fillText(s.hp.toString(), x + 10, y + 20);
+        const health = this.db.healths[shipId];
+        if (health != null) {
+          ctx.strokeText(health.hp.toString(), x + 10, y + 20);
+          ctx.fillText(health.hp.toString(), x + 10, y + 20);
+        }
       }
 
-      for (let id in this.projectiles) {
-        const p = this.projectiles[id];
-        let rads = Core.radians(p.body.lerpYaw(remoteAlpha) - 90);
+      for (let id in this.db.lasers) {
+        const pos = this.db.positions[id];
+        let prev = this.db.prevPositions[id];
+        if (!prev) {
+          prev = pos;
+        }
+        let rads = Core.radians(lerp(pos.yaw, prev.yaw, remoteAlpha) - 90);
         ctx.beginPath();
-        let x = p.body.lerpX(remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
-        let y = p.body.lerpY(remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
+        let x = lerp(pos.x, prev.x, remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
+        let y = lerp(pos.y, prev.y, remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
         ctx.moveTo(x, y);
         ctx.lineTo(x + Math.cos(rads) * 20, y + Math.sin(rads) * 20);
         ctx.strokeStyle = '#F00';

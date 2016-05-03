@@ -1,5 +1,5 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../core/ship.ts" />
+///<reference path="../core/entity/db.ts" />
 ///<reference path="const.ts" />
 ///<reference path="util.ts" />
 
@@ -7,7 +7,8 @@ namespace Bridgesim.Client {
 
   @component('bridgesim-thrust')
   export class Thrust extends polymer.Base {
-    @property({type: Object}) ship: Core.Ship;
+    @property({type: Object}) db: Core.Entity.Db;
+    @property({type: String}) shipId: string;
 
     private can: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
@@ -23,18 +24,19 @@ namespace Bridgesim.Client {
       let w = this.can.width - 1;
       let h = this.can.height - 20;
 
+      const thrust = this.db.velocities[this.shipId];
+
       let barHeight = Math.round(h / 20);
       let maxHeight = h - barHeight;
       ctx.fillStyle = AQUA;
-      ctx.fillRect(HP, snap(maxHeight - (this.ship.thrust * maxHeight)), w,
-                   barHeight);
+      ctx.fillRect(HP, snap(maxHeight - (thrust * maxHeight)), w, barHeight);
 
       ctx.strokeStyle = AQUA;
       ctx.strokeRect(HP, HP, w, h);
 
       ctx.font = "16px sans-serif";
       ctx.fillStyle = RED;
-      const displayThrustValue = Math.round(this.ship.thrust * 100);
+      const displayThrustValue = Math.round(thrust * 100);
       const thrustWidth = ctx.measureText(displayThrustValue.toString()).width;
       ctx.fillText(displayThrustValue.toString(), w / 2 - thrustWidth / 2,
                    this.can.height);

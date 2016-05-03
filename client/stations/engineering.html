@@ -8,7 +8,13 @@
         display: block;
       }
     </style>
-    <bridgesim-power id="power" ship="[[ship]]"></bridgesim-power>
+
+    <bridgesim-power id="power"
+      db="[[db]]"
+      ship-id="[[shipId]]"
+      cur-subsystem="[[curSubsystem]]">
+    </bridgesim-power>
+
   </template>
   <script src="engineering.js"></script>
 </dom-module>

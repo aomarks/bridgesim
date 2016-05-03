@@ -13,7 +13,9 @@
     </style>
     <!-- Unload resource heavy renderer if not in active use. -->
     <template is="dom-if" if="[[active]]">
-      <bridgesim-renderer id="renderer" size="[[size]]" ships="[[ships]]" ship="[[ship]]"> </bridgesim-renderer>
+      <bridgesim-renderer id="renderer" size="[[size]]"
+        db="[[db]]" ship-id="[[shipId]]">
+      </bridgesim-renderer>
     </template>
   </template>
 

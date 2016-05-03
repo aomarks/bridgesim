@@ -1,6 +1,6 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../../bower_components/babylonjs/dist/babylon.2.3.d.ts" />
-///<reference path="../../core/ship.ts" />
+///<reference path="../../core/entity/db.ts" />
 ///<reference path="./ship.ts" />
 
 namespace Bridgesim.Client.Renderer {
@@ -16,14 +16,15 @@ namespace Bridgesim.Client.Renderer {
     private camera: BABYLON.ArcRotateCamera;
 
     private renderShips: Ship[] = [];
-    private shipMap: { [shipName: string]: Ship; } = {};
+    private shipMap: { [shipId: string]: Ship; } = {};
     private skybox: BABYLON.Mesh;
 
     @property({type: Boolean}) assetsLoaded: boolean = false;
 
     @property({type: Number}) size: number;
-    @property({type: Array}) ships: Core.Ship[];
-    @property({type: Object}) ship: Core.Ship;
+
+    @property({type: Object}) db: Core.Entity.Db;
+    @property({type: String}) shipId: string;
 
     ready() {
       this.engine = new BABYLON.Engine(this.$.renderCanvas, true);
@@ -134,36 +135,38 @@ namespace Bridgesim.Client.Renderer {
       if (!this.assetsLoaded) {
         return;
       }
-      const touched: { [shipName: string]: boolean; } = {};
+      const touched: { [shipId: string]: boolean; } = {};
 
       // Update each Renderer.Ship
-      for (let coreShip of this.ships) {
-        let ship = this.shipMap[coreShip.name];
+      for (let shipId in this.db.ships) {
+        let ship = this.shipMap[shipId];
         if (!ship) {
-          ship = new Ship(coreShip, this.scene, this.$.assets);
+          ship = new Ship(shipId, this.db, this.scene, this.$.assets);
           this.renderShips.push(ship);
-          this.shipMap[coreShip.name] = ship;
+          this.shipMap[shipId] = ship;
         }
-        touched[coreShip.name] = true;
+        touched[shipId] = true;
 
-        const alpha = coreShip === this.ship ? localAlpha: remoteAlpha;
+        const alpha = shipId === this.shipId ? localAlpha: remoteAlpha;
         ship.update(alpha);
       }
 
       // Remove old ships
       this.renderShips = this.renderShips.filter((ship: Ship): boolean => {
-        const name = ship.ship.name;
-        const keep = touched[name];
+        const shipId = ship.id;
+        const keep = touched[shipId];
         if (!keep) {
-          delete this.shipMap[name];
+          delete this.shipMap[shipId];
         }
         return keep;
       });
 
       // Update camera parent incase it's changed.
-      const currentShip = this.shipMap[this.ship.name];
+      const currentShip = this.shipMap[this.shipId];
+      if (currentShip) {
       this.camera.parent = currentShip.mesh;
       this.skybox.position = currentShip.mesh.position;
+      }
     }
   }
 

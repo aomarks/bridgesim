@@ -1,5 +1,4 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../core/ship.ts" />
 ///<reference path="../net/message.ts" />
 
 namespace Bridgesim.Client {
@@ -10,7 +9,7 @@ namespace Bridgesim.Client {
 
   @component('bridgesim-input')
   class Input extends polymer.Base {
-    @property({type: Object}) ship: Core.Ship;
+    @property({type: String, notify: true}) curSubsystem: string;
 
     private keys: {
       [key: number]: {
@@ -31,15 +30,28 @@ namespace Bridgesim.Client {
             {binding: () => this.commands.thrust = -1, repeat: true},
         [keyCode('A')]: {binding: () => this.commands.turn = -1, repeat: true},
         [keyCode('D')]: {binding: () => this.commands.turn = 1, repeat: true},
-        [keyCode('K')]: {binding: () => this.commands.power = 1, repeat: true},
-        [keyCode('J')]: {binding: () => this.commands.power = -1, repeat: true},
+        [keyCode('K')]: {
+          binding: () => this.commands.power[this.curSubsystem] = 1,
+          repeat: true
+        },
+        [keyCode('J')]: {
+          binding: () => this.commands.power[this.curSubsystem] = -1,
+          repeat: true
+        },
         [keyCode('H')]: {binding: () => this.prevSubsystem()},
         [keyCode('L')]: {binding: () => this.nextSubsystem()},
         [keyCode(' ')]: {binding: () => this.commands.fire = true},
       };
     }
 
-    resetCommands(): void { this.commands = {turn: 0, thrust: 0, power: 0}; }
+    resetCommands(): void {
+      this.commands = {
+        turn: 0,
+        thrust: 0,
+        power:<Core.Components.Power>{},
+        fire: false,
+      };
+    }
 
     ready(): void {
       window.addEventListener('keydown', this.onKeydown.bind(this));
@@ -101,22 +113,9 @@ namespace Bridgesim.Client {
       return prev;
     }
 
-    nextSubsystem(): void {
-      // TODO Consider deferring actually changing subsystem until process.
-      if (this.ship.curSubsystem == this.ship.subsystems.length - 1) {
-        this.ship.curSubsystem = 0;
-      } else {
-        this.ship.curSubsystem++;
-      }
-    }
-
-    prevSubsystem(): void {
-      if (this.ship.curSubsystem == 0) {
-        this.ship.curSubsystem = this.ship.subsystems.length - 1;
-      } else {
-        this.ship.curSubsystem--;
-      }
-    }
+    // TODO Actually cycle.
+    nextSubsystem(): void { this.curSubsystem = 'maneuvering'; }
+    prevSubsystem(): void { this.curSubsystem = 'engine'; }
   }
   Input.register();
 }

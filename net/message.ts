@@ -1,3 +1,5 @@
+///<reference path="../core/components.ts" />
+
 namespace Bridgesim.Net {
 
   export interface Message {
@@ -23,7 +25,7 @@ namespace Bridgesim.Net {
   export interface Hello { name: string; }
 
   export interface Welcome {
-    clientId: number;
+    playerId: string;
     roster: Roster;
     snapshot: Snapshot;
     snapshotInterval: number;
@@ -31,31 +33,16 @@ namespace Bridgesim.Net {
   }
 
   export interface Roster {
-    players: Player[];
-    ships: Ship[]
-  }
-
-  export interface Player {
-    id: number;
-    name: string;
-  }
-
-  export interface Ship {
-    id: number;
-    name: string;
-    crew: Assignment[];
-  }
-
-  export interface Assignment {
-    station: Station;
-    playerId?: number;
+    ships: {[id: string]: boolean};
+    names: {[id: string]: string};
+    players: {[id: string]: Core.Components.Player};
   }
 
   export interface SendChat { text: string; }
 
   export interface ReceiveChat {
     timestamp: number;
-    clientId?: number;
+    playerId?: string;
     announce?: boolean;
     text: string;
   }
@@ -64,30 +51,23 @@ namespace Bridgesim.Net {
     seq?: number;
     turn: number;
     thrust: number;
-    power: number;
-    fire?: boolean;
-  }
-
-  export interface ShipState {
-    shipId: number;
-    x: number;
-    y: number;
-    yaw: number;
-    thrust: number;
-    hp?: number;
+    power: Core.Components.Power;
+    fire: boolean;
   }
 
   export interface Snapshot {
     seq: number;
-    ships: ShipState[];
-    // TODO Clean up. Projectiles are not ships.
-    projectiles?: ShipState[];
+    lasers: {[id: string]: boolean};
+    positions: {[id: string]: Core.Components.Position};
+    velocities: {[id: string]: number};
+    healths: {[id: string]: Core.Components.Health};
+    power: {[id: string]: Core.Components.Power};
   }
 
   export interface CreateShip {}
 
   export interface JoinCrew {
-    shipId: number;
+    shipId: string;
     station: Station;
   }
 }

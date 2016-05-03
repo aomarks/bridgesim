@@ -47,7 +47,9 @@
       on-connection="onConnection">
     </bridgesim-peer-copypaste>
 
-    <bridgesim-input id="input" ship="[[ship]]"></bridgesim-input>
+    <bridgesim-input id="input"
+      cur-subsystem="{{curSubsystem}}">
+    </bridgesim-input>
 
     <style include="iron-flex iron-flex-alignment iron-flex-factors">
     </style>
@@ -111,7 +113,7 @@
     </paper-dialog>
 
     <paper-dialog id="lobbyDialog">
-      <bridgesim-lobby roster="[[roster]]"
+      <bridgesim-lobby db="[[db]]"
                        on-join-crew="joinCrew"
                        on-create-ship="createShip">
       </bridgesim-lobby>
@@ -171,18 +173,32 @@
                         class="flex-none">
         </bridgesim-chat>
 
-        <iron-pages id='stations' selected="[[routeData.station]]" attr-for-selected='name'>
-          <helm-station name='helm' ship="[[ship]]" ships="[[ships]]" projectiles="[[projectiles]]" size="[[size]]">
+        <iron-pages id="stations" selected="[[routeData.station]]" attr-for-selected="name">
+          <helm-station name="helm"
+            size="[[size]]"
+            db="[[db]]"
+            ship-id="[[shipId]]">
           </helm-station>
-          <comms-station name='comms' ship="[[ship]]">
+
+          <comms-station name="comms">
           </comms-station>
-          <science-station name='science' ship="[[ship]]" ships="[[ships]]">
+
+          <science-station name="science" db="[[db]]">
           </science-station>
-          <weapons-station name='weapons' ship="[[ship]]">
+
+          <weapons-station name="weapons">
           </weapons-station>
-          <engineering-station name='engineering' ship="[[ship]]">
+
+          <engineering-station name="engineering"
+            db="[[db]]"
+            ship-id="[[shipId]]"
+            cur-subsystem="[[curSubsystem]]">
           </engineering-station>
-          <viewscreen-station name='viewscreen' ship="[[ship]]" ships="[[ships]]" size="[[size]]">
+
+          <viewscreen-station name="viewscreen"
+            size="[[size]]"
+            db="[[db]]"
+            ship-id="[[shipId]]">
           </viewscreen-station>
         </iron-pages>
       </div>

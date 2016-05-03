@@ -1,5 +1,5 @@
 ///<reference path="../../bower_components/babylonjs/dist/babylon.2.3.d.ts" />
-///<reference path="../../core/ship.ts" />
+///<reference path="../../core/entity/db.ts" />
 ///<reference path="../asset-pack.ts" />
 ///<reference path="./renderer.ts" />
 
@@ -7,17 +7,19 @@ namespace Bridgesim.Client.Renderer {
   export class Ship {
     public mesh: BABYLON.Mesh;
 
-    private formFittingShield:boolean = false;
+    private formFittingShield: boolean = false;
     private shield: BABYLON.Mesh;
     private visualMesh: BABYLON.Mesh;
     private shieldMaterial: BABYLON.StandardMaterial;
 
-    constructor(public ship: Core.Ship, public scene: BABYLON.Scene, assetPack: AssetPack.AssetPack) {
+    constructor(public id: string, private db: Core.Entity.Db,
+                public scene: BABYLON.Scene, assetPack: AssetPack.AssetPack) {
       this.mesh = new BABYLON.Mesh('ship', scene);
       const shipAsset = assetPack.ships[0];
       console.log(shipAsset);
 
-      const reflectionTexture = new BABYLON.CubeTexture("textures/skybox/box", scene, SKYBOX_EXTENSIONS);
+      const reflectionTexture = new BABYLON.CubeTexture(
+          "textures/skybox/box", scene, SKYBOX_EXTENSIONS);
 
 
       assetPack.loadShip(shipAsset).then((mesh: BABYLON.Mesh) => {
@@ -91,25 +93,34 @@ namespace Bridgesim.Client.Renderer {
         this.shield.parent = this.mesh;
         this.shield.material = material;
       }
-
     }
 
     update(alpha: number) {
-      const s = this.ship;
-      this.mesh.position.x = s.body.lerpX(alpha)*100;
-      this.mesh.position.z = -s.body.lerpY(alpha)*100;
-      this.mesh.rotation.y = Math.PI/180 * s.body.lerpYaw(alpha)
-      const roll = this.ship.body.lerpRoll(alpha);
+      const pos = this.db.positions[this.id];
+      if (!pos) {
+        return;
+      }
+      let prev = this.db.prevPositions[this.id];
+      if (prev == null) {
+        prev = pos;
+      }
+      this.mesh.position.x = lerp(pos.x, prev.x, alpha) * 100;
+      this.mesh.position.z = -lerp(pos.y, prev.y, alpha) * 100;
+      this.mesh.rotation.y = Math.PI / 180 * lerp(pos.yaw, prev.yaw, alpha);
+      const roll = lerp(pos.roll, prev.roll, alpha);
       if (this.visualMesh) {
-        this.visualMesh.rotation.x = -(roll*roll)/4;
+        this.visualMesh.rotation.x = -(roll * roll) / 4;
         this.visualMesh.rotation.z = roll;
       }
       // visual scaling effect when going fast
-      this.mesh.scaling.z = 1/((Math.pow(s.thrust,4)*19)+1)
-      this.shield.setEnabled(this.ship.shieldEnabled);
+      const thrust = this.db.velocities[this.id];
+      this.mesh.scaling.z = 1 /
+                            ((Math.pow(thrust, 4) * 19) + 1)
+                            // TODO shield
+                            this.shield.setEnabled(false);
     }
 
-    walk(mesh: BABYLON.Node, cb: (node: BABYLON.Node)=>void) {
+    walk(mesh: BABYLON.Node, cb: (node: BABYLON.Node) => void) {
       for (let n of mesh.getDescendants()) {
         cb(n);
         this.walk(n, cb);

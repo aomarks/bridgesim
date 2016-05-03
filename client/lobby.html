@@ -18,12 +18,12 @@
     </style>
 
     <template is="dom-repeat" id="ships"
-              items="[[roster.ships]]" as="ship">
-      <h4>[[ship.name]]</h4>
-      <template is="dom-repeat" items="[[ship.crew]]" as="assignment">
+              items="[[shipIds(db.ships)]]" as="shipId">
+      <h4>[[shipName(db.names, shipId)]]</h4>
+      <template is="dom-repeat" items="[[stations]]" as="station">
         <paper-button on-tap="joinCrew" raised
-                      disabled="[[assigned(assignment)]]">
-          [[stationName(assignment.station)]]
+                      disabled="[[assigned(db.players, shipId, station)]]">
+          [[stationName(station)]]
         </paper-button>
       </template>
     </template>

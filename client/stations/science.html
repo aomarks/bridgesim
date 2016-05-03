@@ -16,19 +16,20 @@
         background-color: transparent;
       }
     </style>
+
     <paper-drawer-panel>
       <div drawer>
         <h3>Long Range Sensors</h3>
         <paper-menu selected-item="{{sel}}">
-          <template is="dom-repeat" items="[[ships]]">
-            <paper-item ship="{{item}}">[[item.name]]</paper-item>
+          <template is="dom-repeat" items="[[shipIds(db.ships)]]">
+            <paper-item ship="{{item}}">[[shipName(db.names, item)]]</paper-item>
           </template>
         </paper-menu>
       </div>
       <div main>
-        <h1>[[sel.ship.name]]</h1>
-        <p>HP: <span>[[sel.ship.hp]]</span></p>
-        <p>Shields: <span>[[sel.ship.shieldEnabled]]</span></p>
+        <h1>[[shipName(db.names, sel.ship)]]</h1>
+        <p>HP: <span>[[hp(db.healths, sel.ship)]]</span></p>
+        <p>Shields: <span>[[shields(db.healths, sel.ship)]]</span></p>
       </div>
     </paper-drawer-panel>
   </template>
