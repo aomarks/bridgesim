@@ -35,9 +35,9 @@ namespace Bridgesim.Client {
         password = prompt('Server Password');
       }
       const lobbyList = (this.querySelector('#lobbyList') as any);
-      lobbyList.connect(id, this.copyOffer, password).then((resp: {Answer: string}) => {
-        this.pasteAnswer = resp.Answer;
-      });
+      lobbyList.connect(id, this.copyOffer, password)
+          .then(
+              (resp: {Answer: string}) => { this.pasteAnswer = resp.Answer; });
     }
 
     refreshList(): void { (this.querySelector('#lobbyList') as any).refresh(); }
@@ -59,10 +59,11 @@ namespace Bridgesim.Client {
         this.fire('connection', conn);
         this.$.hostDialog.close();
       };
-      return conn.takeOffer(Net.decodeRSD(offer)) .then(answer => {
-        this.copyAnswer = Net.encodeRSD(answer);
-        return this.copyAnswer;
-      });
+      return conn.takeOffer(Net.decodeRSD(offer))
+          .then(answer => {
+            this.copyAnswer = Net.encodeRSD(answer);
+            return this.copyAnswer;
+          });
     }
 
     @observe('pasteAnswer')
