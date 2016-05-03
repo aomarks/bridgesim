@@ -8,11 +8,11 @@ namespace Bridgesim.Core.Systems {
 
     tick(): void {
       for (let id in this.db.ais) {
-        this.doit(id);
+        this.tickOne(id);
       }
     }
 
-    doit(thisId: string): void {
+    tickOne(thisId: string): void {
       // basic swarm logic, move towards/away nearest ship.
       const thisPos = this.db.positions[thisId];
       let nearestId: string = null;
@@ -40,7 +40,7 @@ namespace Bridgesim.Core.Systems {
           Math.atan2(nearestPos.y - thisPos.y, nearestPos.x - thisPos.x);
       const thetaDegrees = (thetaRadians + Math.PI * (friendliness / 2 + 0.5)) *
                            360.0 / (2.0 * Math.PI);
-      thisPos.yaw *= (59 / 60) + thetaDegrees * (1 / 60);
+      thisPos.yaw = thisPos.yaw * (59 / 60) + thetaDegrees * (1 / 60);
       this.db.velocities[thisId] = 0.1;
     }
   }
