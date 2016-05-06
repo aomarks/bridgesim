@@ -1,0 +1,28 @@
+{
+  "name": "bridgesim",
+  "version": "1.0.0",
+  "description": "It's a starship bridge simulator.",
+  "main": "index.js",
+  "dependencies": {
+    "grunt": "^1.0.1"
+  },
+  "devDependencies": {
+    "crisper": "^2.0.2",
+    "html-minifier": "^2.1.2",
+    "uglify-js": "^2.6.2",
+    "vulcanize": "^1.14.8"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aomarks/bridgesim.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/aomarks/bridgesim/issues"
+  },
+  "homepage": "https://github.com/aomarks/bridgesim#readme"
+}

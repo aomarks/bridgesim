@@ -1,4 +1,6 @@
 bower_components
 typings
+build
+node_modules
 *.js
 *.log
