@@ -34,6 +34,11 @@ namespace Bridgesim.Client {
       return ids;
     }
 
+    private isHuman(shipId: string): boolean {
+      console.log('isHumean', shipId);
+      return !this.db.ais[shipId];
+    }
+
     private shipName(names: {[id: string]: string}, id: string): string {
       return names[id] || '';
     }

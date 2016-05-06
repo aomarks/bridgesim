@@ -223,6 +223,7 @@ namespace Bridgesim.Client {
 
     applyRoster(roster: Net.Roster) {
       this.set('db.ships', roster.ships);
+      this.set('db.ais', roster.ais);
       this.set('db.names', roster.names);
       this.set('db.players', roster.players);
       for (let playerId in this.db.players) {

@@ -18,7 +18,7 @@
     </style>
 
     <template is="dom-repeat" id="ships"
-              items="[[shipIds(db.ships)]]" as="shipId">
+              items="[[shipIds(db.ships)]]" filter="isHuman" as="shipId">
       <h4>[[shipName(db.names, shipId)]]</h4>
       <template is="dom-repeat" items="[[stations]]" as="station">
         <paper-button on-tap="joinCrew" raised

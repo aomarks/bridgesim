@@ -173,6 +173,7 @@ namespace Bridgesim.Core {
         ships: this.db.ships,
         names: this.db.names,
         players: this.db.players,
+        ais: this.db.ais
       };
     }
 

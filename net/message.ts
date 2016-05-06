@@ -37,6 +37,7 @@ namespace Bridgesim.Net {
     ships: {[id: string]: boolean};
     names: {[id: string]: string};
     players: {[id: string]: Core.Components.Player};
+    ais: {[id: string]: boolean};
   }
 
   export interface SendChat { text: string; }
