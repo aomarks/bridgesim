@@ -9,6 +9,8 @@ namespace Bridgesim.Client {
 
   @component('bridgesim-chat')
   export class Chat extends polymer.Base {
+    @property({type: Boolean, value: false}) noInput;
+
     private text: string = '';
     private log: Net.ReceiveChat[];
 
@@ -33,6 +35,9 @@ namespace Bridgesim.Client {
     receiveMsg(chat: Net.ReceiveChat): void { this.unshift('log', chat); }
 
     private open(ev: KeyboardEvent): void {
+      if (this.noInput) {
+        return;
+      }
       if (ev.keyCode === TOGGLE_KEY) {
         this.toggle();
         ev.preventDefault();
@@ -42,6 +47,9 @@ namespace Bridgesim.Client {
 
     @listen('keydown')
     private swallowOrClose(ev: KeyboardEvent): void {
+      if (this.noInput) {
+        return;
+      }
       if (ev.keyCode === TOGGLE_KEY && !ev.repeat) {
         this.toggle();
         ev.preventDefault();

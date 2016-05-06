@@ -31,6 +31,9 @@
         font-size: inherit;
         padding: 3px 5px;
       }
+      input[hidden] {
+        display: none;
+      }
     </style>
 
     <div id="messages" class="flex-1">
@@ -54,7 +57,7 @@
       </template>
     </div>
 
-    <input id="input" value="{{text::input}}"></input>
+    <input id="input" value="{{text::input}}" hidden$="[[noInput]]"></input>
 
     <iron-a11y-keys target="[[input]]"
       keys="enter" on-keys-pressed="send"></iron-a11y-keys>
