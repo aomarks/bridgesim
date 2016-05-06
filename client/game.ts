@@ -60,6 +60,7 @@ namespace Bridgesim.Client {
         tickInterval: 0,      // Server controlled.
         snapshotInterval: 0,  // Server controlled.
         commandBufferSize: 100,
+        name: null
       };
 
       if (this.urlQuery.indexOf('host') != -1) {
@@ -115,6 +116,13 @@ namespace Bridgesim.Client {
       }
     }
 
+    @observe('settings.name')
+    nameChanged(name: string) {
+      if (this.conn) {
+        this.conn.send({updatePlayer: {name: name}}, true);
+      }
+    }
+
     resetSimulation() {
       if (this.animationRequestId != null) {
         cancelAnimationFrame(this.animationRequestId);
@@ -167,7 +175,7 @@ namespace Bridgesim.Client {
       };
 
       console.log('game: sending hello');
-      this.conn.send({hello: {name: 'stranger'}}, true);
+      this.conn.send({hello: {name: this.settings.name}}, true);
     }
 
     joinGame(): void { this.$.peerCopypaste.openClientDialog(); }
@@ -203,6 +211,12 @@ namespace Bridgesim.Client {
           this.latestSnapshotMs = performance.now();
           this.latestSnapshot = msg.snapshot;
           this.latestSeq = msg.snapshot.seq;
+        }
+      } else if (msg.updatePlayer) {
+        const updatePlayer = msg.updatePlayer;
+        const player = this.db.players[updatePlayer.playerId];
+        if (updatePlayer.name) {
+          player.name = updatePlayer.name;
         }
       }
     }

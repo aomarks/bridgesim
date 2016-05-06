@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="deps.html">
 
 <dom-module id="bridgesim-settings-menu">
@@ -16,6 +17,8 @@
         width: 120px;
       }
     </style>
+
+    <paper-input label="Name" value="{{settings.name::change}}"></paper-input>
 
     <paper-toggle-button checked="{{settings.localPredict}}">
       Local prediction</paper-toggle-button>
@@ -37,6 +40,11 @@
                  type="number" min="0" max="100">
       <div suffix>%</div>
     </paper-input>
+
+    <iron-localstorage name="settings-name"
+                       value="{{settings.name}}"
+                       on-iron-localstorage-load-empty="initializeDefaultName"
+  ></iron-localstorage>
   </template>
 
   <script src="settings-menu.js"></script>

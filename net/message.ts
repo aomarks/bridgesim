@@ -12,6 +12,7 @@ namespace Bridgesim.Net {
     snapshot?: Snapshot;
     createShip?: CreateShip;
     joinCrew?: JoinCrew;
+    updatePlayer?: UpdatePlayer;
   }
 
   export enum Station {
@@ -43,6 +44,7 @@ namespace Bridgesim.Net {
   export interface ReceiveChat {
     timestamp: number;
     playerId?: string;
+    name?: string;
     announce?: boolean;
     text: string;
   }
@@ -71,5 +73,10 @@ namespace Bridgesim.Net {
   export interface JoinCrew {
     shipId: string;
     station: Station;
+  }
+
+  export interface UpdatePlayer {
+    playerId?: string;
+    name?: string;
   }
 }

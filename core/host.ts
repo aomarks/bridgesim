@@ -187,12 +187,14 @@ namespace Bridgesim.Core {
         this.onCreateShip(connId, msg.createShip);
       } else if (msg.joinCrew) {
         this.onJoinCrew(connId, msg.joinCrew);
+      } else if (msg.updatePlayer) {
+        this.onUpdatePlayer(connId, msg.updatePlayer);
       }
     }
 
     private onHello(connId: string, hello: Net.Hello) {
       const player = this.db.players[connId] = {
-        name: 'P' + connId,
+        name: hello.name,
         shipId: null,
         station: null,
         inputs: [],
@@ -208,12 +210,21 @@ namespace Bridgesim.Core {
       console.log('host: sending welcome', connId);
       this.conns[connId].send({welcome: welcome}, true);
       this.broadcastRoster();
-      this.announce('player ' + connId + ' joined');
+      this.announce('player ' + player.name + ' (' + connId + ') joined');
 
       // TODO Don't create a ship for every player once client supports not
       // being assigned.
       const shipId = this.spawnShip('S' + connId, 0, 0, false);
       this.onJoinCrew(connId, {shipId: shipId, station: Net.Station.Helm});
+    }
+
+    private onUpdatePlayer(connId: string, updatePlayer: Net.UpdatePlayer) {
+      const player = this.db.players[connId];
+      const oldName = player.name;
+      player.name = updatePlayer.name;
+      this.announce('player ' + oldName + ' (' + connId + ') has changed their name to ' + player.name);
+      updatePlayer.playerId = connId;
+      this.broadcast({updatePlayer: updatePlayer}, true);
     }
 
     private onCreateShip(playerId: string, createShip: Net.CreateShip) {
@@ -235,9 +246,11 @@ namespace Bridgesim.Core {
     }
 
     private onSendChat(connId: string, sendChat: Net.SendChat) {
+      const name = this.db.players[connId] && this.db.players[connId].name || connId;
       const rc: Net.ReceiveChat = {
         timestamp: Date.now(),
         playerId: connId,
+        name: name,
         text: sendChat.text,
       };
       this.broadcast({receiveChat: rc}, true);

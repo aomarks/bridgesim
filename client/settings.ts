@@ -38,5 +38,8 @@ namespace Bridgesim.Client {
     // used to catch up our prediction. The older the snapshot, the more input
     // we need to re-apply.
     commandBufferSize: number;
+
+    // The name of the current player.
+    name: string;
   }
 }

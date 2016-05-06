@@ -46,7 +46,7 @@
         <template is="dom-if" if="{{!item.announce}}">
           <div>
             <span class="when">{{formatTimestamp(item.timestamp)}}</span>
-            <span class="who">&lt;p{{item.clientId}}&gt;</span>
+            <span class="who">&lt;{{item.name}}&gt;</span>
             {{item.text}}
           </div>
         </template>
