@@ -23,7 +23,8 @@
       <template is="dom-repeat" items="[[stations]]" as="station">
         <paper-button on-tap="joinCrew" raised
                       disabled="[[assigned(db.players, shipId, station)]]">
-          [[stationName(station)]]
+          <span>[[stationName(station)]]</span>
+          <span>[[playerName(db.players, shipId, station)]]</span>
         </paper-button>
       </template>
     </template>

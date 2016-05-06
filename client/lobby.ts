@@ -44,13 +44,24 @@ namespace Bridgesim.Client {
 
     private assigned(players: {[id: string]: Core.Components.Player},
                      shipId: string, station: Net.Station): boolean {
+      return !!this.playerFromStation(players, shipId, station);
+    }
+
+    private playerName(players: {[id: string]: Core.Components.Player},
+                     shipId: string, station: Net.Station): string {
+      const player = this.playerFromStation(players, shipId, station);
+      return player ? player.name : '';
+    }
+
+    private playerFromStation(players: {[id: string]: Core.Components.Player},
+                              shipId: string, station: Net.Station): Core.Components.Player {
       for (let playerId in players) {
         const player = players[playerId];
         if (player.shipId === shipId && player.station === station) {
-          return true;
+          return player;
         }
       }
-      return false;
+      return;
     }
   }
   Lobby.register();
