@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "It's a starship bridge simulator.",
   "main": "index.js",
-  "dependencies": {
-    "grunt": "^1.0.1"
-  },
   "devDependencies": {
     "crisper": "^2.0.2",
     "html-minifier": "^2.1.2",
