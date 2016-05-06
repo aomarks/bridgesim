@@ -12,24 +12,42 @@
       paper-drawer-panel {
         position: static;
       }
+      div[drawer], div[main] {
+        padding: 10px;
+      }
       div[drawer] {
         background-color: transparent;
+      }
+      paper-menu {
+        color: white;
+        background-color: #212121;
       }
     </style>
 
     <paper-drawer-panel>
       <div drawer>
         <h3>Long Range Sensors</h3>
+        <h4>Ships</h4>
         <paper-menu selected-item="{{sel}}">
           <template is="dom-repeat" items="[[shipIds(db.ships)]]">
-            <paper-item ship="{{item}}">[[shipName(db.names, item)]]</paper-item>
+            <paper-item ship="{{item}}" disabled="[[scanning]]">[[shipName(db.names, item)]]</paper-item>
           </template>
         </paper-menu>
       </div>
       <div main>
-        <h1>[[shipName(db.names, sel.ship)]]</h1>
-        <p>HP: <span>[[hp(db.healths, sel.ship)]]</span></p>
-        <p>Shields: <span>[[shields(db.healths, sel.ship)]]</span></p>
+        <template is="dom-if" if="[[sel.ship]]">
+          <h1>Ship: <span>[[shipName(db.names, sel.ship)]]</span></h1>
+          <p>HP: <span>[[hp(db.healths, sel.ship)]]</span></p>
+          <p>Shields: <span>[[shields(db.healths, sel.ship)]]</span></p>
+          <paper-button disabled="[[scanning]]" on-tap="scan">Scan</paper-button>
+          <template is="dom-if" if="[[scanning]]">
+            Scanning... Please wait
+          </template>
+          <template is="dom-if" if="[[scanResults]]">
+            <h2>Scan Results</h2>
+            <p>[[scanResults]]</p>
+          </template>
+        </template>
       </div>
     </paper-drawer-panel>
   </template>
