@@ -1,5 +1,6 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../core/entity/db.ts" />
+///<reference path="../core/util.ts" />
 ///<reference path="const.ts" />
 ///<reference path="colors.ts" />
 ///<reference path="util.ts" />
@@ -85,6 +86,20 @@ namespace Bridgesim.Client {
           ctx.strokeText(health.hp.toString(), x + 10, y + 20);
           ctx.fillText(health.hp.toString(), x + 10, y + 20);
         }
+      }
+
+      for (let id in this.db.debris) {
+        const pos = this.db.positions[id];
+        let prev = this.db.prevPositions[id];
+        if (!prev) {
+          prev = pos;
+        }
+        let x = lerp(pos.x, prev.x, remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
+        let y = lerp(pos.y, prev.y, remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
+        ctx.moveTo(x, y);
+        ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
+        ctx.fillStyle = '#964B00';
+        ctx.fill();
       }
 
       for (let id in this.db.lasers) {

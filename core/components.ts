@@ -38,4 +38,12 @@ namespace Bridgesim.Core.Components {
     engine: number;
     maneuvering: number;
   }
+
+  export enum DebrisType {
+    ASTEROID,
+  }
+
+  export interface Debris {
+    type: DebrisType;
+  }
 }

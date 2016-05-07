@@ -1,6 +1,7 @@
 ///<reference path="../net/connection.ts" />
 ///<reference path="../net/message.ts" />
 ///<reference path="entity/ship.ts" />
+///<reference path="entity/debris.ts" />
 ///<reference path="systems/ai.ts" />
 ///<reference path="systems/input.ts" />
 ///<reference path="systems/motion.ts" />
@@ -68,6 +69,9 @@ namespace Bridgesim.Core {
       this.spawnShip('Mean', 3, 2, true);
       this.spawnShip('Neutral', 4, 4, true);
       this.spawnShip('Friendly', 5, 3, true);
+      for (let i = 0; i < 10; i++) {
+        Entity.SpawnDebris(this.db, Math.random()*10, Math.random()*10);
+      }
       this.tick();
     }
 
@@ -155,6 +159,7 @@ namespace Bridgesim.Core {
         velocities: this.db.velocities,
         healths: this.db.healths,
         power: this.db.power,
+        debris: this.db.debris,
       };
     }
 

@@ -67,6 +67,7 @@ namespace Bridgesim.Net {
     velocities: {[id: string]: number};
     healths: {[id: string]: Core.Components.Health};
     power: {[id: string]: Core.Components.Power};
+    debris: {[id: string]: Core.Components.Debris};
   }
 
   export interface CreateShip {}
