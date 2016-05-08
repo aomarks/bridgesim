@@ -85,17 +85,16 @@ namespace Bridgesim.Client {
       const ctx = this.ctx;
       ctx.save();
       ctx.strokeStyle = AQUA;
+      ctx.beginPath();
       for (let i = 0; i < 360; i += degreeIncrements) {
         const char = i.toString();
-        const charWidth = ctx.measureText(char).width;
         ctx.translate(centerX, centerY);
-        ctx.beginPath();
         ctx.moveTo(0, -radius);
         ctx.lineTo(0, -radius + tickLength);
-        ctx.stroke();
         ctx.rotate(degreeIncrements * Math.PI / 180);
         ctx.translate(-centerX, -centerY);  // reset translation
       }
+      ctx.stroke();
       ctx.restore();
     }
   }
