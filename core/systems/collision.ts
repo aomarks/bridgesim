@@ -7,22 +7,28 @@ namespace Bridgesim.Core.Systems {
     constructor(private db: Entity.Db) {}
 
     tick(): void {
+      const colliders = {};
       for (let a in this.db.collidables) {
         const aCol = this.db.collidables[a];
         const aPos = this.db.positions[a];
-        const aBox = new Core.Collision.BoxCollider(aPos.x, aPos.y, aCol.length,
+        colliders[a] = new Core.Collision.BoxCollider(aPos.x, aPos.y, aCol.length,
                                                     aCol.width, aCol.mass);
-        for (let b in this.db.collidables) {
-          if (a == b) {
-            continue;
-          }
+      }
+      const collidables = Object.keys(this.db.collidables);
+      for (let i = 0; i < collidables.length; i++) {
+        const a = collidables[i];
+        const aCol = this.db.collidables[a];
+        const aPos = this.db.positions[a];
+        const aBox = colliders[a];
+
+        for (let j = i+1; j < collidables.length; j++) {
+          const b = collidables[j];
           const bCol = this.db.collidables[b];
           if (aCol.ignore == b || bCol.ignore == a) {
             continue;
           }
           const bPos = this.db.positions[b];
-          const bBox = new Core.Collision.BoxCollider(
-              bPos.x, bPos.y, bCol.length, bCol.width, bCol.mass);
+          const bBox = colliders[b];
           if (aBox.isOverlap(bBox)) {
             aBox.resolveCollision(bBox);
             // TODO Previous position.
@@ -38,7 +44,6 @@ namespace Bridgesim.Core.Systems {
             if (healthB) {
               healthB.hp -= aCol.damage;
             }
-            console.log('collision:', a, b);
           }
         }
       }
