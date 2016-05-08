@@ -72,10 +72,13 @@ namespace Bridgesim.Core {
       this.spawnShip('Mean', 3, 2, true);
       this.spawnShip('Neutral', 4, 4, true);
       this.spawnShip('Friendly', 5, 3, true);
-      for (let i = 0; i < 100; i++) {
-        Entity.SpawnDebris(this.db, Math.random()*10, Math.random()*10);
+      for (let i = 0; i < 2; i++) {
+        Entity.SpawnStation(this.db, null, Math.random()*9, Math.random()*9);
       }
-      Entity.SpawnStation(this.db, null, 5, 5);
+      for (let i = 0; i < 5; i++) {
+        Entity.SpawnAstroidBelt(this.db, Math.random()*10, Math.random()*10,
+                                Math.random()*10, Math.random()*10);
+      }
       this.tick();
     }
 
