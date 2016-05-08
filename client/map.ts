@@ -116,6 +116,10 @@ namespace Bridgesim.Client {
         this.drawImage(x, y, this.stationImage, 0, 1/2);
         const name = this.db.names[id];
         this.drawText(x + 10, y + 5, name);
+        const health = this.db.healths[id];
+        if (health != null) {
+          this.drawText(x + 10, y + 20, health.hp.toString());
+        }
       }
 
       for (let id in this.db.debris) {

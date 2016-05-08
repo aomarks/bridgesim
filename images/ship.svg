@@ -1,10 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="34px" height="59px" viewBox="0 0 34 59" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
-    <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
-    <title>ship</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
-        <path d="M10,41.082808 L12.170266,37.8652563 C12.0590941,37.4299452 12,36.973979 12,36.5044128 L12,32.2032429 C5.61213681,30.1036578 1,24.0904401 1,17 C1,8.163444 8.163444,1 17,1 C25.836556,1 33,8.163444 33,17 C33,23.7147551 28.8636607,29.4634164 23,31.8369659 L23,36.5044128 C23,36.9741055 22.940881,37.4300359 22.8297063,37.8652152 L25,41.082808 L25,37.990053 C25,35.7864076 26.7953562,34 29,34 C31.209139,34 33,35.7842933 33,37.990053 L33,54.009947 C33,56.2135924 31.2046438,58 29,58 C26.790861,58 25,56.2157067 25,54.009947 L25,51.6705232 C24.833777,51.51697 24.6825831,51.341968 24.5506056,51.1463032 L18.3384043,41.9363361 C18.064965,41.9782565 17.7849692,42 17.5,42 C17.2149209,42 16.9349076,41.9782931 16.6615201,41.9364481 L10.4493944,51.1463032 C10.3174169,51.341968 10.166223,51.51697 10,51.6705232 L10,54.009947 C10,56.2135924 8.20464385,58 6,58 C3.790861,58 2,56.2157067 2,54.009947 L2,37.990053 C2,35.7864076 3.79535615,34 6,34 C8.209139,34 10,35.7842933 10,37.990053 L10,41.082808 Z" id="Rectangle-2" stroke="#7FDBFF" stroke-width="5" sketch:type="MSShapeGroup"></path>
-    </g>
+<svg
+   xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="37"
+   height="62"
+   viewBox="0 0 37 62"
+   version="1.1"
+   id="svg2"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="ship.svg">
+  <metadata
+     id="metadata14">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>ship</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="958"
+     inkscape:window-height="1048"
+     id="namedview12"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="4"
+     inkscape:cx="19.5"
+     inkscape:cy="31"
+     inkscape:window-x="0"
+     inkscape:window-y="30"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <!-- Generator: Sketch 3.4.2 (15855) - http://www.bohemiancoding.com/sketch -->
+  <title
+     id="title4">ship</title>
+  <desc
+     id="desc6">Created with Sketch.</desc>
+  <defs
+     id="defs8" />
+  <g
+     id="Page-1"
+     sketch:type="MSPage"
+     style="fill:none;fill-rule:evenodd;stroke:none;stroke-width:1"
+     transform="translate(1.5,1.5)">
+    <path
+       d="m 10,41.082808 2.170266,-3.217552 C 12.059094,37.429945 12,36.973979 12,36.504413 l 0,-4.30117 C 5.6121368,30.103658 1,24.09044 1,17 1,8.163444 8.163444,1 17,1 c 8.836556,0 16,7.163444 16,16 0,6.714755 -4.136339,12.463416 -10,14.836966 l 0,4.667447 c 0,0.469692 -0.05912,0.925623 -0.170294,1.360802 L 25,41.082808 25,37.990053 C 25,35.786408 26.795356,34 29,34 c 2.209139,0 4,1.784293 4,3.990053 l 0,16.019894 C 33,56.213592 31.204644,58 29,58 26.790861,58 25,56.215707 25,54.009947 l 0,-2.339424 C 24.833777,51.51697 24.682583,51.341968 24.550606,51.146303 L 18.338404,41.936336 C 18.064965,41.978256 17.784969,42 17.5,42 17.214921,42 16.934908,41.97829 16.66152,41.93645 l -6.212126,9.209855 C 10.317417,51.341968 10.166223,51.51697 10,51.670523 l 0,2.339424 C 10,56.213592 8.2046439,58 6,58 3.790861,58 2,56.215707 2,54.009947 L 2,37.990053 C 2,35.786408 3.7953562,34 6,34 c 2.209139,0 4,1.784293 4,3.990053 l 0,3.092755 z"
+       id="Rectangle-2"
+       sketch:type="MSShapeGroup"
+       inkscape:connector-curvature="0"
+       style="stroke:#7fdbff;stroke-width:5" />
+  </g>
 </svg>
