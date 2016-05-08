@@ -87,7 +87,6 @@ namespace Bridgesim.Client {
       ctx.strokeStyle = AQUA;
       ctx.beginPath();
       for (let i = 0; i < 360; i += degreeIncrements) {
-        const char = i.toString();
         ctx.translate(centerX, centerY);
         ctx.moveTo(0, -radius);
         ctx.lineTo(0, -radius + tickLength);
