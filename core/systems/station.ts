@@ -25,7 +25,7 @@ namespace Bridgesim.Core.Systems {
       for (let resource in station.produces) {
         // Produce one resource probabilistically every n seconds.
         if (Math.random() < (diff / station.produces[resource])) {
-          station.resources[resource] += 1;
+          station.resources[resource] = (station.resources[resource]||0) + 1;
         }
       }
     }

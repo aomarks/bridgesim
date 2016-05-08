@@ -1,10 +1,14 @@
 ///<reference path="db.ts" />
+///<reference path="../resources.ts" />
 
 namespace Bridgesim.Core.Entity {
 
   export function SpawnStation(db: Db, name: string, x: number, y: number): string {
     const id = db.spawn();
-    db.stations[id] = {resources: {missile: 2, energy: 100}, produces: {missile: 60, energy: 0.5}};
+    db.stations[id] = {resources: {}, produces: {}};
+    const produces = db.stations[id].produces;
+    produces[Resource.Missile] = 60;
+    produces[Resource.Energy] = 1;
     if (!name) {
       name = 'Station ' + id;
     }

@@ -1,5 +1,6 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../../core/entity/db.ts" />
+///<reference path="../../core/resources.ts" />
 
 namespace Bridgesim.Client.Stations {
   interface Selected {
@@ -41,7 +42,8 @@ namespace Bridgesim.Client.Stations {
         const station = this.db.stations[this.sel.station];
         const resources = [];
         for (let resource in station.resources) {
-          resources.push(resource + ' (' + station.resources[resource] + ')');
+          const resourceName = Core.Resource[resource];
+          resources.push(resourceName + ' (' + station.resources[resource] + ')');
         }
         this.log(name, 'Available resources: ' + resources.join(', '));
       }, 1000);
