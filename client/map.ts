@@ -43,6 +43,7 @@ namespace Bridgesim.Client {
 
     drawBlip(x: number, y: number, color: string): void {
       const ctx = this.ctx;
+      ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
       ctx.fillStyle = color;
