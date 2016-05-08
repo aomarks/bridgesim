@@ -25,23 +25,31 @@ namespace Bridgesim.Client.Stations {
     idName(names: any, id: string): string { return names[id] || ''; }
 
     requestAssistance(e: Event): void {
-      const shipName = this.db.names[this.sel.ship];
-      this.logUs(shipName + ': Please assist us!');
+      const name = this.db.names[this.sel.ship];
+      this.logUs(name + ': Please assist us!');
     }
 
     requestSurrender(e: Event): void {
-      const shipName = this.db.names[this.sel.ship];
-      this.logUs(shipName + ': We request your unconditional surrender!');
+      const name = this.db.names[this.sel.ship];
+      this.logUs(name + ': We request your unconditional surrender!');
     }
 
     requestResources(e: Event): void {
-      const shipName = this.db.names[this.sel.station];
-      this.logUs(shipName + ': Do you have any resources that we can use?');
+      const name = this.db.names[this.sel.station];
+      this.logUs(name + ': Do you have any resources that we can use?');
+      setTimeout(() => {
+        const station = this.db.stations[this.sel.station];
+        const resources = [];
+        for (let resource in station.resources) {
+          resources.push(resource + ' (' + station.resources[resource] + ')');
+        }
+        this.log(name, 'Available resources: ' + resources.join(', '));
+      }, 1000);
     }
 
     requestDock(e: Event): void {
-      const shipName = this.db.names[this.sel.station];
-      this.logUs(shipName + ': We are requesting permission to dock.');
+      const name = this.db.names[this.sel.station];
+      this.logUs(name + ': We are requesting permission to dock.');
     }
 
     currentName(): string {

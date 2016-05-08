@@ -22,7 +22,7 @@ namespace Bridgesim.Core.Entity {
     ships: {[id: string]: boolean} = {};
     velocities: {[id: string]: number} = {};
     debris: {[id: string]: Components.Debris} = {};
-    stations: {[id: string]: boolean} = {};
+    stations: {[id: string]: Components.Station} = {};
 
     spawn(): string { return (this.nextId++).toString(); }
 

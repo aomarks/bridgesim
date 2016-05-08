@@ -46,4 +46,8 @@ namespace Bridgesim.Core.Components {
   export interface Debris {
     type: DebrisType;
   }
+
+  export interface Station {
+    resources: {[type: string]: number};
+  }
 }
