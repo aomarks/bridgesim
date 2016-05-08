@@ -49,5 +49,7 @@ namespace Bridgesim.Core.Components {
 
   export interface Station {
     resources: {[type: string]: number};
+    // station produces one resource every n seconds.
+    produces: {[type: string]: number};
   }
 }

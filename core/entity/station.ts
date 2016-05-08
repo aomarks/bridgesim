@@ -4,7 +4,7 @@ namespace Bridgesim.Core.Entity {
 
   export function SpawnStation(db: Db, name: string, x: number, y: number): string {
     const id = db.spawn();
-    db.stations[id] = {resources: {missile: 2, energy: 100}};
+    db.stations[id] = {resources: {missile: 2, energy: 100}, produces: {missile: 60, energy: 0.5}};
     if (!name) {
       name = 'Station ' + id;
     }

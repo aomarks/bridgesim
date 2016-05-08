@@ -4,11 +4,12 @@
 ///<reference path="entity/ship.ts" />
 ///<reference path="entity/station.ts" />
 ///<reference path="systems/ai.ts" />
+///<reference path="systems/collision.ts" />
 ///<reference path="systems/input.ts" />
-///<reference path="systems/motion.ts" />
 ///<reference path="systems/laser.ts" />
 ///<reference path="systems/missile.ts" />
-///<reference path="systems/collision.ts" />
+///<reference path="systems/motion.ts" />
+///<reference path="systems/station.ts" />
 
 namespace Bridgesim.Core {
 
@@ -37,6 +38,7 @@ namespace Bridgesim.Core {
     private laser: Systems.Laser = new Systems.Laser(this.db);
     private missile: Systems.Missile = new Systems.Missile(this.db);
     private collision: Systems.Collision = new Systems.Collision(this.db);
+    private station: Systems.Station = new Systems.Station(this.db);
 
     private conns: {[id: string]: Net.Connection} = {};
     private timeoutId: number;
@@ -126,6 +128,7 @@ namespace Bridgesim.Core {
         this.laser.tick();
         this.missile.tick();
         this.collision.tick();
+        this.station.tick();
 
         this.tickLag -= this.settings.tickInterval;
         this.snapshotStale = true;
