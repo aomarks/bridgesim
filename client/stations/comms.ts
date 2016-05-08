@@ -16,13 +16,13 @@ namespace Bridgesim.Client.Stations {
 
     draw() {}
 
-    shipIds(ships: any): string[] {
-      const ids = Object.keys(ships);
+    ids(dict: any): string[] {
+      const ids = Object.keys(dict);
       ids.sort();
       return ids;
     }
 
-    shipName(names: any, id: string): string { return names[id] || ''; }
+    idName(names: any, id: string): string { return names[id] || ''; }
 
     requestAssistance(e: Event): void {
       const shipName = this.db.names[this.sel.ship];
@@ -45,7 +45,7 @@ namespace Bridgesim.Client.Stations {
     }
 
     currentName(): string {
-      return this.shipName(this.db.names, this.shipId);
+      return this.idName(this.db.names, this.shipId);
     }
 
     private logUs(msg: string): void {

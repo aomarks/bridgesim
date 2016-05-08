@@ -31,26 +31,26 @@
       <div drawer>
         <h3>Ships Within Communication Range</h3>
         <paper-menu selected-item="{{sel}}">
-          <template is="dom-repeat" items="[[shipIds(db.ships)]]">
-            <paper-item ship="{{item}}">[[shipName(db.names, item)]]</paper-item>
+          <template is="dom-repeat" items="[[ids(db.ships)]]">
+            <paper-item ship="{{item}}">[[idName(db.names, item)]]</paper-item>
           </template>
         </paper-menu>
         <h3>Stations</h3>
         <paper-menu selected-item="{{sel}}">
-          <template is="dom-repeat" items="[[shipIds(db.ships)]]">
-            <paper-item station="{{item}}">[[shipName(db.names, item)]]</paper-item>
+          <template is="dom-repeat" items="[[ids(db.stations)]]">
+            <paper-item station="{{item}}">[[idName(db.names, item)]]</paper-item>
           </template>
         </paper-menu>
       </div>
       <div main>
         <template is="dom-if" if="[[sel.ship]]">
-          <h1>Ship: <span>[[shipName(db.names, sel.ship)]]</span></h1>
+          <h1>Ship: <span>[[idName(db.names, sel.ship)]]</span></h1>
           <h2>Actions</h2>
           <paper-button on-tap="requestAssistance">Please Assist</paper-button>
           <paper-button on-tap="requestSurrender">Surrender</paper-button>
         </template>
         <template is="dom-if" if="[[sel.station]]">
-          <h1>Station: <span>[[shipName(db.names, sel.ship)]]</span></h1>
+          <h1>Station: <span>[[idName(db.names, sel.station)]]</span></h1>
           <h2>Actions</h2>
           <paper-button on-tap="requestResources">Request resources</paper-button>
           <paper-button on-tap="requestDock">Request to dock</paper-button>
