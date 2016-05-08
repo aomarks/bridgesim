@@ -254,6 +254,7 @@ namespace Bridgesim.Client {
       this.db.velocities = snapshot.velocities;
       this.db.power = snapshot.power;
       this.db.debris = snapshot.debris;
+      this.db.stations = snapshot.stations;
     }
 
     frame(ts: number): void {

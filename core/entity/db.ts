@@ -22,6 +22,7 @@ namespace Bridgesim.Core.Entity {
     ships: {[id: string]: boolean} = {};
     velocities: {[id: string]: number} = {};
     debris: {[id: string]: Components.Debris} = {};
+    stations: {[id: string]: boolean} = {};
 
     spawn(): string { return (this.nextId++).toString(); }
 
@@ -41,6 +42,7 @@ namespace Bridgesim.Core.Entity {
       delete this.ships[id];
       delete this.velocities[id];
       delete this.debris[id];
+      delete this.stations[id];
     }
   }
 }

@@ -19,6 +19,7 @@ namespace Bridgesim.Client {
     private can: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
     private shipImage: HTMLImageElement;
+    private stationImage: HTMLImageElement;
 
     ready(): void {
       this.can = this.$.canvas;
@@ -26,6 +27,37 @@ namespace Bridgesim.Client {
       this.ctx.font = '11px Share Tech Mono';
       this.shipImage = new Image();
       this.shipImage.src = "/images/ship.svg";
+      this.stationImage = new Image();
+      this.stationImage.src = "/images/station.svg";
+    }
+
+    drawText(x: number, y: number, text: string): void {
+      const ctx = this.ctx;
+      ctx.beginPath();
+      ctx.fillStyle = '#FFF';
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 3;
+      ctx.strokeText(text, x, y);
+      ctx.fillText(text, x, y);
+    }
+
+    drawBlip(x: number, y: number, color: string): void {
+      const ctx = this.ctx;
+      ctx.moveTo(x, y);
+      ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+
+    drawImage(x: number, y: number, image: HTMLImageElement, yaw: number, scale: number): void {
+      const ctx = this.ctx;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(yaw * Math.PI / 180);
+      const width = image.width * scale;
+      const height = image.height * scale;
+      ctx.drawImage(image, -width / 2, -height / 2, width, height);
+      ctx.restore();
     }
 
     draw(localAlpha: number, remoteAlpha: number): void {
@@ -58,34 +90,32 @@ namespace Bridgesim.Client {
         let x = lerp(pos.x, prev.x, alpha) * TILE_PX + TILE_PX / 2 + HP;
         let y = lerp(pos.y, prev.y, alpha) * TILE_PX + TILE_PX / 2 + HP;
         if (shipId === this.shipId) {
-          ctx.save();
-          ctx.translate(x, y);
           const yaw = lerp(pos.yaw, prev.yaw, alpha);
-          ctx.rotate(yaw * Math.PI / 180);
-          const shipWidth = 34 / 3;
-          const shipHeight = 59 / 3;
-          ctx.drawImage(this.shipImage, -shipWidth / 2, -shipHeight / 2,
-                        shipWidth, shipHeight);
-          ctx.restore();
+          this.drawImage(x, y, this.shipImage, yaw, 1/2);
         } else {
-          ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
-          ctx.fillStyle = '#FF0000';
-          ctx.fill();
+          this.drawBlip(x, y, '#FF0000');
         }
 
-        ctx.beginPath();
-        ctx.fillStyle = '#FFF';
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 3;
         const name = this.db.names[shipId];
-        ctx.strokeText(name, x + 10, y + 5);
-        ctx.fillText(name, x + 10, y + 5);
+        this.drawText(x + 10, y + 5, name);
 
         const health = this.db.healths[shipId];
         if (health != null) {
-          ctx.strokeText(health.hp.toString(), x + 10, y + 20);
-          ctx.fillText(health.hp.toString(), x + 10, y + 20);
+          this.drawText(x + 10, y + 20, health.hp.toString());
         }
+      }
+
+      for (let id in this.db.stations) {
+        const pos = this.db.positions[id];
+        let prev = this.db.prevPositions[id];
+        if (!prev) {
+          prev = pos;
+        }
+        let x = lerp(pos.x, prev.x, remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
+        let y = lerp(pos.y, prev.y, remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
+        this.drawImage(x, y, this.stationImage, 0, 1/2);
+        const name = this.db.names[id];
+        this.drawText(x + 10, y + 5, name);
       }
 
       for (let id in this.db.debris) {
@@ -96,10 +126,7 @@ namespace Bridgesim.Client {
         }
         let x = lerp(pos.x, prev.x, remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
         let y = lerp(pos.y, prev.y, remoteAlpha) * TILE_PX + TILE_PX / 2 + HP;
-        ctx.moveTo(x, y);
-        ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
-        ctx.fillStyle = '#964B00';
-        ctx.fill();
+        this.drawBlip(x, y, '#964B00');
       }
 
       for (let id in this.db.lasers) {
