@@ -52,6 +52,17 @@ namespace Bridgesim.Client.Stations {
     requestDock(e: Event): void {
       const name = this.db.names[this.sel.station];
       this.logUs(name + ': We are requesting permission to dock.');
+      setTimeout(() => {
+        const pos = this.db.positions[this.shipId];
+        const stationPos = this.db.positions[this.sel.station];
+        const dist = Math.sqrt(Math.pow(pos.x - stationPos.x, 2) + Math.pow(pos.y - stationPos.y, 2));
+        if (dist > 0.25) {
+          this.log(name, 'You are currently out of range.');
+        } else {
+          this.log(name, 'Commencing docking procedures.');
+          // TODO: Transfer resources
+        }
+      }, 1000);
     }
 
     currentName(): string {
