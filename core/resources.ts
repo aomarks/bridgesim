@@ -1,6 +1,4 @@
-namespace Bridgesim.Core {
-  export enum Resource {
-    Energy,
-    Missile,
-  }
+export enum Resource {
+  Energy,
+  Missile,
 }

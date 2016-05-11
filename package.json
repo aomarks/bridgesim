@@ -4,13 +4,17 @@
   "description": "It's a starship bridge simulator.",
   "main": "index.js",
   "devDependencies": {
+    "browserify": "^13.0.1",
     "crisper": "^2.0.2",
     "html-minifier": "^2.1.2",
     "uglify-js": "^2.6.2",
-    "vulcanize": "^1.14.8"
+    "vulcanize": "^1.14.8",
+    "watchify": "^3.7.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "npm run watch-ts & npm run watch-js",
+    "watch-ts": "tsc --watch",
+    "watch-js": "watchify $(find client/ -name '*.js' | tr -s '\n' ' ') --outfile out.js --debug --verbose"
   },
   "repository": {
     "type": "git",

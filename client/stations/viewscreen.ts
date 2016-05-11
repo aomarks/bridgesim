@@ -1,32 +1,30 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../renderer/renderer.ts" />
 
-namespace Bridgesim.Client.Stations {
+import {Renderer} from "../renderer/renderer";
 
-  @component('viewscreen-station')
-  class Viewscreen extends polymer.Base {
-    private active: boolean = false;
-    private renderer: Bridgesim.Client.Renderer.Renderer;
+@component('viewscreen-station')
+class Viewscreen extends polymer.Base {
+  private active: boolean = false;
+  private renderer: Renderer;
 
-    draw(localAlpha: number, remoteAlpha: number) {
-      if (!this.active) {
-        this.renderer = null;
-        return;
-      }
-      if (!this.renderer) {
-        this.renderer = this.$$('#renderer');
-      }
-      this.renderer.draw(localAlpha, remoteAlpha);
+  draw(localAlpha: number, remoteAlpha: number) {
+    if (!this.active) {
+      this.renderer = null;
+      return;
     }
-
-    attached() {
-      this.parentNode.addEventListener('iron-select', this.select.bind(this));
+    if (!this.renderer) {
+      this.renderer = this.$$('#renderer');
     }
-
-    select(e: Event) {
-      this.active = (this.parentNode as any).selectedItem === this;
-    }
+    this.renderer.draw(localAlpha, remoteAlpha);
   }
 
-  Viewscreen.register();
+  attached() {
+    this.parentNode.addEventListener('iron-select', this.select.bind(this));
+  }
+
+  select(e: Event) {
+    this.active = (this.parentNode as any).selectedItem === this;
+  }
 }
+
+Viewscreen.register();

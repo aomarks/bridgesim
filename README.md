@@ -15,7 +15,7 @@ typings install
 This command compiles all `.ts` files in the project and will recompile if
 there are any changes made to them.
 ```
-tsc -w
+npm run watch
 ```
 
 ### Run
