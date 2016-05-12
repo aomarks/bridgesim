@@ -5,16 +5,18 @@
   "main": "index.js",
   "devDependencies": {
     "browserify": "^13.0.1",
+    "chai": "^3.5.0",
     "crisper": "^2.0.2",
     "html-minifier": "^2.1.2",
+    "mocha": "^2.4.5",
     "uglify-js": "^2.6.2",
     "vulcanize": "^1.14.8",
     "watchify": "^3.7.0"
   },
   "scripts": {
-    "watch": "npm run watch-ts & npm run watch-js",
-    "watch-ts": "tsc --watch",
-    "watch-js": "watchify $(find client/ -name '*.js' | tr -s '\n' ' ') --outfile out.js --debug --verbose"
+    "test": "tsc && mocha $(find -name '*_test.js' ! -path './node_modules/*' ! -path './bower_components/*'| tr -s '\n' ' ')",
+    "watch": "tsc --watch & watchify $(find client/ -name '*.js' ! -name '*_test.js' | tr -s '\n' ' ') --outfile out.js --debug --verbose",
+    "watch-test": "npm run watch-ts & mocha $(find -name '*_test.js' ! -path './node_modules/*' ! -path './bower_components/*'| tr -s '\n' ' ') --watch"
   },
   "repository": {
     "type": "git",

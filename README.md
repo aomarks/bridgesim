@@ -26,6 +26,18 @@ google-chrome http://localhost:8000?client # Open client tab
 ```
 Use WASD to pilot.
 
+
+### Test
+Run all tests (includes compilation).
+```
+npm run test
+```
+
+Run all tests (includes compilation) and watch for changes.
+```
+npm run watch-test
+```
+
 ## Deploy
 To build the production version of the app run the build script. This
 automatically compiles the typescript, vulcanizes and minifies the source code.
