@@ -29,6 +29,7 @@
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
 <link rel="import" href="./stations/helm.html">
+<link rel="import" href="./stations/helm2.html">
 <link rel="import" href="./stations/science.html">
 <link rel="import" href="./stations/viewscreen.html">
 <link rel="import" href="./stations/weapons.html">
@@ -49,7 +50,10 @@
     </bridgesim-peer-copypaste>
 
     <bridgesim-input id="input"
-      cur-subsystem="{{curSubsystem}}">
+      cur-subsystem="{{curSubsystem}}"
+      zoom="{{zoom}}"
+      pan-x="{{panX}}"
+      pan-y="{{panY}}">
     </bridgesim-input>
 
     <style include="iron-flex iron-flex-alignment iron-flex-factors">
@@ -58,6 +62,7 @@
     <style>
       :host {
         display: block;
+        height: 100%;
         background-color: #000;
         color: #fff;
 
@@ -105,6 +110,9 @@
       bridgesim-chat {
         margin: 0 !important;
         height: 98px;
+      }
+      iron-pages {
+        height: 100%;
       }
     </style>
 
@@ -162,6 +170,7 @@
                       attr-for-selected="name"
                       class="flex-2">
             <paper-tab name='helm'>HLM</paper-tab>
+            <paper-tab name='helm2'>HLM2</paper-tab>
             <paper-tab name='comms'>COM</paper-tab>
             <paper-tab name='science'>SCI</paper-tab>
             <paper-tab name='weapons'>WEP</paper-tab>
@@ -176,12 +185,23 @@
                         class="flex-none">
         </bridgesim-chat>
 
-        <iron-pages id="stations" selected="[[routeData.station]]" attr-for-selected="name">
+        <iron-pages id="stations" class="flex"
+           selected="[[routeData.station]]"
+           attr-for-selected="name">
+
           <helm-station name="helm"
             size="[[size]]"
             db="[[db]]"
             ship-id="[[shipId]]">
           </helm-station>
+
+          <helm2-station name="helm2"
+            db="[[db]]"
+            ship-id="[[shipId]]"
+            zoom="{{zoom}}"
+            pan-x="[[panX]]"
+            pan-y="[[panY]]">
+          </helm2-station>
 
           <comms-station name="comms"
             db="[[db]]"

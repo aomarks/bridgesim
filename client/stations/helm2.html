@@ -1,0 +1,50 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../map2.html">
+
+<dom-module id="helm2-station">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 100%;
+      }
+
+      bridgesim-map2 {
+        height: 100%;
+      }
+
+      #zoom {
+        align-items: center;
+        background-color: rgba(0, 0, 0, .7);
+        border-radius: 10px;
+        border: 2px solid rgba(255, 255, 255, .2);
+        display: flex;
+        justify-content: flex-end;
+        margin: 10px;
+        padding: 0 5px 0 10px;
+        position: absolute;
+        right: 0;
+        width: 200px;
+      }
+    </style>
+
+    <div id="zoom">
+      <span>Zoom</span>
+      <paper-slider
+        value="{{zoom}}" immediate-value="{{zoom}}"
+        min="10" max="800" snaps step="20">
+      </paper-slider>
+    </div>
+
+    <bridgesim-map2 id="map2"
+      db="[[db]]"
+      ship-id="[[shipId]]"
+      follow="[[shipId]]"
+      zoom="[[zoom]]"
+      pan-x="[[panX]]"
+      pan-y="[[panY]]">
+    </bridgesim-map2>
+  </template>
+</dom-module>

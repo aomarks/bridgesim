@@ -12,6 +12,9 @@ function keyCode(ch: string): number {
 @component('bridgesim-input')
 class Input extends polymer.Base {
   @property({type: String, notify: true}) curSubsystem: string;
+  @property({type: Number, notify: true}) zoom: number;
+  @property({type: Number, notify: true}) panX: number;
+  @property({type: Number, notify: true}) panY: number;
 
   private keys: {
     [key: number]: {
@@ -43,6 +46,12 @@ class Input extends polymer.Base {
       [keyCode('L')]: {binding: () => this.nextSubsystem()},
       [keyCode(' ')]: {binding: () => this.commands.fireLaser = true},
       [keyCode('M')]: {binding: () => this.commands.fireMissile = true},
+      [187]: {binding: () => this.zoom += 10},
+      [189]: {binding: () => this.zoom -= 10},
+      [38]: {binding: () => this.panY += 10},
+      [40]: {binding: () => this.panY -= 10},
+      [37]: {binding: () => this.panX -= 10},
+      [39]: {binding: () => this.panX += 10},
     };
   }
 

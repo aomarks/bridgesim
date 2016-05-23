@@ -229,7 +229,7 @@ export class Host {
 
     // TODO Don't create a ship for every player once client supports not
     // being assigned.
-    const shipId = this.spawnShip('S' + connId, 0, 0, false);
+    const shipId = this.spawnShip('S' + connId, 5, 5, false);
     this.onJoinCrew(connId, {shipId: shipId, station: Net.Station.Helm});
   }
 
