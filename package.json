@@ -16,7 +16,7 @@
   "scripts": {
     "test": "tsc && mocha $(find . -name '*_test.js' ! -path './node_modules/*' ! -path './bower_components/*'| tr -s '\n' ' ')",
     "watch": "tsc --watch & watchify $(find client/ -name '*.js' ! -name '*_test.js' | tr -s '\n' ' ') --outfile out.js --debug --verbose",
-    "watch-test": "npm run watch-ts & mocha $(find -name '*_test.js' ! -path './node_modules/*' ! -path './bower_components/*'| tr -s '\n' ' ') --watch"
+    "watch-test": "npm run watch-ts & mocha $(find . -name '*_test.js' ! -path './node_modules/*' ! -path './bower_components/*'| tr -s '\n' ' ') --watch"
   },
   "repository": {
     "type": "git",
