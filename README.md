@@ -10,6 +10,13 @@ bower install
 typings install
 ```
 
+## Update Dependencies
+```
+npm -g update
+npm update
+bower update
+```
+
 ## Developing
 ### Build TypeScript
 This command compiles all `.ts` files in the project and will recompile if
