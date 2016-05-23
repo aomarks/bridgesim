@@ -4,7 +4,7 @@ It's a starship bridge simulator.
 
 ## Install Dependencies
 ```
-npm -g install bower typescript typings
+npm -g install bower typescript typings http-server
 npm install
 bower install
 typings install
@@ -27,9 +27,9 @@ npm run watch
 
 ### Run
 ```
-python -m SimpleHTTPServer                 # Launch webserver on port 8000
-google-chrome http://localhost:8000?host   # Open host tab
-google-chrome http://localhost:8000?client # Open client tab
+http-server                                # Launch webserver on port 8080
+google-chrome http://localhost:8080?host   # Open host tab
+google-chrome http://localhost:8080?client # Open client tab
 ```
 Use WASD to pilot.
 
