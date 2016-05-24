@@ -4,6 +4,7 @@ class Helm2 extends polymer.Base {
 
   draw(localAlpha: number, remoteAlpha: number) {
     this.$.map2.draw(localAlpha, remoteAlpha);
+    this.$.headingIndicator.draw(localAlpha);
   }
 }
 

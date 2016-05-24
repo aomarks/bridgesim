@@ -2,31 +2,47 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
 <link rel="import" href="../map2.html">
+<link rel="import" href="../heading-indicator.html">
 
 <dom-module id="helm2-station">
   <template>
     <style>
       :host {
-        display: block;
+        display: flex;
         height: 100%;
+        position: relative;
       }
 
       bridgesim-map2 {
+        position: absolute;
+        width: 100%;
         height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
+
+      bridgesim-heading-indicator {
+        align-self: center;
+        margin: auto;
+        width: 50%;
+        height: 50%;
+        z-index: 1;
       }
 
       #zoom {
-        align-items: center;
-        background-color: rgba(0, 0, 0, .7);
-        border-radius: 10px;
-        border: 2px solid rgba(255, 255, 255, .2);
-        display: flex;
-        justify-content: flex-end;
-        margin: 10px;
-        padding: 0 5px 0 10px;
         position: absolute;
-        right: 0;
         width: 200px;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 5px 0 10px;
+        background-color: rgba(0, 0, 0, .7);
+        border: 2px solid rgba(255, 255, 255, .2);
+        border-radius: 10px;
+        z-index: 2;
       }
     </style>
 
@@ -38,6 +54,9 @@
       </paper-slider>
     </div>
 
+    <bridgesim-heading-indicator id="headingIndicator">
+    </bridgesim-heading-indicator>
+
     <bridgesim-map2 id="map2"
       db="[[db]]"
       ship-id="[[shipId]]"
@@ -46,5 +65,6 @@
       pan-x="[[panX]]"
       pan-y="[[panY]]">
     </bridgesim-map2>
+
   </template>
 </dom-module>
