@@ -29,7 +29,6 @@
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
 <link rel="import" href="./stations/helm.html">
-<link rel="import" href="./stations/helm2.html">
 <link rel="import" href="./stations/science.html">
 <link rel="import" href="./stations/viewscreen.html">
 <link rel="import" href="./stations/weapons.html">
@@ -172,7 +171,6 @@
                       attr-for-selected="name"
                       class="flex-2">
             <paper-tab name='helm'>HLM</paper-tab>
-            <paper-tab name='helm2'>HLM2</paper-tab>
             <paper-tab name='comms'>COM</paper-tab>
             <paper-tab name='science'>SCI</paper-tab>
             <paper-tab name='weapons'>WEP</paper-tab>
@@ -192,18 +190,12 @@
            attr-for-selected="name">
 
           <helm-station name="helm"
-            size="[[size]]"
-            db="[[db]]"
-            ship-id="[[shipId]]">
-          </helm-station>
-
-          <helm2-station name="helm2"
             db="[[db]]"
             ship-id="[[shipId]]"
             zoom="{{zoom}}"
             pan-x="[[panX]]"
             pan-y="[[panY]]">
-          </helm2-station>
+          </helm-station>
 
           <comms-station name="comms"
             db="[[db]]"
