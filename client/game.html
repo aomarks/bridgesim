@@ -1,7 +1,7 @@
 <link href='https://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'>
 
-<link rel="import" href="../bower_components/carbon-route/carbon-location.html">
-<link rel="import" href="../bower_components/carbon-route/carbon-route.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-location/iron-location.html">
@@ -223,8 +223,8 @@
       </div>
     </paper-drawer-panel>
 
-    <carbon-location route="{{route}}" use-hash-as-path></carbon-location>
-    <carbon-route route="{{route}}" pattern="/station/:station" data="{{routeData}}"></carbon-route>
+    <app-location route="{{route}}" use-hash-as-path></app-location>
+    <app-route route="{{route}}" pattern="/station/:station" data="{{routeData}}"></app-route>
   </template>
   <script src="../out.js"></script>
 </dom-module>

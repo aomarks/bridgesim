@@ -9,15 +9,15 @@
     "typings"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.3.1",
-    "polymer-ts": "^0.1.22",
-    "iron-elements": "PolymerElements/iron-elements#^1.0.8",
+    "polymer": "Polymer/polymer#^1.5.0",
+    "polymer-ts": "nippur72/PolymerTS#^0.1.26",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.10",
     "paper-elements": "PolymerElements/paper-elements#^1.0.7",
-    "babylonjs": "^2.2.0",
-    "carbon-elements": "PolymerElements/carbon-elements#^0.1.0",
-    "webrtc-lobby-elements": "^1.0.0"
+    "babylonjs": "BabylonJS/Babylon.js#^2.3.0",
+    "app-route": "PolymerElements/app-route#^0.9.1",
+    "webrtc-lobby-elements": "d4l3k/webrtc-lobby-elements#^1.0.3"
   },
   "resolutions": {
-    "polymer": "^1.4.0"
+    "polymer": "^1.5.0"
   }
 }
