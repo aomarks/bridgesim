@@ -9,7 +9,7 @@ export function SpawnDebris(db: Db, x: number, y: number): string {
   db.prevPositions[id] = {x: x, y: y, yaw: yaw, roll: roll};
   db.velocities[id] = 0;
   db.healths[id] = {hp: 10000, shields: false};
-  db.collidables[id] = {length: .2, width: .2, mass: 10000, damage: 20};
+  db.collidables[id] = {length: 200, width: 200, mass: 10000, damage: 20};
   db.debris[id] = {type: DebrisType.ASTEROID};
   console.log('entity.debris: spawned debris', id);
   return id;
@@ -17,8 +17,8 @@ export function SpawnDebris(db: Db, x: number, y: number): string {
 
 export function SpawnAstroidBelt(
     db: Db, x1: number, y1: number, x2: number, y2: number) {
-  const fuzz = 0.5;
-  const density = 5;
+  const fuzz = 500;
+  const density = .005;
   const xdist = x2 - x1;
   const ydist = y2 - y1;
   const dist = Math.sqrt(xdist * xdist + ydist * ydist);

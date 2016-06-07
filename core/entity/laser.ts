@@ -10,7 +10,7 @@ export function SpawnLaser(
   db.odometers[id] = 0;
   db.healths[id] = {hp: 0, shields: false};
   db.collidables[id] =
-      {length: .2, width: .2, mass: 0, damage: 1, ignore: origin};
+      {length: 200, width: 200, mass: 0, damage: 1, ignore: origin};
   console.log('entity.laser: spawned laser', id);
   return id;
 }

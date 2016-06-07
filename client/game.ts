@@ -27,7 +27,7 @@ class Game extends polymer.Base {
   @property({type: String}) playerId: string;
   @property({type: String}) shipId: string;
   @property({type: String, value: 'engine'}) curSubsystem: string;
-  @property({type: Number, value: 150}) zoom: number;
+  @property({type: Number, value: 0.7}) zoom: number;
   @property({type: Number, value: 0}) panX: number;
   @property({type: Number, value: 0}) panY: number;
 

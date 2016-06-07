@@ -6,6 +6,7 @@ import {HP} from './const';
 import {lerp, snap} from './util';
 import {radians} from '../core/util';
 import {Position} from '../core/components';
+import {SECTOR_METERS} from '../core/const';
 
 interface Coord2D {
   x: number;
@@ -13,6 +14,8 @@ interface Coord2D {
 }
 
 const BLIP_PX = 2;
+const MIN_METERS_PER_PX = 1;   // How far in we can zoom.
+const MAX_METERS_PER_PX = 20;  // How far out we can zoom.
 
 @component('bridgesim-map')
 export class Map extends polymer.Base {
@@ -20,7 +23,7 @@ export class Map extends polymer.Base {
   @property({type: String}) shipId: string;
   @property({type: String}) follow: string;
   @property({type: Number, value: 10}) size: number;
-  @property({type: Number, value: 150}) zoom: number;
+  @property({type: Number, value: 0}) zoom: number;
   @property({type: Number, value: 0}) panX: number;
   @property({type: Number, value: 0}) panY: number;
 
@@ -30,9 +33,10 @@ export class Map extends polymer.Base {
   private stationImage: HTMLImageElement;
   private w: number;  // canvas width
   private h: number;  // canvas height
-  private screenCenter: Coord2D = {x: 0, y: 0};
-  private worldCenter: Coord2D = {x: 0, y: 0};
+  private centerCC: Coord2D = {x: 0, y: 0};
+  private followGC: Coord2D = {x: 0, y: 0};
   private drawn: boolean = false;
+  private metersPerPx: number;
 
   ready(): void {
     this.can = this.$.canvas;
@@ -47,16 +51,16 @@ export class Map extends polymer.Base {
   resize(): void {
     this.w = this.can.width = this.can.clientWidth;
     this.h = this.can.height = this.can.clientHeight;
-    this.screenCenter.x = this.w / 2;
-    this.screenCenter.y = this.h / 2;
+    this.centerCC.x = this.w / 2;
+    this.centerCC.y = this.h / 2;
   }
 
   worldToScreen(x: number, y: number): Coord2D {
     return {
-      x: this.screenCenter.x - (this.worldCenter.x * this.zoom) +
-          (x * this.zoom) + this.panX,
-      y: this.screenCenter.y - (this.worldCenter.y * this.zoom) +
-          (y * this.zoom) - this.panY
+      x: this.centerCC.x + x / this.metersPerPx -
+          this.followGC.x / this.metersPerPx,
+      y: this.centerCC.y - y / this.metersPerPx +
+          this.followGC.y / this.metersPerPx
     };
   }
 
@@ -74,16 +78,18 @@ export class Map extends polymer.Base {
     return {x: s.x, y: s.y, yaw: lerp(pos.yaw, prev.yaw, alpha), roll: 0};
   }
 
-
   draw(localAlpha: number, remoteAlpha: number): void {
     if (!this.drawn) {
       this.resize();  // gross
     }
-
     this.ctx.clearRect(0, 0, this.w, this.h);
 
+    // Transform zoom range [0,1] to meter/px range.
+    this.metersPerPx = (-this.zoom * (MAX_METERS_PER_PX - MIN_METERS_PER_PX)) +
+        MAX_METERS_PER_PX;
+
     if (this.follow == null) {
-      this.worldCenter.x = this.worldCenter.y = this.size / 2;
+      this.followGC.x = this.followGC.y = 0;
 
     } else {
       const pos = this.db.positions[this.follow];
@@ -91,8 +97,8 @@ export class Map extends polymer.Base {
       if (prev == null) {
         prev = pos;
       }
-      this.worldCenter.x = lerp(pos.x, prev.x, localAlpha);
-      this.worldCenter.y = lerp(pos.y, prev.y, localAlpha);
+      this.followGC.x = lerp(pos.x, prev.x, localAlpha);
+      this.followGC.y = lerp(pos.y, prev.y, localAlpha);
     }
 
     this.drawGrid();
@@ -106,14 +112,20 @@ export class Map extends polymer.Base {
 
   drawGrid(): void {
     const ctx = this.ctx;
-    const sectPx = this.zoom;
-    const topLeft = this.worldToScreen(0, 0);
+    const sectorPx = Math.round(SECTOR_METERS / this.metersPerPx);
+    const galaxyPx = sectorPx * this.size;
+    const topLeft = {
+      x: snap(
+          this.centerCC.x - galaxyPx / 2 - this.followGC.x / this.metersPerPx),
+      y: snap(
+          this.centerCC.y - galaxyPx / 2 + this.followGC.y / this.metersPerPx)
+    };
     ctx.beginPath();
     for (let i = 0; i <= this.size; i++) {
-      ctx.moveTo(i * sectPx + topLeft.x, topLeft.y);
-      ctx.lineTo(i * sectPx + topLeft.x, this.size * sectPx + topLeft.y);
-      ctx.moveTo(topLeft.x, i * sectPx + topLeft.y);
-      ctx.lineTo(this.size * sectPx + topLeft.x, i * sectPx + topLeft.y);
+      ctx.moveTo(i * sectorPx + topLeft.x, topLeft.y);
+      ctx.lineTo(i * sectorPx + topLeft.x, this.size * sectorPx + topLeft.y);
+      ctx.moveTo(topLeft.x, i * sectorPx + topLeft.y);
+      ctx.lineTo(this.size * sectorPx + topLeft.x, i * sectorPx + topLeft.y);
     }
     ctx.lineWidth = 1;
     ctx.strokeStyle = color.GREEN;

@@ -28,9 +28,9 @@ export class Motion {
 
     const rads = radians(pos.yaw - 90);
     // TODO Do this curve somewhere else.
-    const velocity = Math.pow(this.db.velocities[id], 2);
+    const velocity = Math.pow(this.db.velocities[id], 2) * 1000;
     pos.x += velocity * Math.cos(rads);
-    pos.y += velocity * Math.sin(rads);
+    pos.y -= velocity * Math.sin(rads);
     // console.log('new position', pos.x, pos.y);
 
     pos.roll *= .95;

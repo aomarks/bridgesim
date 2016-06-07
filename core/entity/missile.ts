@@ -10,7 +10,7 @@ export function SpawnMissile(
   db.odometers[id] = 0;
   db.healths[id] = {hp: 0, shields: false};
   db.collidables[id] =
-      {length: 1, width: 1, mass: 0, damage: 20, ignore: origin};
+      {length: 1000, width: 1000, mass: 0, damage: 20, ignore: origin};
   console.log('entity.missile: spawned missile', id);
   return id;
 }

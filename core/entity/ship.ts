@@ -12,7 +12,7 @@ export function SpawnShip(
   db.prevPositions[id] = {x: x, y: y, yaw: 120, roll: 0};
   db.velocities[id] = 0;
   db.inputs[id] = [];
-  db.collidables[id] = {length: .03, width: .03, mass: 10, damage: 10};
+  db.collidables[id] = {length: 30, width: 30, mass: 10, damage: 10};
   db.healths[id] = {hp: 100, shields: true};
   db.power[id] = {engine: 100, maneuvering: 100};
   console.log(name, ai);

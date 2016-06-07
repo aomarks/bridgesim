@@ -11,6 +11,7 @@ import {SpawnDebris, SpawnAstroidBelt} from "./entity/debris";
 import {SpawnShip} from "./entity/ship";
 import {SpawnStation} from "./entity/station";
 import {Station} from "./systems/station";
+import {randGalaxyCoord} from "./util";
 
 export interface Settings {
   // Milliseconds between simulation ticks.
@@ -68,16 +69,15 @@ export class Host {
 
   start() {
     console.log('host: starting');
-    this.spawnShip('Mean', 3, 2, true);
-    this.spawnShip('Neutral', 4, 4, true);
-    this.spawnShip('Friendly', 5, 3, true);
+    const rand = () => randGalaxyCoord(10);
+    this.spawnShip('Mean', rand(), rand(), true);
+    this.spawnShip('Neutral', rand(), rand(), true);
+    this.spawnShip('Friendly', rand(), rand(), true);
     for (let i = 0; i < 2; i++) {
-      SpawnStation(this.db, null, Math.random() * 9, Math.random() * 9);
+      SpawnStation(this.db, null, rand(), rand());
     }
     for (let i = 0; i < 5; i++) {
-      SpawnAstroidBelt(
-          this.db, Math.random() * 10, Math.random() * 10, Math.random() * 10,
-          Math.random() * 10);
+      SpawnAstroidBelt(this.db, rand(), rand(), rand(), rand());
     }
     this.tick();
   }
@@ -229,7 +229,7 @@ export class Host {
 
     // TODO Don't create a ship for every player once client supports not
     // being assigned.
-    const shipId = this.spawnShip('S' + connId, 5, 5, false);
+    const shipId = this.spawnShip('S' + connId, 0, 0, false);
     this.onJoinCrew(connId, {shipId: shipId, station: Net.Station.Helm});
   }
 

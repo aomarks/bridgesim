@@ -14,7 +14,7 @@ export function SpawnStation(
   db.names[id] = name;
   db.positions[id] = {x: x, y: y, yaw: 0, roll: 0};
   db.prevPositions[id] = {x: x, y: y, yaw: 0, roll: 0};
-  db.collidables[id] = {length: .03, width: .03, mass: 1000, damage: 10};
+  db.collidables[id] = {length: 300, width: 300, mass: 1000, damage: 10};
   db.healths[id] = {hp: 1000, shields: true};
   console.log('entity.station: spawned station', id, name);
   return id;
