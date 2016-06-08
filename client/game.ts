@@ -18,7 +18,7 @@ const RTC_CONFIG: RTCConfiguration = {
 
 @component('bridgesim-game')
 class Game extends polymer.Base {
-  @property({type: Number, value: 100}) size: number;
+  @property({type: Number, value: 1}) size: number;
   @property({type: Object}) settings: Settings;
   @property({type: Object}) routeData: {station: string};
   @property({type: Object}) db: Db;
@@ -187,6 +187,7 @@ class Game extends polymer.Base {
   onMessage(msg: Net.Message) {
     if (msg.welcome) {
       console.log('game: got welcome', msg.welcome.playerId);
+      this.size = msg.welcome.galaxySize;
       this.settings.tickInterval = msg.welcome.tickInterval;
       this.settings.snapshotInterval = msg.welcome.snapshotInterval;
       this.playerId = msg.welcome.playerId;

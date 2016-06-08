@@ -14,6 +14,9 @@ import {Station} from "./systems/station";
 import {randGalaxyCoord} from "./util";
 
 export interface Settings {
+  // The play field will have this many sectors across and down.
+  galaxySize: number;
+
   // Milliseconds between simulation ticks.
   tickInterval: number;
 
@@ -26,6 +29,7 @@ export interface Settings {
 
 export class Host {
   private settings: Settings = {
+    galaxySize: 12,
     tickInterval: 1000 / 30,
     snapshotInterval: 1000 / 15,
     commandBufferSize: 100,
@@ -69,7 +73,7 @@ export class Host {
 
   start() {
     console.log('host: starting');
-    const rand = () => randGalaxyCoord(10);
+    const rand = () => randGalaxyCoord(this.settings.galaxySize);
     this.spawnShip('Mean', rand(), rand(), true);
     this.spawnShip('Neutral', rand(), rand(), true);
     this.spawnShip('Friendly', rand(), rand(), true);
@@ -221,6 +225,7 @@ export class Host {
       roster: this.makeRoster(),
       snapshotInterval: this.settings.snapshotInterval,
       tickInterval: this.settings.tickInterval,
+      galaxySize: this.settings.galaxySize,
     };
     console.log('host: sending welcome', connId);
     this.conns[connId].send({welcome: welcome}, true);

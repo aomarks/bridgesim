@@ -29,6 +29,7 @@ export interface Welcome {
   snapshot: Snapshot;
   snapshotInterval: number;
   tickInterval: number;
+  galaxySize: number;
 }
 
 export interface Roster {

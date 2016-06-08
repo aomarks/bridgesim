@@ -22,7 +22,7 @@ export class Map extends polymer.Base {
   @property({type: Object}) db: Db;
   @property({type: String}) shipId: string;
   @property({type: String}) follow: string;
-  @property({type: Number, value: 10}) size: number;
+  @property({type: Number, value: 2}) size: number;
   @property({type: Number, value: 0}) zoom: number;
   @property({type: Number, value: 0}) panX: number;
   @property({type: Number, value: 0}) panY: number;
