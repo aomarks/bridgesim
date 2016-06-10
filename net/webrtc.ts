@@ -1,4 +1,4 @@
-///<reference path="../typings/browser.d.ts" />
+///<reference path="../typings/index.d.ts" />
 
 import {Connection} from "./connection";
 import {Message} from "./message";

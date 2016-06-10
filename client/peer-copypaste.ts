@@ -1,5 +1,5 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../typings/browser.d.ts" />
+///<reference path="../typings/index.d.ts" />
 
 import {WebRTCConnection, encodeRSD, decodeRSD} from "../net/webrtc";
 

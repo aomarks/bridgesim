@@ -1,5 +1,5 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../typings/browser.d.ts" />
+///<reference path="../typings/index.d.ts" />
 
 import * as Net from "../net/message";
 import {ChatEvent} from "./chat";
