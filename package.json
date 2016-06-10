@@ -17,7 +17,8 @@
     "test": "tsc && mocha $(find . -name '*_test.js' ! -path './node_modules/*' ! -path './bower_components/*'| tr -s '\n' ' ')",
     "watch": "tsc --watch & watchify $(find client/ -name '*.js' ! -name '*_test.js' | tr -s '\n' ' ') --outfile out.js --debug --verbose",
     "watch-test": "tsc --watch & mocha $(find . -name '*_test.js' ! -path './node_modules/*' ! -path './bower_components/*'| tr -s '\n' ' ') --watch",
-    "clean": "rm -rf build && find . -name '*.js' ! -path './build.js' ! -path './node_modules/*' ! -path './bower_components/*' | xargs rm"
+    "clean": "rm -rf build && find . -name '*.js' ! -path './util/build.js' ! -path './node_modules/*' ! -path './bower_components/*' | xargs rm",
+    "build": "node ./util/build.js"
   },
   "repository": {
     "type": "git",
