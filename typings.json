@@ -1,5 +1,5 @@
 {
-  "ambientDependencies": {
+  "globalDependencies": {
     "MediaStream": "github:DefinitelyTyped/DefinitelyTyped/webrtc/MediaStream.d.ts#b59563b811042b592581868b4c015e91d1db1096",
     "RTCPeerConnection": "github:DefinitelyTyped/DefinitelyTyped/webrtc/RTCPeerConnection.d.ts#bc92442c075929849ec41d28ab618892ba493504",
     "chai": "registry:dt/chai#3.4.0+20160317120654",
