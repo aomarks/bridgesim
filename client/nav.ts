@@ -4,7 +4,7 @@ import * as color from "./colors";
 import {Db} from "../core/entity/db";
 import {HP} from "./const";
 import {lerp} from "./util";
-import {radians} from "../core/util";
+import {radians} from "../core/math";
 
 @component('bridgesim-nav')
 export class Nav extends polymer.Base {

@@ -2,6 +2,7 @@ import * as Net from "../../net/message";
 import {Db} from "../entity/db";
 import {SpawnLaser} from "../entity/laser";
 import {SpawnMissile} from "../entity/missile";
+import {clamp} from "../math";
 
 // Applies player input.
 export class Input {
@@ -25,13 +26,12 @@ export class Input {
     for (let sys in input.power) {
       const delta = input.power[sys];
       if (delta) {
-        power[sys] = Math.min(100, Math.max(0, power[sys] + delta));
+        power[sys] = clamp(power[sys] + delta, 0, 100);
       }
     }
 
     if (velocity != null) {
-      this.db.velocities[id] =
-          Math.min(1, Math.max(0, velocity + (.01 * input.thrust)));
+      this.db.velocities[id] = clamp(velocity + (.01 * input.thrust), 0, 1);
     }
 
     if (pos != null) {

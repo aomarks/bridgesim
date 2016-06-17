@@ -1,10 +1,17 @@
 import {Db} from "../entity/db";
-import {radians} from "../util";
+import {radians, clamp} from "../math";
+import {maxCoord} from "../galaxy";
 
 // Updates the position and previous position of entities according to their
 // velocity.
 export class Motion {
-  constructor(private db: Db) {}
+  maxCoord: number;
+  minCoord: number;
+
+  constructor(private db: Db, galaxySize: number) {
+    this.maxCoord = maxCoord(galaxySize);
+    this.minCoord = -this.maxCoord;
+  }
 
   tick(): void {
     for (let id in this.db.velocities) {
@@ -32,6 +39,10 @@ export class Motion {
     pos.x += velocity * Math.cos(rads);
     pos.y -= velocity * Math.sin(rads);
     // console.log('new position', pos.x, pos.y);
+
+    // Don't allow movement beyond the galaxy border.
+    pos.x = clamp(pos.x, this.minCoord, this.maxCoord);
+    pos.y = clamp(pos.y, this.minCoord, this.maxCoord);
 
     pos.roll *= .95;
 
