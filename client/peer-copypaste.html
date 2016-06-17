@@ -15,45 +15,68 @@
         cursor: pointer;
         resize: none;
       }
+      [hidden] {
+        display: none;
+      }
+      table {
+        width: 100%;
+      }
+      #connectByID {
+        width: calc(100% - 90px);
+        display: inline-block;
+      }
     </style>
 
     <paper-dialog id="clientDialog" on-iron-overlay-closed="clear">
-      <div>send this offer to the server:</div>
-      <textarea class="token" on-tap="selectAndCopy">[[copyOffer]]</textarea>
-      <div>paste the answer here:</div>
-      <textarea class="token" value="{{pasteAnswer::input}}"></textarea>
-
-      <div><paper-toggle-button checked="{{showPublicLobbies}}">Public Lobbies</paper-toggle-button></div>
-      <template is="dom-if" if="[[showPublicLobbies]]">
-        <paper-button on-tap="refreshList">Refresh</paper-button>
-        <table>
-          <thead>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Creator</th>
-            <th>RequiresPassword</th>
-            <th>Distance</th>
-            <th>Size</th>
-            <th></th>
-          </thead>
-          <tbody>
-            <template is="dom-repeat" items="{{lobbies}}">
-              <tr>
-                <td>{{item.ID}}</td>
-                <td>{{item.Name}}</td>
-                <td>{{item.Creator}}</td>
-                <td>{{item.RequiresPassword}}</td>
-                <td>{{item.Distance}}</td>
-                <td>
-                  <span>{{item.People}}</span> / <span>{{item.Capacity}}</span>
-                </td>
-                <td><paper-button on-tap="connect">Connect</paper-button></td>
-              </tr>
-            </template>
-          </tbody>
-        </table>
-        <webrtc-lobby-list id="lobbyList" url="wss://fn.lc/lobby" lobbies="{{lobbies}}" service="bridgesim"></webrtc-lobby-list>
-      </template>
+      <div>
+        <h2>Connect</h2>
+        <paper-input id="connectByID" label="Connect By ID" value="{{hostID}}"></paper-input>
+        <paper-button on-tap="connectByID">Connect</paper-button>
+      </div>
+      <div>
+        <paper-toggle-button checked="{{showPublicLobbies}}">Show Public Lobbies</paper-toggle-button>
+        <template is="dom-if" if="[[showPublicLobbies]]">
+          <table>
+            <thead>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Creator</th>
+              <th>RequiresPassword</th>
+              <th>Distance</th>
+              <th>Size</th>
+              <th></th>
+            </thead>
+            <tbody>
+              <template is="dom-repeat" items="{{lobbies}}">
+                <tr>
+                  <td>{{item.ID}}</td>
+                  <td>{{item.Name}}</td>
+                  <td>{{item.Creator}}</td>
+                  <td>{{item.RequiresPassword}}</td>
+                  <td>{{item.Distance}}</td>
+                  <td>
+                    <span>{{item.People}}</span> / <span>{{item.Capacity}}</span>
+                  </td>
+                  <td><paper-button on-tap="connect">Connect</paper-button></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+          <paper-button on-tap="refreshList">Refresh</paper-button>
+        </template>
+      </div>
+      <div>
+        <paper-toggle-button checked="{{showRTCOffer}}">
+          Show Manual WebRTC Offers
+        </paper-toggle-button>
+        <div hidden$="[[!showRTCOffer]]">
+          <div>send this offer to the server:</div>
+          <textarea class="token" on-tap="selectAndCopy">[[copyOffer]]</textarea>
+          <div>paste the answer here:</div>
+          <textarea class="token" value="{{pasteAnswer::input}}"></textarea>
+        </div>
+      </div>
+      <webrtc-lobby-list id="lobbyList" url="wss://fn.lc/lobby" lobbies="{{lobbies}}" service="bridgesim"></webrtc-lobby-list>
     </paper-dialog>
 
     <paper-dialog id="hostDialog" on-iron-overlay-closed="clear">

@@ -115,6 +115,9 @@
         min-width: 400px;
         min-height: 400px;
       }
+      [hidden] {
+        display: none;
+      }
     </style>
 
     <paper-dialog id="settingsDialog">
@@ -147,15 +150,14 @@
         <template is="dom-if" if="[[isHost]]" restamp>
           ID: <span>[[serverToken]]</span>
           <paper-toggle-button checked="{{serverHidden}}">Hidden</paper-toggle-button>
-          <template is="dom-if" if="[[!serverHidden]]">
-            <paper-input label="Server Name" value="{{serverName}}"></paper-input>
-          </template>
+          <paper-input hidden$="[[serverHidden]]" label="Server Name" value="{{serverName}}"></paper-input>
 
           <webrtc-lobby-host id="lobbyHost"
             url="wss://fn.lc/lobby"
             service="bridgesim"
             name="{{serverName}}"
             token="{{serverToken}}"
+            hidden="{{serverHidden}}"
             ></webrtc-lobby-host>
         </template>
       </div>
