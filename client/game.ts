@@ -133,7 +133,7 @@ class Game extends polymer.Base {
     this.lag = 0;
     this.welcomed = false;
     this.db = new Db();
-    this.motion = new Motion(this.db);
+    this.motion = null;
     this.input = new Input(this.db);
     console.log('game: reset simulation');
   }
@@ -188,6 +188,7 @@ class Game extends polymer.Base {
     if (msg.welcome) {
       console.log('game: got welcome', msg.welcome.playerId);
       this.size = msg.welcome.galaxySize;
+      this.motion = new Motion(this.db, this.size);
       this.settings.tickInterval = msg.welcome.tickInterval;
       this.settings.snapshotInterval = msg.welcome.snapshotInterval;
       this.playerId = msg.welcome.playerId;

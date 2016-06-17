@@ -4,9 +4,9 @@ import * as color from './colors';
 import {Db} from '../core/entity/db';
 import {HP} from './const';
 import {lerp, snap} from './util';
-import {radians} from '../core/util';
+import {radians} from '../core/math';
 import {Position} from '../core/components';
-import {SECTOR_METERS} from '../core/const';
+import {SECTOR_METERS} from '../core/galaxy';
 
 interface Coord2D {
   x: number;

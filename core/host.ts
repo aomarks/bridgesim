@@ -11,7 +11,7 @@ import {SpawnDebris, SpawnAstroidBelt} from "./entity/debris";
 import {SpawnShip} from "./entity/ship";
 import {SpawnStation} from "./entity/station";
 import {Station} from "./systems/station";
-import {randGalaxyCoord} from "./util";
+import {randCoord} from "./galaxy";
 
 export interface Settings {
   // The play field will have this many sectors across and down.
@@ -38,7 +38,7 @@ export class Host {
   private db: Db = new Db();
   private ai: Ai = new Ai(this.db);
   private input: Input = new Input(this.db);
-  private motion: Motion = new Motion(this.db);
+  private motion: Motion = new Motion(this.db, this.settings.galaxySize);
   private laser: Laser = new Laser(this.db);
   private missile: Missile = new Missile(this.db);
   private collision: Collision = new Collision(this.db);
@@ -73,7 +73,7 @@ export class Host {
 
   start() {
     console.log('host: starting');
-    const rand = () => randGalaxyCoord(this.settings.galaxySize);
+    const rand = () => randCoord(this.settings.galaxySize);
     this.spawnShip('Mean', rand(), rand(), true);
     this.spawnShip('Neutral', rand(), rand(), true);
     this.spawnShip('Friendly', rand(), rand(), true);
