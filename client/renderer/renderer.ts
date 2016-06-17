@@ -1,5 +1,5 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../../bower_components/babylonjs/dist/babylon.2.3.d.ts" />
+///<reference path="../../bower_components/babylonjs/dist/babylon.2.4.d.ts" />
 
 import {Db} from "../../core/entity/db";
 import {Ship} from "./ship";

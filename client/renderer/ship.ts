@@ -1,4 +1,4 @@
-///<reference path="../../bower_components/babylonjs/dist/babylon.2.3.d.ts" />
+///<reference path="../../bower_components/babylonjs/dist/babylon.2.4.d.ts" />
 
 import {AssetPack} from "../asset-pack";
 import {Db} from "../../core/entity/db";
