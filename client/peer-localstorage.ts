@@ -2,10 +2,7 @@
 ///<reference path="../typings/index.d.ts" />
 
 import {WebRTCConnection} from "../net/webrtc";
-
-const RTC_CONFIG: RTCConfiguration = {
-  iceServers: [{urls: 'stun:stun.1.google.com:19302'}]
-};
+import {RTC_CONFIG} from "./webrtc-config";
 
 interface handshake {
   offer: RTCSessionDescriptionInit;

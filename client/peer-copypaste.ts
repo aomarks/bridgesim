@@ -2,10 +2,7 @@
 ///<reference path="../typings/index.d.ts" />
 
 import {WebRTCConnection, encodeRSD, decodeRSD} from "../net/webrtc";
-
-const RTC_CONFIG: RTCConfiguration = {
-  iceServers: [{urls: "stun:stun.1.google.com:19302"}]
-};
+import {RTC_CONFIG} from "./webrtc-config";
 
 @component("bridgesim-peer-copypaste")
 class PeerCopypaste extends polymer.Base {

@@ -12,10 +12,6 @@ import {Loopback} from "../net/loopback";
 import {Motion} from "../core/systems/motion";
 import {Settings} from "./settings";
 
-const RTC_CONFIG: RTCConfiguration = {
-  iceServers: [{urls: 'stun:stun.1.google.com:19302'}]
-};
-
 @component('bridgesim-game')
 class Game extends polymer.Base {
   @property({type: Number, value: 1}) size: number;
