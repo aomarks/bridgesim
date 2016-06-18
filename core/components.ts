@@ -1,4 +1,4 @@
-import * as Net from "../net/message";
+import * as Net from '../net/message';
 
 export interface Player {
   name: string;

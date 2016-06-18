@@ -1,5 +1,4 @@
-import {HP} from "./const";
-
+import {HP} from './const';
 export function snap(px: number): number {
   return Math.round(px + HP) - HP;
 }

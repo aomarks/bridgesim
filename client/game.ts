@@ -1,16 +1,17 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/index.d.ts" />
 
-import * as Net from "../net/message";
-import {ChatEvent} from "./chat";
-import {Conditioner} from "../net/conditioner";
-import {Connection} from "../net/connection";
-import {Db} from "../core/entity/db";
-import {Host} from "../core/host";
-import {Input} from "../core/systems/input";
-import {Loopback} from "../net/loopback";
-import {Motion} from "../core/systems/motion";
-import {Settings} from "./settings";
+import {Db} from '../core/entity/db';
+import {Host} from '../core/host';
+import {Input} from '../core/systems/input';
+import {Motion} from '../core/systems/motion';
+import {Conditioner} from '../net/conditioner';
+import {Connection} from '../net/connection';
+import {Loopback} from '../net/loopback';
+import * as Net from '../net/message';
+
+import {ChatEvent} from './chat';
+import {Settings} from './settings';
 
 @component('bridgesim-game')
 class Game extends polymer.Base {
@@ -98,7 +99,7 @@ class Game extends polymer.Base {
       loopback.open();
 
       setTimeout(
-          () => { this.$$("#lobbyHost").offer = this.offer.bind(this); }, 1);
+          () => { this.$$('#lobbyHost').offer = this.offer.bind(this); }, 1);
 
       this.$.hostIDToast.open();
     }
@@ -181,8 +182,8 @@ class Game extends polymer.Base {
     this.conn.send({hello: {name: this.settings.name}}, true);
   }
 
-  switchToStation(station: string = "helm"): void {
-    window.location.hash = "/station/" + station;
+  switchToStation(station: string = 'helm'): void {
+    window.location.hash = '/station/' + station;
   }
 
   hostGame(): void {
