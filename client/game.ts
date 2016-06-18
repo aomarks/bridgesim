@@ -96,7 +96,7 @@ class Game extends polymer.Base {
       loopback.open();
 
       setTimeout(() => {
-        (this.querySelector('#lobbyHost') as any).offer = this.offer.bind(this);
+        this.$$("#lobbyHost").offer = this.offer.bind(this);
       }, 1);
 
       this.$.hostIDToast.open();
