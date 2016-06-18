@@ -25,6 +25,9 @@
         width: calc(100% - 90px);
         display: inline-block;
       }
+      .error {
+        color: red;
+      }
     </style>
 
     <paper-dialog id="clientDialog" on-iron-overlay-closed="clear">
@@ -32,6 +35,8 @@
         <h2>Connect</h2>
         <paper-input id="connectByID" label="Connect By ID" value="{{hostID}}"></paper-input>
         <paper-button on-tap="connectByID">Connect</paper-button>
+        <div class="error" hidden$="[[!error]]">Error: <span>[[error]]</span></div>
+        <paper-progress hidden$="[[!connecting]]" indeterminate></paper-progress>
       </div>
       <div>
         <paper-toggle-button checked="{{showPublicLobbies}}">Show Public Lobbies</paper-toggle-button>

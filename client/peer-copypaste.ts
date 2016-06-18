@@ -11,6 +11,8 @@ class PeerCopypaste extends polymer.Base {
   private pasteOffer: string;
   private pasteAnswer: string;
   private hostID: string;
+  private error: string = null;
+  private connecting: boolean = false;
   private conn: WebRTCConnection;
 
   openClientDialog(): void {
@@ -33,9 +35,21 @@ class PeerCopypaste extends polymer.Base {
     this.lobbyListConnect(id, password);
   }
 
+  onStopConnecting() {
+    this.connecting = false;
+  }
+
   lobbyListConnect(id: string, password: string = "") {
-    this.$.lobbyList.connect(id, this.copyOffer, password)
-        .then((resp: {Answer: string}) => { this.pasteAnswer = resp.Answer; });
+    this.error = null;
+    this.connecting = true;
+    const done = () => {
+      this.connecting = false;
+    };
+    return this.$.lobbyList.connect(id, this.copyOffer, password)
+      .then((resp: {Answer: string}) => { this.pasteAnswer = resp.Answer; })
+      .catch((err) => {
+        this.error = err;
+      }).then(done, done);
   }
 
   connectByID(e: any): void {
