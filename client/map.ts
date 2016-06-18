@@ -110,7 +110,7 @@ export class Map extends polymer.Base {
     this.drawMissiles(remoteAlpha);
     this.drawLocalShip(localAlpha);
     if (this.showBoundingBoxes) {
-      this.drawBoundingBoxes();
+      this.drawBoundingBoxes(localAlpha, remoteAlpha);
     }
   }
 
@@ -227,20 +227,21 @@ export class Map extends polymer.Base {
     this.drawImage(pos.x, pos.y, this.shipImage, pos.yaw, .5);
   }
 
-  drawBoundingBoxes(): void {
+  drawBoundingBoxes(localAlpha: number, remoteAlpha: number): void {
     const ctx = this.ctx;
     ctx.strokeStyle = color.YELLOW;
     ctx.lineWidth = 1;
     for (let id in this.db.collidables) {
-      const pos = this.db.positions[id];
+      const pos =
+          this.lerpScreenPos(id, id === this.shipId ? localAlpha : remoteAlpha);
       if (pos == null) {
         continue;
       }
       const collidable = this.db.collidables[id];
-      const s = this.worldToScreen(pos.x, pos.y);
       const width = collidable.width / this.metersPerPx;
       const height = collidable.length / this.metersPerPx;
-      ctx.rect(snap(s.x - width / 2), snap(s.y - height / 2), width, height);
+      ctx.rect(
+          snap(pos.x - width / 2), snap(pos.y - height / 2), width, height);
     }
     ctx.stroke();
   }

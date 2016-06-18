@@ -181,7 +181,7 @@ class Game extends polymer.Base {
   }
 
   switchToStation(station: string = "helm"): void {
-    window.location.hash = "/station/"+station;
+    window.location.hash = "/station/" + station;
   }
 
   hostGame(): void {
