@@ -6,7 +6,7 @@ export function SpawnMissile(
   db.missiles[id] = true;
   db.positions[id] = {x: x, y: y, yaw: yaw, roll: 0};
   db.prevPositions[id] = {x: x, y: y, yaw: yaw, roll: 0};
-  db.velocities[id] = .1;
+  db.velocities[id] = .5;
   db.odometers[id] = 0;
   db.healths[id] = {hp: 0, shields: false};
   db.collidables[id] =

@@ -1,6 +1,6 @@
 import {randInt} from "./math";
 
-export const SECTOR_METERS = 1000;
+export const SECTOR_METERS = 10000;
 
 // Returns the absolute value of the maximum coordinate on either axis.
 export function maxCoord(galaxySize: number): number {
