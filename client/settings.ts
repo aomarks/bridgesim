@@ -37,4 +37,7 @@ export interface Settings {
 
   // The name of the current player.
   name: string;
+
+  // Whether to draw bounding boxes on collidable entities.
+  showBoundingBoxes: boolean;
 }

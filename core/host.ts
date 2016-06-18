@@ -168,6 +168,7 @@ export class Host {
       lasers: this.db.lasers,
       missiles: this.db.missiles,
       positions: this.db.positions,
+      collidables: this.db.collidables,
       velocities: this.db.velocities,
       healths: this.db.healths,
       power: this.db.power,

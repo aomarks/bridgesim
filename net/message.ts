@@ -63,6 +63,7 @@ export interface Snapshot {
   lasers: {[id: string]: boolean};
   missiles: {[id: string]: boolean};
   positions: {[id: string]: Components.Position};
+  collidables: {[id: string]: Components.Collidable};
   velocities: {[id: string]: number};
   healths: {[id: string]: Components.Health};
   power: {[id: string]: Components.Power};

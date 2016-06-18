@@ -26,6 +26,7 @@ export class Map extends polymer.Base {
   @property({type: Number, value: 0}) zoom: number;
   @property({type: Number, value: 0}) panX: number;
   @property({type: Number, value: 0}) panY: number;
+  @property({type: Boolean, value: false}) showBoundingBoxes: boolean;
 
   private can: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -108,6 +109,9 @@ export class Map extends polymer.Base {
     this.drawLasers(remoteAlpha);
     this.drawMissiles(remoteAlpha);
     this.drawLocalShip(localAlpha);
+    if (this.showBoundingBoxes) {
+      this.drawBoundingBoxes();
+    }
   }
 
   drawGrid(): void {
@@ -223,6 +227,24 @@ export class Map extends polymer.Base {
     this.drawImage(pos.x, pos.y, this.shipImage, pos.yaw, .5);
   }
 
+  drawBoundingBoxes(): void {
+    const ctx = this.ctx;
+    ctx.strokeStyle = color.YELLOW;
+    ctx.lineWidth = 1;
+    for (let id in this.db.collidables) {
+      const pos = this.db.positions[id];
+      if (pos == null) {
+        continue;
+      }
+      const collidable = this.db.collidables[id];
+      const s = this.worldToScreen(pos.x, pos.y);
+      const width = collidable.width / this.metersPerPx;
+      const height = collidable.length / this.metersPerPx;
+      ctx.rect(snap(s.x - width / 2), snap(s.y - height / 2), width, height);
+    }
+    ctx.stroke();
+  }
+
   drawText(x: number, y: number, text: string): void {
     const ctx = this.ctx;
     ctx.beginPath();
@@ -255,5 +277,4 @@ export class Map extends polymer.Base {
     ctx.restore();
   }
 }
-
 Map.register();
