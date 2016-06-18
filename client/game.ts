@@ -98,6 +98,8 @@ class Game extends polymer.Base {
       setTimeout(() => {
         (this.querySelector('#lobbyHost') as any).offer = this.offer.bind(this);
       }, 1);
+
+      this.$.hostIDToast.open();
     }
   }
 
