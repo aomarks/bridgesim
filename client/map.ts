@@ -38,6 +38,8 @@ export class Map extends polymer.Base {
   private followGC: Coord2D = {x: 0, y: 0};
   private drawn: boolean = false;
   private metersPerPx: number;
+  private left: number;
+  private top: number;
 
   ready(): void {
     this.can = this.$.canvas;
@@ -55,10 +57,21 @@ export class Map extends polymer.Base {
     this.centerCC.x = this.w / 2;
     this.centerCC.y = this.h / 2;
 
+    const bounds = this.can.getBoundingClientRect();
+    this.left = bounds.left;
+    this.top = bounds.top;
+
     const pixelRatio = window.devicePixelRatio;
     this.can.width = this.w * pixelRatio;
     this.can.height = this.h * pixelRatio;
     this.ctx.scale(pixelRatio, pixelRatio);
+  }
+
+  @listen("tap")
+  handleTap(e: any) {
+    this.fire(
+        "map-tap",
+        this.screenToWorld(e.detail.x - this.left, e.detail.y - this.top));
   }
 
   worldToScreen(x: number, y: number): Coord2D {
@@ -67,6 +80,15 @@ export class Map extends polymer.Base {
           this.followGC.x / this.metersPerPx,
       y: this.centerCC.y - y / this.metersPerPx +
           this.followGC.y / this.metersPerPx
+    };
+  }
+
+  screenToWorld(x: number, y: number): Coord2D {
+    return {
+      x: this.followGC.x + x * this.metersPerPx -
+          this.centerCC.x * this.metersPerPx,
+      y: this.followGC.y - y * this.metersPerPx +
+          this.centerCC.y * this.metersPerPx,
     };
   }
 
