@@ -1,11 +1,13 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../power.html">
+<link rel="import" href="../resource-display.html">
 
 <dom-module id="engineering-station">
   <template>
     <style>
       :host {
         display: block;
+        padding: 10px;
       }
     </style>
 
@@ -14,5 +16,9 @@
       ship-id="[[shipId]]"
       cur-subsystem="[[curSubsystem]]">
     </bridgesim-power>
+    <resource-display
+      db="[[db]]"
+      ship-id="[[shipId]]">
+    </resource-display>
   </template>
 </dom-module>

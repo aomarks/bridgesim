@@ -21,6 +21,7 @@ export class Db {
   velocities: {[id: string]: number} = {};
   debris: {[id: string]: Components.Debris} = {};
   stations: {[id: string]: Components.Station} = {};
+  resources: {[id: string]: {[type: string]: number}} = {};
 
   spawn(): string { return (this.nextId++).toString(); }
 
@@ -41,5 +42,6 @@ export class Db {
     delete this.velocities[id];
     delete this.debris[id];
     delete this.stations[id];
+    delete this.resources[id];
   }
 }

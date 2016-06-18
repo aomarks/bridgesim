@@ -174,6 +174,7 @@ export class Host {
       power: this.db.power,
       debris: this.db.debris,
       stations: this.db.stations,
+      resources: this.db.resources,
     };
   }
 

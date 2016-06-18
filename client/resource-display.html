@@ -1,0 +1,15 @@
+<link rel="import" href="deps.html">
+
+<dom-module id="resource-display">
+  <template>
+    <h3>Resources</h3>
+      <table>
+    <template is="dom-repeat" items="[[resources(db.resources)]]">
+      <tr>
+        <td>[[item.name]]</td>
+        <td>[[item.count]]</td>
+      </tr>
+    </template>
+      </table>
+  </template>
+</dom-modules

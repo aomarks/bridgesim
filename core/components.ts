@@ -44,7 +44,6 @@ export enum DebrisType {
 export interface Debris { type: DebrisType; }
 
 export interface Station {
-  resources: {[type: string]: number};
   // station produces one resource every n seconds.
   produces: {[type: string]: number};
 }

@@ -39,11 +39,11 @@ class Comms extends polymer.Base {
     const name = this.db.names[this.sel.station];
     this.logUs(name + ': Do you have any resources that we can use?');
     setTimeout(() => {
-      const station = this.db.stations[this.sel.station];
+      const stationResources = this.db.resources[this.sel.station];
       const resources = [];
-      for (let resource in station.resources) {
+      for (let resource in stationResources) {
         const resourceName = Resource[resource];
-        resources.push(resourceName + ' (' + station.resources[resource] + ')');
+        resources.push(resourceName + ' (' + stationResources[resource] + ')');
       }
       this.log(name, 'Available resources: ' + resources.join(', '));
     }, 1000);

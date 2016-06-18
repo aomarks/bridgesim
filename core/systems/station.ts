@@ -19,10 +19,11 @@ export class Station {
 
   tickOne(thisId: string, diff: number): void {
     const station = this.db.stations[thisId];
+    const resources = this.db.resources[thisId];
     for (let resource in station.produces) {
       // Produce one resource probabilistically every n seconds.
       if (Math.random() < (diff / station.produces[resource])) {
-        station.resources[resource] = (station.resources[resource] || 0) + 1;
+        resources[resource] = (resources[resource] || 0) + 1;
       }
     }
   }

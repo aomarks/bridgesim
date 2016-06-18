@@ -270,6 +270,7 @@ class Game extends polymer.Base {
     this.db.power = snapshot.power;
     this.db.debris = snapshot.debris;
     this.set('db.stations', snapshot.stations);
+    this.set('db.resources', snapshot.resources);
   }
 
   frame(ts: number): void {

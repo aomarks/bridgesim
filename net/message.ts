@@ -69,6 +69,7 @@ export interface Snapshot {
   power: {[id: string]: Components.Power};
   debris: {[id: string]: Components.Debris};
   stations: {[id: string]: Components.Station};
+  resources: {[id: string]: {[type: string]: number}};
 }
 
 export interface CreateShip {}
