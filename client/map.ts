@@ -50,10 +50,15 @@ export class Map extends polymer.Base {
   }
 
   resize(): void {
-    this.w = this.can.width = this.can.clientWidth;
-    this.h = this.can.height = this.can.clientHeight;
+    this.w = this.can.clientWidth;
+    this.h = this.can.clientHeight;
     this.centerCC.x = this.w / 2;
     this.centerCC.y = this.h / 2;
+
+    const pixelRatio = window.devicePixelRatio;
+    this.can.width = this.w * pixelRatio;
+    this.can.height = this.h * pixelRatio;
+    this.ctx.scale(pixelRatio, pixelRatio);
   }
 
   worldToScreen(x: number, y: number): Coord2D {
