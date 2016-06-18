@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <title>Bridgesim</title>
     <link rel="shortcut icon" href="favico.png">
-    <link rel="import" href="client/game.html">
     <style>
       body {
         height: 100vh;
@@ -14,21 +13,9 @@
     <script>
       // setup Polymer options
       window.Polymer = {lazyRegister: true, dom: 'shadow'};
-
-      // load webcomponents polyfills
-      (function() {
-        if ('registerElement' in document
-            && 'import' in document.createElement('link')
-            && 'content' in document.createElement('template')) {
-          // browser has web components
-        } else {
-          // polyfill web components
-          var e = document.createElement('script');
-          e.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
-          document.head.appendChild(e);
-        }
-      })();
     </script>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="client/game.html">
   </head>
   <body>
     <bridgesim-game></bridgesim-game>

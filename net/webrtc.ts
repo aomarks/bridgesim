@@ -30,7 +30,9 @@ export class WebRTCConnection implements Connection {
   private open = false;
 
   constructor(config: RTCConfiguration) {
-    this.peer = new webkitRTCPeerConnection(config);
+    const rtcPeerConnection: any = window.RTCPeerConnection ||
+      window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+    this.peer = new rtcPeerConnection(config);
   }
 
   send(msg: Message, reliable: boolean) {
@@ -103,7 +105,7 @@ export class WebRTCConnection implements Connection {
         this.peer.createAnswer(answer => {
           this.peer.setLocalDescription(answer, () => {}, reject);
         }, reject);
-      });
+      }, reject);
     });
   }
 
