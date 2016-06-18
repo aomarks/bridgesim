@@ -81,6 +81,16 @@ function runMinify(html, js) {
   if (err) {
     console.log(err);
   }
+
+  console.log('Copying images...');
+  exec('cp -r images build', function(error, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    if (error) {
+      console.log('error copying', error, stdout, stderr);
+      return;
+    }
+  });
 }
 
 function runHtmlMinify(html) {

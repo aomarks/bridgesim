@@ -43,9 +43,9 @@ export class Map extends polymer.Base {
     this.can = this.$.canvas;
     this.ctx = this.can.getContext('2d');
     this.shipImage = new Image();
-    this.shipImage.src = '/images/ship.svg';
+    this.shipImage.src = 'images/ship.svg';
     this.stationImage = new Image();
-    this.stationImage.src = '/images/station.svg';
+    this.stationImage.src = 'images/station.svg';
     window.addEventListener('resize', this.resize.bind(this));
   }
 
