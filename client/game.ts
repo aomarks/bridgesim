@@ -80,6 +80,8 @@ class Game extends polymer.Base {
 
   openLobbyDialog(): void { this.$.lobbyDialog.open(); }
 
+  closeHostIDToast(): void { this.$.hostIDToast.close(); }
+
   @observe('isHost')
   isHostChanged(isHost: boolean): void {
     this.resetSimulation();
@@ -95,9 +97,8 @@ class Game extends polymer.Base {
       console.log('game: opening loopback connection');
       loopback.open();
 
-      setTimeout(() => {
-        this.$$("#lobbyHost").offer = this.offer.bind(this);
-      }, 1);
+      setTimeout(
+          () => { this.$$("#lobbyHost").offer = this.offer.bind(this); }, 1);
 
       this.$.hostIDToast.open();
     }
