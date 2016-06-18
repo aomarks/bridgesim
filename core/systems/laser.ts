@@ -1,6 +1,6 @@
 import {Db} from "../entity/db";
 
-const RANGE = 5000;
+const RANGE = 10000;
 
 export class Laser {
   constructor(private db: Db) {}

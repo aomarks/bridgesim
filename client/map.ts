@@ -14,8 +14,8 @@ interface Coord2D {
 }
 
 const BLIP_PX = 2;
-const MIN_METERS_PER_PX = 1;   // How far in we can zoom.
-const MAX_METERS_PER_PX = 20;  // How far out we can zoom.
+const MIN_METERS_PER_PX = 10;   // How far in we can zoom.
+const MAX_METERS_PER_PX = 200;  // How far out we can zoom.
 
 @component('bridgesim-map')
 export class Map extends polymer.Base {
@@ -142,12 +142,21 @@ export class Map extends polymer.Base {
   }
 
   drawDebris(alpha: number): void {
+    const ctx = this.ctx;
+    ctx.strokeStyle = '#964B00';
     for (let id in this.db.debris) {
       const coords = this.lerpScreenPos(id, alpha);
       if (coords == null) {
         continue;
       }
-      this.drawBlip(coords.x, coords.y, '#964B00');
+      const collidable = this.db.collidables[id];
+      if (collidable == null) {
+        continue;
+      }
+      const radius = Math.max(.5, collidable.length / this.metersPerPx / 2);
+      ctx.beginPath();
+      ctx.arc(coords.x, coords.y, radius, 0, 2 * Math.PI);
+      ctx.stroke();
     }
   }
 
@@ -254,6 +263,7 @@ export class Map extends polymer.Base {
   drawText(x: number, y: number, text: string): void {
     const ctx = this.ctx;
     ctx.beginPath();
+    ctx.font = '12px Share Tech Mono';
     ctx.fillStyle = '#FFF';
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 3;
@@ -264,7 +274,6 @@ export class Map extends polymer.Base {
   drawBlip(x: number, y: number, color: string): void {
     const ctx = this.ctx;
     ctx.beginPath();
-    ctx.moveTo(x, y);
     ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
     ctx.fillStyle = color;
     ctx.fill();

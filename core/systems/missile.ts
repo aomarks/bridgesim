@@ -1,6 +1,6 @@
 import {Db} from "../entity/db";
 
-const RANGE = 15000;
+const RANGE = 30000;
 
 export class Missile {
   constructor(private db: Db) {}

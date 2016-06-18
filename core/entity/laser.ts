@@ -6,11 +6,11 @@ export function SpawnLaser(
   db.lasers[id] = true;
   db.positions[id] = {x: x, y: y, yaw: yaw, roll: 0};
   db.prevPositions[id] = {x: x, y: y, yaw: yaw, roll: 0};
-  db.velocities[id] = .5;
+  db.velocities[id] = 1;
   db.odometers[id] = 0;
   db.healths[id] = {hp: 0, shields: false};
   db.collidables[id] =
-      {length: 200, width: 200, mass: 0, damage: 1, ignore: origin};
+      {length: 10, width: 10, mass: 0, damage: 1, ignore: origin};
   console.log('entity.laser: spawned laser', id);
   return id;
 }
