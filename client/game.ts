@@ -64,10 +64,14 @@ class Game extends polymer.Base {
       this.$.peerLocalstorage.makeOffer();
     }
 
-    if (!this.routeData.station) {
+    if (!window.location.hash || !this.isHost) {
       // TODO Why doesn't iron-location hash binding work?
       // TODO Is there some smarter way to do this using the route?
-      window.location.hash = '/station/helm';
+      if (this.isHost) {
+        this.switchToStation();
+      } else {
+        window.location.hash = '/welcome';
+      }
     }
   }
 
@@ -153,6 +157,7 @@ class Game extends polymer.Base {
     } else {
       this.conn = event.detail;
       this.setupConn();
+      this.switchToStation();
     }
   }
 
@@ -172,6 +177,14 @@ class Game extends polymer.Base {
     this.conn.send({hello: {name: this.settings.name}}, true);
   }
 
+  switchToStation(station: string = "helm"): void {
+    window.location.hash = "/station/"+station;
+  }
+
+  hostGame(): void {
+    this.isHost = true;
+    this.switchToStation();
+  }
   joinGame(): void { this.$.peerCopypaste.openClientDialog(); }
   invitePlayer(): void { this.$.peerCopypaste.openHostDialog(); }
   offer(offer: any, resolve: (resp: any) => void): void {

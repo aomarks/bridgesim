@@ -118,6 +118,22 @@
       [hidden] {
         display: none;
       }
+      #welcome {
+        margin-top: -40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+      #welcome > div {
+        text-align: center;
+        margin: 16px;
+      }
+      #welcome h1 {
+        margin: 0 0 50px;
+        font-size: 3rem;
+        font-weight: 100;
+      }
     </style>
 
     <paper-dialog id="settingsDialog">
@@ -171,6 +187,7 @@
           <paper-tabs selected="{{routeData.station}}"
                       no-bar
                       attr-for-selected="name"
+                      hidden="[[!showStations]]"
                       class="flex-2">
             <paper-tab name='helm'>HLM</paper-tab>
             <paper-tab name='comms'>COM</paper-tab>
@@ -187,7 +204,7 @@
                         class="flex-none">
         </bridgesim-chat>
 
-        <iron-pages id="stations" class="flex"
+        <iron-pages id="stations" class="flex" hidden="[[!showStations]]"
            selected="[[routeData.station]]"
            attr-for-selected="name">
 
@@ -223,11 +240,22 @@
             ship-id="[[shipId]]">
           </viewscreen-station>
         </iron-pages>
+
+        <div id="welcome" hidden="[[!showWelcome]]">
+          <div>
+            <h1>BRIDGESIM</h1>
+            <p>Welcome! What would you like to do?</p>
+            <paper-button on-tap="hostGame">Host</paper-button>
+            <paper-button on-tap="joinGame">Join</paper-button>
+          </div>
+        </div>
       </div>
     </paper-drawer-panel>
 
     <app-location route="{{route}}" use-hash-as-path></app-location>
-    <app-route route="{{route}}" pattern="/station/:station" data="{{routeData}}"></app-route>
+    <app-route route="{{route}}" pattern="/station/:station"
+               data="{{routeData}}" active="{{showStations}}"></app-route>
+    <app-route route="{{route}}" pattern="/welcome" active="{{showWelcome}}"></app-route>
   </template>
   <script src="../out.js"></script>
 </dom-module>
