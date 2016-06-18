@@ -27,6 +27,17 @@ exec('tsc', function(error, stdout, stderr) {
   runVulcanize();
 });
 
+console.log('Copying images and textures...');
+function puts(error, stdout, stderr) {
+  if (stdout) { console.log(stdout); }
+  if (stderr) { console.log(stderr); }
+  if (error) {
+    console.log('error copying', error, stdout, stderr);
+  }
+}
+exec('cp -r images build', puts);
+exec('cp -r textures build', puts);
+
 function runVulcanize() {
   console.log('Vulcanizing...');
 
@@ -81,16 +92,6 @@ function runMinify(html, js) {
   if (err) {
     console.log(err);
   }
-
-  console.log('Copying images...');
-  exec('cp -r images build', function(error, stdout, stderr) {
-    console.log(stdout);
-    console.log(stderr);
-    if (error) {
-      console.log('error copying', error, stdout, stderr);
-      return;
-    }
-  });
 }
 
 function runHtmlMinify(html) {
