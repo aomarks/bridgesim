@@ -55,7 +55,8 @@ class Game extends polymer.Base {
       tickInterval: 0,      // Server controlled.
       snapshotInterval: 0,  // Server controlled.
       commandBufferSize: 100,
-      name: null
+      name: null,
+      showBoundingBoxes: false,
     };
 
     if (this.urlQuery.indexOf('host') != -1) {
@@ -261,6 +262,7 @@ class Game extends polymer.Base {
     this.db.missiles = snapshot.missiles;
     this.db.prevPositions = this.db.positions;
     this.db.positions = snapshot.positions;
+    this.db.collidables = snapshot.collidables;
     this.db.velocities = snapshot.velocities;
     this.db.power = snapshot.power;
     this.db.debris = snapshot.debris;
