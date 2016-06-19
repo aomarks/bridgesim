@@ -1,17 +1,22 @@
 import * as Net from '../net/message';
+import {Connection} from '../net/connection';
+import {randCoord} from './galaxy';
+
+// Systems
 import {Ai} from './systems/ai';
 import {Collision} from './systems/collision';
-import {Connection} from '../net/connection';
-import {Db} from './entity/db';
+import {Death} from './systems/death';
 import {Input} from './systems/input';
 import {Laser} from './systems/laser';
 import {Missile} from './systems/missile';
 import {Motion} from './systems/motion';
-import {SpawnDebris, SpawnAstroidBelt} from './entity/debris';
+import {Station} from './systems/station';
+
+// Entities
+import {Db} from './entity/db';
+import {SpawnAstroidBelt} from './entity/debris';
 import {SpawnShip} from './entity/ship';
 import {SpawnStation} from './entity/station';
-import {Station} from './systems/station';
-import {randCoord} from './galaxy';
 
 export interface Settings {
   // The play field will have this many sectors across and down.
@@ -29,19 +34,22 @@ export interface Settings {
 
 export class Host {
   private settings: Settings = {
-    galaxySize: 12,
-    tickInterval: 1000 / 30,
-    snapshotInterval: 1000 / 15,
     commandBufferSize: 100,
+    galaxySize: 12,
+    snapshotInterval: 1000 / 15,
+    tickInterval: 1000 / 30,
   };
 
   private db: Db = new Db();
+
+  // Systems
   private ai: Ai = new Ai(this.db);
+  private collision: Collision = new Collision(this.db);
+  private death: Death = new Death(this.db);
   private input: Input = new Input(this.db);
-  private motion: Motion = new Motion(this.db, this.settings.galaxySize);
   private laser: Laser = new Laser(this.db);
   private missile: Missile = new Missile(this.db);
-  private collision: Collision = new Collision(this.db);
+  private motion: Motion = new Motion(this.db, this.settings.galaxySize);
   private station: Station = new Station(this.db);
 
   private conns: {[id: string]: Connection} = {};
@@ -51,11 +59,7 @@ export class Host {
   private snapshotLag: number = 0;
   private snapshotStale: boolean = false;
 
-  private spawnShip(name: string, x: number, y: number, ai: boolean): string {
-    return SpawnShip(this.db, name, x, y, ai);
-  }
-
-  addConnection(conn: Connection) {
+  public addConnection(conn: Connection) {
     const connId = this.db.spawn();  // TODO
     this.conns[connId] = conn;
     console.log('host: connection added', connId);
@@ -69,7 +73,7 @@ export class Host {
     };
   }
 
-  start() {
+  public start() {
     console.log('host: starting');
     const rand = () => randCoord(this.settings.galaxySize);
     this.spawnShip('Mean', rand(), rand(), true);
@@ -84,7 +88,7 @@ export class Host {
     this.tick();
   }
 
-  stop() {
+  public stop() {
     if (this.timeoutId != null) {
       clearTimeout(this.timeoutId);
       this.timeoutId = null;
@@ -94,6 +98,11 @@ export class Host {
     }
     console.log('host: stopped');
   }
+
+  private spawnShip(name: string, x: number, y: number, ai: boolean): string {
+    return SpawnShip(this.db, name, x, y, ai);
+  }
+
 
   private broadcast(msg: Net.Message, reliable: boolean) {
     for (let id in this.db.players) {
@@ -128,11 +137,12 @@ export class Host {
       }
 
       this.ai.tick();
+      this.collision.tick();
+      this.death.tick();
       this.input.tick();
-      this.motion.tick();
       this.laser.tick();
       this.missile.tick();
-      this.collision.tick();
+      this.motion.tick();
       this.station.tick();
 
       this.tickLag -= this.settings.tickInterval;

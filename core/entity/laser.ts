@@ -9,7 +9,7 @@ export function SpawnLaser(
   db.prevPositions[id] = {x: x, y: y, yaw: yaw, roll: 0};
   db.velocities[id] = 1;
   db.odometers[id] = 0;
-  db.healths[id] = {hp: 0, shields: false};
+  db.healths[id] = {hp: 1, shields: false};
   db.collidables[id] =
       {length: 10, width: 10, mass: 0, damage: 1, ignore: origin};
   db.resources[origin][Resource.Energy] -= 10;

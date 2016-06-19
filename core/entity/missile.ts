@@ -8,7 +8,7 @@ export function SpawnMissile(
   db.prevPositions[id] = {x: x, y: y, yaw: yaw, roll: 0};
   db.velocities[id] = .5;
   db.odometers[id] = 0;
-  db.healths[id] = {hp: 0, shields: false};
+  db.healths[id] = {hp: 1, shields: false};
   db.collidables[id] =
       {length: 1000, width: 1000, mass: 0, damage: 20, ignore: origin};
   console.log('entity.missile: spawned missile', id);
