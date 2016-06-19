@@ -38,14 +38,15 @@
       <div main>
         <template is="dom-if" if="[[sel.ship]]">
           <h1>Ship: <span>[[shipName(db.names, sel.ship)]]</span></h1>
-          <p>HP: <span>[[hp(db.healths, sel.ship)]]</span></p>
-          <p>Shields: <span>[[shields(db.healths, sel.ship)]]</span></p>
+          <p>Distance: <span>[[dist(db.positions, sel.ship, shipId)]]</span></p>
           <paper-button disabled="[[scanning]]" on-tap="scan">Scan</paper-button>
           <template is="dom-if" if="[[scanning]]">
             Scanning... Please wait
           </template>
           <template is="dom-if" if="[[scanResults]]">
             <h2>Scan Results</h2>
+            <p>HP: <span>[[hp(db.healths, sel.ship)]]</span></p>
+            <p>Shields: <span>[[shields(db.healths, sel.ship)]]</span></p>
             <p>[[scanResults]]</p>
             <resource-display db="[[db]]" ship-id="[[sel.ship]]"></resource-display>
           </template>

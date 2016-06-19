@@ -331,7 +331,9 @@ class Game extends polymer.Base {
         remoteAlpha = 1;
       }
 
-      station.draw(localAlpha, remoteAlpha);
+      if (station.draw) {
+        station.draw(localAlpha, remoteAlpha);
+      }
     }
 
     this.prevTs = ts;
