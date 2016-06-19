@@ -36,9 +36,12 @@ export class HeadingIndicator extends polymer.Base {
   }
 
   draw(alpha: number): void {
-    if (!this.drawn) {
-      this.resize();  // gross
+    if (this.drawn) {
+      return;
     }
+    this.drawn = true;
+    this.resize();
+
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.w, this.h);
 

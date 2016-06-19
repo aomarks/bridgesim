@@ -1,17 +1,17 @@
-import * as Net from "../net/message";
-import {Ai} from "./systems/ai";
-import {Collision} from "./systems/collision";
-import {Connection} from "../net/connection";
-import {Db} from "./entity/db";
-import {Input} from "./systems/input";
-import {Laser} from "./systems/laser";
-import {Missile} from "./systems/missile";
-import {Motion} from "./systems/motion";
-import {SpawnDebris, SpawnAstroidBelt} from "./entity/debris";
-import {SpawnShip} from "./entity/ship";
-import {SpawnStation} from "./entity/station";
-import {Station} from "./systems/station";
-import {randCoord} from "./galaxy";
+import * as Net from '../net/message';
+import {Ai} from './systems/ai';
+import {Collision} from './systems/collision';
+import {Connection} from '../net/connection';
+import {Db} from './entity/db';
+import {Input} from './systems/input';
+import {Laser} from './systems/laser';
+import {Missile} from './systems/missile';
+import {Motion} from './systems/motion';
+import {SpawnDebris, SpawnAstroidBelt} from './entity/debris';
+import {SpawnShip} from './entity/ship';
+import {SpawnStation} from './entity/station';
+import {Station} from './systems/station';
+import {randCoord} from './galaxy';
 
 export interface Settings {
   // The play field will have this many sectors across and down.
@@ -52,9 +52,7 @@ export class Host {
   private snapshotStale: boolean = false;
 
   private spawnShip(name: string, x: number, y: number, ai: boolean): string {
-    const id = SpawnShip(this.db, name, x, y, ai);
-    console.log('new ship', id);
-    return id;
+    return SpawnShip(this.db, name, x, y, ai);
   }
 
   addConnection(conn: Connection) {
@@ -236,7 +234,7 @@ export class Host {
 
     // TODO Don't create a ship for every player once client supports not
     // being assigned.
-    const shipId = this.spawnShip('S' + connId, 0, 0, false);
+    const shipId = this.spawnShip(null, 0, 0, false);
     this.onJoinCrew(connId, {shipId: shipId, station: Net.Station.Helm});
   }
 

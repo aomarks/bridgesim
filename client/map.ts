@@ -67,10 +67,10 @@ export class Map extends polymer.Base {
     this.ctx.scale(pixelRatio, pixelRatio);
   }
 
-  @listen("tap")
+  @listen('tap')
   handleTap(e: any) {
     this.fire(
-        "map-tap",
+        'map-tap',
         this.screenToWorld(e.detail.x - this.left, e.detail.y - this.top));
   }
 
@@ -106,7 +106,7 @@ export class Map extends polymer.Base {
     return {x: s.x, y: s.y, yaw: lerp(pos.yaw, prev.yaw, alpha), roll: 0};
   }
 
-  draw(localAlpha: number, remoteAlpha: number): void {
+  public draw(localAlpha: number, remoteAlpha: number): void {
     if (!this.drawn) {
       this.resize();  // gross
     }
@@ -141,7 +141,7 @@ export class Map extends polymer.Base {
     }
   }
 
-  drawGrid(): void {
+  private drawGrid(): void {
     const ctx = this.ctx;
     const sectorPx = Math.round(SECTOR_METERS / this.metersPerPx);
     const galaxyPx = sectorPx * this.size;
@@ -149,23 +149,30 @@ export class Map extends polymer.Base {
       x: snap(
           this.centerCC.x - galaxyPx / 2 - this.followGC.x / this.metersPerPx),
       y: snap(
-          this.centerCC.y - galaxyPx / 2 + this.followGC.y / this.metersPerPx)
+          this.centerCC.y - galaxyPx / 2 + this.followGC.y / this.metersPerPx),
     };
     ctx.beginPath();
     for (let i = 0; i <= this.size; i++) {
-      ctx.moveTo(i * sectorPx + topLeft.x, topLeft.y);
-      ctx.lineTo(i * sectorPx + topLeft.x, this.size * sectorPx + topLeft.y);
-      ctx.moveTo(topLeft.x, i * sectorPx + topLeft.y);
-      ctx.lineTo(this.size * sectorPx + topLeft.x, i * sectorPx + topLeft.y);
+      const x = i * sectorPx + topLeft.x;
+      if (x >= 0 && x <= this.w) {
+        ctx.moveTo(x, Math.max(0, topLeft.y));
+        ctx.lineTo(x, Math.min(this.h, galaxyPx + topLeft.y));
+      }
+      const y = i * sectorPx + topLeft.y;
+      if (y >= 0 && y <= this.h) {
+        ctx.moveTo(Math.max(0, topLeft.x), y);
+        ctx.lineTo(Math.min(this.w, galaxyPx + topLeft.x), y);
+      }
     }
     ctx.lineWidth = 1;
     ctx.strokeStyle = color.GREEN;
     ctx.stroke();
   }
 
-  drawDebris(alpha: number): void {
+  private drawDebris(alpha: number): void {
     const ctx = this.ctx;
     ctx.strokeStyle = '#964B00';
+    ctx.beginPath();
     for (let id in this.db.debris) {
       const coords = this.lerpScreenPos(id, alpha);
       if (coords == null) {
@@ -176,13 +183,13 @@ export class Map extends polymer.Base {
         continue;
       }
       const radius = Math.max(.5, collidable.length / this.metersPerPx / 2);
-      ctx.beginPath();
+      ctx.moveTo(coords.x + radius, coords.y);
       ctx.arc(coords.x, coords.y, radius, 0, 2 * Math.PI);
-      ctx.stroke();
     }
+    ctx.stroke();
   }
 
-  drawStations(alpha: number): void {
+  private drawStations(alpha: number): void {
     for (let id in this.db.stations) {
       const coords = this.lerpScreenPos(id, alpha);
       if (coords == null) {
@@ -198,7 +205,7 @@ export class Map extends polymer.Base {
     }
   }
 
-  drawRemoteShips(alpha: number): void {
+  private drawRemoteShips(alpha: number): void {
     for (let id in this.db.ships) {
       if (id === this.shipId) {
         continue;
@@ -218,41 +225,41 @@ export class Map extends polymer.Base {
     }
   }
 
-  drawLasers(alpha: number): void {
+  private drawLasers(alpha: number): void {
     const ctx = this.ctx;
+    ctx.beginPath();
     for (let id in this.db.lasers) {
       const pos = this.lerpScreenPos(id, alpha);
       if (pos == null) {
         continue;
       }
       let rads = radians(pos.yaw - 90);
-      ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
       ctx.lineTo(pos.x + Math.cos(rads) * 20, pos.y + Math.sin(rads) * 20);
-      ctx.strokeStyle = '#F00';
-      ctx.lineWidth = 2;
-      ctx.stroke();
     }
+    ctx.strokeStyle = '#F00';
+    ctx.lineWidth = 2;
+    ctx.stroke();
   }
 
-  drawMissiles(alpha: number): void {
+  private drawMissiles(alpha: number): void {
     const ctx = this.ctx;
+    ctx.beginPath();
     for (let id in this.db.missiles) {
       const pos = this.lerpScreenPos(id, alpha);
       if (pos == null) {
         continue;
       }
       let rads = radians(pos.yaw - 90);
-      ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
       ctx.lineTo(pos.x + Math.cos(rads) * 5, pos.y + Math.sin(rads) * 5);
-      ctx.strokeStyle = color.AQUA;
-      ctx.lineWidth = 2;
-      ctx.stroke();
     }
+    ctx.strokeStyle = color.AQUA;
+    ctx.lineWidth = 2;
+    ctx.stroke();
   }
 
-  drawLocalShip(alpha: number): void {
+  private drawLocalShip(alpha: number): void {
     if (this.shipId == null) {
       return;
     }
@@ -263,7 +270,7 @@ export class Map extends polymer.Base {
     this.drawImage(pos.x, pos.y, this.shipImage, pos.yaw, .5);
   }
 
-  drawBoundingBoxes(localAlpha: number, remoteAlpha: number): void {
+  private drawBoundingBoxes(localAlpha: number, remoteAlpha: number): void {
     const ctx = this.ctx;
     ctx.strokeStyle = color.YELLOW;
     ctx.lineWidth = 1;
@@ -282,7 +289,7 @@ export class Map extends polymer.Base {
     ctx.stroke();
   }
 
-  drawText(x: number, y: number, text: string): void {
+  private drawText(x: number, y: number, text: string): void {
     const ctx = this.ctx;
     ctx.beginPath();
     ctx.font = '12px Share Tech Mono';
@@ -293,7 +300,7 @@ export class Map extends polymer.Base {
     ctx.fillText(text, x, y);
   }
 
-  drawBlip(x: number, y: number, color: string): void {
+  private drawBlip(x: number, y: number, color: string): void {
     const ctx = this.ctx;
     ctx.beginPath();
     ctx.arc(x, y, BLIP_PX, 0, 2 * Math.PI);
@@ -301,7 +308,7 @@ export class Map extends polymer.Base {
     ctx.fill();
   }
 
-  drawImage(
+  private drawImage(
       x: number, y: number, image: HTMLImageElement, yaw: number,
       scale: number): void {
     const ctx = this.ctx;

@@ -1,5 +1,5 @@
-import {Db} from "./db";
-import {Resource} from "../resources";
+import {Db} from './db';
+import {Resource} from '../resources';
 
 export function SpawnShip(
     db: Db, name: string, x: number, y: number, ai: boolean): string {
@@ -10,7 +10,7 @@ export function SpawnShip(
   }
   db.names[id] = name;
   db.positions[id] = {x: x, y: y, yaw: 120, roll: 0};
-  db.prevPositions[id] = {x: x, y: y, yaw: 120, roll: 0};
+  db.prevPositions[id] = db.positions[id];
   db.velocities[id] = 0;
   db.inputs[id] = [];
   db.collidables[id] = {length: 300, width: 300, mass: 10, damage: 10};
@@ -18,7 +18,6 @@ export function SpawnShip(
   db.power[id] = {engine: 100, maneuvering: 100};
   const resources = db.resources[id] = {};
   resources[Resource.Energy] = 1000;
-  console.log(name, ai);
   if (ai) {
     db.ais[id] = true;
   }
