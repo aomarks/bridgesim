@@ -151,17 +151,22 @@ export class Map extends polymer.Base {
       y: snap(
           this.centerCC.y - galaxyPx / 2 + this.followGC.y / this.metersPerPx),
     };
+    const gridTop = Math.max(0, topLeft.y);
+    const gridBottom = Math.min(this.h, galaxyPx + topLeft.y);
+    const gridLeft = Math.max(0, topLeft.x);
+    const gridRight = Math.min(this.w, galaxyPx + topLeft.x); let x = 0;
+    let y = 0;
     ctx.beginPath();
     for (let i = 0; i <= this.size; i++) {
-      const x = i * sectorPx + topLeft.x;
+      x = i * sectorPx + topLeft.x;
       if (x >= 0 && x <= this.w) {
-        ctx.moveTo(x, Math.max(0, topLeft.y));
-        ctx.lineTo(x, Math.min(this.h, galaxyPx + topLeft.y));
+        ctx.moveTo(x, gridTop);
+        ctx.lineTo(x, gridBottom);
       }
-      const y = i * sectorPx + topLeft.y;
+      y = i * sectorPx + topLeft.y;
       if (y >= 0 && y <= this.h) {
-        ctx.moveTo(Math.max(0, topLeft.x), y);
-        ctx.lineTo(Math.min(this.w, galaxyPx + topLeft.x), y);
+        ctx.moveTo(gridLeft, y);
+        ctx.lineTo(gridRight, y);
       }
     }
     ctx.lineWidth = 1;

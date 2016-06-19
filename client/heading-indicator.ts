@@ -33,14 +33,16 @@ export class HeadingIndicator extends polymer.Base {
     this.can.width = this.w * pixelRatio;
     this.can.height = this.h * pixelRatio;
     this.ctx.scale(pixelRatio, pixelRatio);
+
+    this.drawn = false;
   }
 
   draw(alpha: number): void {
     if (this.drawn) {
       return;
     }
-    this.drawn = true;
     this.resize();
+    this.drawn = true;
 
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.w, this.h);
