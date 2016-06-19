@@ -29,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/aomarks/bridgesim/issues"
   },
-  "homepage": "https://github.com/aomarks/bridgesim#readme"
+  "homepage": "https://github.com/aomarks/bridgesim#readme",
+  "dependencies": {
+    "svgo": "^0.6.6"
+  }
 }
