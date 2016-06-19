@@ -11,13 +11,7 @@ class Science extends polymer.Base {
   @property({type: Boolean}) scanning: boolean;
   @property({type: String}) scanResults: string;
 
-  public shipIds(ships: any): string[] {
-    const ids = Object.keys(ships);
-    ids.sort();
-    return ids;
-  }
-
-  public shipName(names: any, id: string): string { return names[id] || ''; }
+  public animateName(names: any, id: string): string { return names[id] || ''; }
 
   public hp(healths: any, id: string): number { return healths[id].hp || 0; }
 
@@ -25,7 +19,7 @@ class Science extends polymer.Base {
     return healths[id].shields || false;
   }
 
-  @observe('sel')
+  @observe('selected')
   public hideResults() {
     this.scanResults = null;
   }
@@ -36,14 +30,12 @@ class Science extends polymer.Base {
     setTimeout(() => {
       this.scanning = false;
       this.scanResults = 'Goats Teleported: ' + Math.random() * 100000;
-    }, 3000);
+    }, 1000);
   }
 
   public dist(_, shipA: string, shipB: string): string {
     const distance = dist(this.db.positions[shipA], this.db.positions[shipB]);
-    return formatNumber(distance
-               ) +
-        'm';
+    return formatNumber(distance) + 'm';
   }
 }
 

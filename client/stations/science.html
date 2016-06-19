@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../animate-selector.html">
 <link rel="import" href="../resource-display.html">
 
 <dom-module id="science-station">
@@ -28,27 +29,22 @@
     <paper-drawer-panel>
       <div drawer>
         <h3>Long Range Sensors</h3>
-        <h4>Ships</h4>
-        <paper-menu selected-item="{{sel}}">
-          <template is="dom-repeat" items="[[shipIds(db.ships)]]">
-            <paper-item ship="{{item}}" disabled="[[scanning]]">[[shipName(db.names, item)]]</paper-item>
-          </template>
-        </paper-menu>
+        <animate-selector db="{{db}}" selected="{{selected}}"></animate-selector>
       </div>
       <div main>
-        <template is="dom-if" if="[[sel.ship]]">
-          <h1>Ship: <span>[[shipName(db.names, sel.ship)]]</span></h1>
-          <p>Distance: <span>[[dist(db.positions, sel.ship, shipId)]]</span></p>
+        <template is="dom-if" if="[[selected]]">
+          <h1>[[animateName(db.names, selected)]]</h1>
+          <p>Distance: <span>[[dist(db.positions, selected, shipId)]]</span></p>
           <paper-button disabled="[[scanning]]" on-tap="scan">Scan</paper-button>
           <template is="dom-if" if="[[scanning]]">
             Scanning... Please wait
           </template>
           <template is="dom-if" if="[[scanResults]]">
             <h2>Scan Results</h2>
-            <p>HP: <span>[[hp(db.healths, sel.ship)]]</span></p>
-            <p>Shields: <span>[[shields(db.healths, sel.ship)]]</span></p>
+            <p>HP: <span>[[hp(db.healths, selected)]]</span></p>
+            <p>Shields: <span>[[shields(db.healths, selected)]]</span></p>
             <p>[[scanResults]]</p>
-            <resource-display db="[[db]]" ship-id="[[sel.ship]]"></resource-display>
+            <resource-display db="[[db]]" ship-id="[[selected]]"></resource-display>
           </template>
         </template>
       </div>

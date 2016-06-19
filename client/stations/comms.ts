@@ -1,45 +1,34 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
 
-import {Db} from "../../core/entity/db";
-import {Resource} from "../../core/resources";
-
-interface Selected {
-  ship?: string;
-  station?: string;
-}
+import {Db} from '../../core/entity/db';
+import {Resource} from '../../core/resources';
+import {dist} from '../../core/util';
 
 @component('comms-station')
 class Comms extends polymer.Base {
-  @property({type: Array}) logs: string[];
-  @property({type: String}) shipId: string;
-  @property({type: Object}) db: Db;
-  @property({type: Object}) sel: Selected;
+  @property({type: Array}) public logs: string[];
+  @property({type: String}) public shipId: string;
+  @property({type: Object}) public db: Db;
 
-  draw() {}
+  private selected: string;
 
-  ids(dict: any): string[] {
-    const ids = Object.keys(dict);
-    ids.sort();
-    return ids;
-  }
+  public idName(names: any, id: string): string { return names[id] || ''; }
 
-  idName(names: any, id: string): string { return names[id] || ''; }
-
-  requestAssistance(e: Event): void {
-    const name = this.db.names[this.sel.ship];
+  public requestAssistance(e: Event): void {
+    const name = this.db.names[this.selected];
     this.logUs(name + ': Please assist us!');
   }
 
-  requestSurrender(e: Event): void {
-    const name = this.db.names[this.sel.ship];
+  public requestSurrender(e: Event): void {
+    const name = this.db.names[this.selected];
     this.logUs(name + ': We request your unconditional surrender!');
   }
 
-  requestResources(e: Event): void {
-    const name = this.db.names[this.sel.station];
+  public requestResources(e: Event): void {
+    const name = this.db.names[this.selected];
     this.logUs(name + ': Do you have any resources that we can use?');
     setTimeout(() => {
-      const stationResources = this.db.resources[this.sel.station];
+      const stationResources = this.db.resources[this.selected];
       const resources = [];
       for (let resource in stationResources) {
         const resourceName = Resource[resource];
@@ -49,16 +38,13 @@ class Comms extends polymer.Base {
     }, 1000);
   }
 
-  requestDock(e: Event): void {
-    const name = this.db.names[this.sel.station];
+  public requestDock(e: Event): void {
+    const name = this.db.names[this.selected];
     this.logUs(name + ': We are requesting permission to dock.');
     setTimeout(() => {
       const pos = this.db.positions[this.shipId];
-      const stationPos = this.db.positions[this.sel.station];
-      const dist = Math.sqrt(
-          Math.pow(pos.x - stationPos.x, 2) +
-          Math.pow(pos.y - stationPos.y, 2));
-      if (dist > 0.25) {
+      const stationPos = this.db.positions[this.selected];
+      if (dist(pos, stationPos) > 1000) {
         this.log(name, 'You are currently out of range.');
       } else {
         this.log(name, 'Commencing docking procedures.');
@@ -67,12 +53,21 @@ class Comms extends polymer.Base {
     }, 1000);
   }
 
-  currentName(): string { return this.idName(this.db.names, this.shipId); }
+  public isShip(id: string): boolean { return !!this.db.ships[id]; }
+  public isStation(id: string): boolean { return !!this.db.stations[id]; }
+
+  private currentName(): string {
+    return this.idName(this.db.names, this.shipId);
+  }
 
   private logUs(msg: string): void { this.log(this.currentName(), msg); }
 
   private log(from: string, msg: string): void {
-    this.$.chat.receiveMsg({timestamp: +new Date, name: from, text: msg});
+    this.$.chat.receiveMsg({
+      name: from,
+      text: msg,
+      timestamp: +new Date(),
+    });
   }
 }
 

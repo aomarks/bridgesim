@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../animate-selector.html">
 
 <dom-module id="comms-station">
   <template>
@@ -18,10 +19,6 @@
       div[drawer] {
         background-color: transparent;
       }
-      paper-menu {
-        color: white;
-        background-color: #212121;
-      }
       bridgesim-chat {
         height: 200px;
       }
@@ -29,29 +26,19 @@
 
     <paper-drawer-panel>
       <div drawer>
-        <h3>Ships Within Communication Range</h3>
-        <paper-menu selected-item="{{sel}}">
-          <template is="dom-repeat" items="[[ids(db.ships)]]">
-            <paper-item ship="{{item}}">[[idName(db.names, item)]]</paper-item>
-          </template>
-        </paper-menu>
-        <h3>Stations</h3>
-        <paper-menu selected-item="{{sel}}">
-          <template is="dom-repeat" items="[[ids(db.stations)]]">
-            <paper-item station="{{item}}">[[idName(db.names, item)]]</paper-item>
-          </template>
-        </paper-menu>
+        <h3>Communications</h3>
+        <animate-selector db="{{db}}" selected="{{selected}}"></animate-selector>
       </div>
       <div main>
-        <template is="dom-if" if="[[sel.ship]]">
-          <h1>Ship: <span>[[idName(db.names, sel.ship)]]</span></h1>
+        <template is="dom-if" if="[[selected]]">
+          <h1>[[idName(db.names, selected)]]</h1>
           <h2>Actions</h2>
+        </template>
+        <template is="dom-if" if="[[isShip(selected)]]">
           <paper-button on-tap="requestAssistance">Please Assist</paper-button>
           <paper-button on-tap="requestSurrender">Surrender</paper-button>
         </template>
-        <template is="dom-if" if="[[sel.station]]">
-          <h1>Station: <span>[[idName(db.names, sel.station)]]</span></h1>
-          <h2>Actions</h2>
+        <template is="dom-if" if="[[isStation(selected)]]">
           <paper-button on-tap="requestResources">Request resources</paper-button>
           <paper-button on-tap="requestDock">Request to dock</paper-button>
         </template>
