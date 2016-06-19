@@ -1,7 +1,7 @@
 ///<reference path="../typings/index.d.ts" />
 
-import {Connection} from "./connection";
-import {Message} from "./message";
+import {Connection} from './connection';
+import {Message} from './message';
 
 export function encodeRSD(rsd: RTCSessionDescription): string {
   return btoa(JSON.stringify(rsd)).replace(/=+/g, '');
@@ -11,12 +11,17 @@ export function decodeRSD(rsd: string): RTCSessionDescription {
   return new RTCSessionDescription(JSON.parse(atob(rsd)));
 }
 
-function pack(msg: Message): string {
+function pack(msg: MetaMessage): string {
   return JSON.stringify(msg);
 }
 
-function unpack(msg: string): Message {
+function unpack(msg: string): MetaMessage {
   return JSON.parse(msg);
+}
+
+interface MetaMessage {
+  pieces?: number;
+  msg?: Message;
 }
 
 export class WebRTCConnection implements Connection {
@@ -31,7 +36,7 @@ export class WebRTCConnection implements Connection {
 
   constructor(config: RTCConfiguration) {
     const rtcPeerConnection: any = window.RTCPeerConnection ||
-      window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+        window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
     this.peer = new rtcPeerConnection(config);
   }
 
@@ -40,9 +45,16 @@ export class WebRTCConnection implements Connection {
       console.error('connection closed');
       return;
     }
-    const packed = pack(msg);
+    const packed = pack({msg: msg});
     if (reliable) {
-      this.reliable.send(packed);
+      const packetSize = 1 << 14;  // 16KB
+      if (packed.length > packetSize) {
+        this.reliable.send(
+            pack({pieces: Math.ceil(packed.length / packetSize)}));
+      }
+      for (let i = 0; i < packed.length; i += packetSize) {
+        this.reliable.send(packed.substr(i, packetSize));
+      }
     } else {
       this.unreliable.send(packed);
     }
@@ -117,9 +129,28 @@ export class WebRTCConnection implements Connection {
 
   private setupChan(chan: RTCDataChannel, reliable: boolean) {
     chan.onopen = chan.onclose = this.pokeState.bind(this);
+    let buf = '';
+    let remaining = 0;
     chan.onmessage = (ev: MessageEvent) => {
       if (this.onMessage) {
-        this.onMessage(unpack(ev.data), reliable);
+        if (remaining > 0) {
+          buf += ev.data;
+          remaining -= 1;
+          if (remaining > 0) {
+            return;
+          }
+          return;
+        }
+        const meta = unpack(buf.length ? buf : ev.data);
+        if (meta.pieces > 0) {
+          buf = '';
+          remaining = meta.pieces;
+          return;
+        }
+        this.onMessage(meta.msg, reliable);
+        if (buf.length) {
+          buf = '';
+        }
       }
     }
   }
