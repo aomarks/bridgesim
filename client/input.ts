@@ -1,7 +1,8 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 
-import * as Net from "../net/message";
-import {Power} from "../core/components";
+import * as Net from '../net/message';
+import {Power} from '../core/components';
+import {Db} from '../core/entity/db';
 
 // TODO: Key codes are kind of a mess. This should work for Chrome at least.
 // See http://unixpapa.com/js/key.html
@@ -11,6 +12,8 @@ function keyCode(ch: string): number {
 
 @component('bridgesim-input')
 class Input extends polymer.Base {
+  @property({type: Object}) db: Db;
+  @property({type: String}) shipId: string;
   @property({type: String, notify: true}) curSubsystem: string;
   @property({type: Number, notify: true}) zoom: number;
   @property({type: Number, notify: true}) panX: number;
@@ -27,7 +30,7 @@ class Input extends polymer.Base {
 
   private commands: Net.Commands;
 
-  created() {
+  public created() {
     this.resetCommands();
     this.keys = {
       [keyCode('W')]: {binding: () => this.commands.thrust = 1, repeat: true},
@@ -35,12 +38,12 @@ class Input extends polymer.Base {
       [keyCode('A')]: {binding: () => this.commands.turn = -1, repeat: true},
       [keyCode('D')]: {binding: () => this.commands.turn = 1, repeat: true},
       [keyCode('K')]: {
-        binding: () => this.commands.power[this.curSubsystem] = 1,
-        repeat: true
+        binding: () => this.commands.power[this.curSubsystem] = 5,
+        repeat: true,
       },
       [keyCode('J')]: {
-        binding: () => this.commands.power[this.curSubsystem] = -1,
-        repeat: true
+        binding: () => this.commands.power[this.curSubsystem] = -5,
+        repeat: true,
       },
       [keyCode('H')]: {binding: () => this.prevSubsystem()},
       [keyCode('L')]: {binding: () => this.nextSubsystem()},
@@ -55,48 +58,13 @@ class Input extends polymer.Base {
     };
   }
 
-  resetCommands(): void {
-    this.commands = {
-      turn: 0,
-      thrust: 0,
-      power: <Power>{},
-      fireLaser: false,
-      fireMissile: false,
-    };
-  }
-
-  ready(): void {
+  public ready(): void {
     window.addEventListener('keydown', this.onKeydown.bind(this));
     window.addEventListener('keyup', this.onKeyup.bind(this));
     window.addEventListener('blur', this.onBlur.bind(this));
   }
 
-  onKeydown(event: KeyboardEvent): void {
-    if (event.repeat) {
-      return;
-    }
-    const key = this.keys[event.keyCode];
-    if (key) {
-      key.binding();
-      key.pressed = true;
-      key.down = true;
-    }
-  }
-
-  onKeyup(event: KeyboardEvent): void {
-    const key = this.keys[event.keyCode];
-    if (key) {
-      key.down = false;
-    }
-  }
-
-  onBlur(): void {
-    for (let code in this.keys) {
-      this.keys[code].down = false;
-    }
-  }
-
-  process(): Net.Commands {
+  public process(): Net.Commands {
     for (let code in this.keys) {
       const key = this.keys[code];
       if (key.repeat && key.down && !key.pressed) {
@@ -125,8 +93,52 @@ class Input extends polymer.Base {
     return prev;
   }
 
-  // TODO Actually cycle.
-  nextSubsystem(): void { this.curSubsystem = 'maneuvering'; }
-  prevSubsystem(): void { this.curSubsystem = 'engine'; }
+  private resetCommands(): void {
+    this.commands = {
+      fireLaser: false,
+      fireMissile: false,
+      power: <Power>{},
+      thrust: 0,
+      turn: 0,
+    };
+  }
+
+  private onKeydown(event: KeyboardEvent): void {
+    if (event.repeat) {
+      return;
+    }
+    const key = this.keys[event.keyCode];
+    if (key) {
+      key.binding();
+      key.pressed = true;
+      key.down = true;
+    }
+  }
+
+  private onKeyup(event: KeyboardEvent): void {
+    const key = this.keys[event.keyCode];
+    if (key) {
+      key.down = false;
+    }
+  }
+
+  private onBlur(): void {
+    for (let code in this.keys) {
+      this.keys[code].down = false;
+    }
+  }
+
+  private nextSubsystem(advance: number = 1): void {
+    const power = this.db.power[this.shipId];
+    if (!power) {
+      return;
+    }
+    const names = Object.keys(power);
+    names.sort();
+    let newIdx = (names.indexOf(this.curSubsystem) + advance + names.length) %
+        names.length;
+    this.curSubsystem = names[newIdx];
+  }
+  private prevSubsystem(): void { this.nextSubsystem(-1); }
 }
 Input.register();

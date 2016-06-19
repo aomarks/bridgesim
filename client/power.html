@@ -2,6 +2,53 @@
 
 <dom-module id="bridgesim-power">
   <template>
-    <canvas id="canvas" width="264" height="200"></canvas>
+    <style>
+      :host {
+        --bar-width: 40px;
+      }
+      #container {
+        border: 1px solid white;
+        padding: 5px;
+      }
+      .subsystem {
+        border: 1px solid black;
+        display: inline-block;
+        height: 200px;
+        text-transform: uppercase;
+        width: var(--bar-width);
+        position: relative;
+      }
+      .subsystem label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -moz-transform: translateX(-50%) translateY(-50%) rotate(-90deg);
+        -webkit-transform: translateX(-50%) translateY(-50%) rotate(-90deg);
+        transform:  translateX(-50%) translateY(-50%) rotate(-90deg);
+      }
+
+      .subsystem .bar {
+        background-color: blue;
+        bottom: 0;
+        height: 100%;
+        position: absolute;
+        width: var(--bar-width);
+        transition: height 0.1s;
+      }
+      .subsystem[active] {
+        border-color: red;
+      }
+    </style>
+
+    <h3>Power Levels</h3>
+    <div id="container">
+      <template is="dom-repeat" items="[[subsystemNames]]">
+        <div class="subsystem" active$="[[subsystemActive(curSubsystem, item)]]">
+          <div class="bar" style$="[[subsystemLevel(db.power, shipId, item)]]"></div>
+          <label>[[item]]</label>
+        </div>
+      </template>
+    </div>
+    <sub>Use H, J, K and L to adjust power levels.</sub>
   </template>
 </dom-modules
