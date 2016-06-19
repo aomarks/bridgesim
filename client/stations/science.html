@@ -34,7 +34,10 @@
       <div main>
         <template is="dom-if" if="[[selected]]">
           <h1>[[animateName(db.names, selected)]]</h1>
-          <p>Distance: <span>[[dist(db.positions, selected, shipId)]]</span></p>
+          <p>
+          Distance: <span>[[dist(db.positions, selected, shipId)]]</span>,
+          Heading: <span>[[heading(db.positions, selected, shipId)]]</span>
+          </p>
           <paper-button disabled="[[scanning]]" on-tap="scan">Scan</paper-button>
           <template is="dom-if" if="[[scanning]]">
             Scanning... Please wait

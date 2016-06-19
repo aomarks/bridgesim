@@ -54,9 +54,6 @@
       </paper-slider>
     </div>
 
-    <bridgesim-heading-indicator id="headingIndicator">
-    </bridgesim-heading-indicator>
-
     <bridgesim-map id="map"
       db="[[db]]"
       size="[[size]]"
@@ -67,6 +64,12 @@
       pan-x="[[panX]]"
       pan-y="[[panY]]">
     </bridgesim-map>
+
+    <bridgesim-heading-indicator
+      db="[[db]]"
+      ship-id="[[shipId]]"
+      id="headingIndicator">
+    </bridgesim-heading-indicator>
 
   </template>
 </dom-module>

@@ -1,7 +1,7 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
 
 import {Db} from '../../core/entity/db';
-import {dist, formatNumber} from '../../core/util';
+import {dist, heading, formatNumber} from '../../core/util';
 
 @component('science-station')
 class Science extends polymer.Base {
@@ -36,6 +36,11 @@ class Science extends polymer.Base {
   public dist(_, shipA: string, shipB: string): string {
     const distance = dist(this.db.positions[shipA], this.db.positions[shipB]);
     return formatNumber(distance) + 'm';
+  }
+
+  public heading(_, shipA: string, shipB: string): string {
+    const bearing = heading(this.db.positions[shipA], this.db.positions[shipB]);
+    return bearing.toFixed(0) + '°';
   }
 }
 
