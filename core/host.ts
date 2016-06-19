@@ -45,7 +45,7 @@ export class Host {
   // Systems
   private ai: Ai = new Ai(this.db);
   private collision: Collision = new Collision(this.db);
-  private death: Death = new Death(this.db);
+  private death: Death = new Death(this.db, this);
   private input: Input = new Input(this.db);
   private laser: Laser = new Laser(this.db);
   private missile: Missile = new Missile(this.db);
@@ -103,6 +103,9 @@ export class Host {
     return SpawnShip(this.db, name, x, y, ai);
   }
 
+  public broadcastRoster() {
+    this.broadcast({roster: this.makeRoster()}, true);
+  }
 
   private broadcast(msg: Net.Message, reliable: boolean) {
     for (let id in this.db.players) {
@@ -190,10 +193,6 @@ export class Host {
     this.broadcast(
         {receiveChat: {timestamp: Date.now(), announce: true, text: text}},
         true);
-  }
-
-  private broadcastRoster() {
-    this.broadcast({roster: this.makeRoster()}, true);
   }
 
   private makeRoster(): Net.Roster {

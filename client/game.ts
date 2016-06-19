@@ -43,6 +43,7 @@ class Game extends polymer.Base {
   private urlQuery: string;
   private animationRequestId: number;
   private welcomed: boolean;
+  private showStations: boolean;
 
   ready(): void {
     console.log('game: ready');
@@ -347,6 +348,11 @@ class Game extends polymer.Base {
       if (station.draw) {
         station.draw(localAlpha, remoteAlpha);
       }
+    }
+
+    // Check for ship destruction.
+    if (this.shipId && !this.db.ships[this.shipId] && this.showStations) {
+      window.location.hash = '/gameover';
     }
 
     this.prevTs = ts;

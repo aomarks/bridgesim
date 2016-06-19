@@ -122,18 +122,18 @@
       [hidden] {
         display: none !important;
       }
-      #welcome {
+      .hero {
         margin-top: -40px;
         display: flex;
         align-items: center;
         justify-content: center;
         height: 100%;
       }
-      #welcome > div {
+      .hero > div {
         text-align: center;
         margin: 16px;
       }
-      #welcome h1 {
+      .hero h1 {
         margin: 0 0 50px;
         font-size: 3rem;
         font-weight: 100;
@@ -248,12 +248,19 @@
           </viewscreen-station>
         </iron-pages>
 
-        <div id="welcome" hidden="[[!showWelcome]]">
+        <div class="hero" hidden="[[!showWelcome]]">
           <div>
             <h1>BRIDGESIM</h1>
             <p>Welcome! What would you like to do?</p>
             <paper-button on-tap="hostGame">Host</paper-button>
             <paper-button on-tap="joinGame">Join</paper-button>
+          </div>
+        </div>
+
+        <div class="hero" hidden="[[!showGameOver]]">
+          <div>
+            <h1>Game Over</h1>
+            <p>Your ship has been destroyed.</p>
           </div>
         </div>
 
@@ -268,6 +275,7 @@
     <app-route route="{{route}}" pattern="/station/:station"
                data="{{routeData}}" active="{{showStations}}"></app-route>
     <app-route route="{{route}}" pattern="/welcome" active="{{showWelcome}}"></app-route>
+    <app-route route="{{route}}" pattern="/gameover" active="{{showGameOver}}"></app-route>
   </template>
   <script src="../out.js"></script>
 </dom-module>
