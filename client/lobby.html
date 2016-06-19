@@ -15,7 +15,12 @@
         background-color: var(--paper-blue-500);
         color: white;
       }
+      span + span:not(:empty) {
+        margin-left: 5px;
+      }
     </style>
+
+    <h3>Ships</h3>
 
     <template is="dom-repeat" id="ships"
               items="[[shipIds(db.ships)]]" filter="isHuman" as="shipId">
