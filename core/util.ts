@@ -5,6 +5,9 @@ const hypot = (Math as any).hypot || function(x: number, y: number) {
 };
 
 export function dist(a: Position, b: Position): number {
+  if (!a || !b) {
+    return -1;
+  }
   return hypot(a.x - b.x, a.y - b.y);
 }
 
