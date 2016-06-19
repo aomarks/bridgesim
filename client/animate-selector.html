@@ -1,0 +1,26 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+<dom-module id="animate-selector">
+  <template>
+    <style>
+      paper-menu {
+        color: white;
+        background-color: #212121;
+      }
+    </style>
+
+    <paper-menu selected-item="{{sel}}">
+      <paper-item disabled>Ships</paper-item>
+      <template is="dom-repeat" items="[[ids(db.ships, db.names)]]">
+        <paper-item animate="{{item}}">[[idName(db.names, item)]]</paper-item>
+      </template>
+
+      <paper-item disabled>Stations</paper-item>
+      <template is="dom-repeat" items="[[ids(db.stations, db.names)]]">
+        <paper-item animate="{{item}}">[[idName(db.names, item)]]</paper-item>
+      </template>
+    </paper-menu>
+  </template>
+</dom-module>
