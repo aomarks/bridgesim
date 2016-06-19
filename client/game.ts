@@ -261,17 +261,24 @@ class Game extends polymer.Base {
   }
 
   applySnapshot(snapshot: Net.Snapshot): void {
-    this.set('db.healths', snapshot.healths);
+    this.db.healths = snapshot.healths;
     this.db.lasers = snapshot.lasers;
     this.db.missiles = snapshot.missiles;
     this.db.prevPositions = this.db.positions;
-    this.set('db.positions', snapshot.positions);
+    this.db.positions = snapshot.positions;
     this.db.collidables = snapshot.collidables;
     this.db.velocities = snapshot.velocities;
-    this.set('db.power', snapshot.power);
+    this.db.power = snapshot.power;
     this.db.debris = snapshot.debris;
-    this.set('db.stations', snapshot.stations);
-    this.set('db.resources', snapshot.resources);
+    this.db.stations = snapshot.stations;
+    this.db.resources = snapshot.resources;
+
+    // Let polymer know that we've changed certain paths.
+    this.notifyPath('db.healths', this.db.healths);
+    this.notifyPath('db.positions', this.db.positions);
+    this.notifyPath('db.power', this.db.power);
+    this.notifyPath('db.stations', this.db.stations);
+    this.notifyPath('db.resources', this.db.resources);
   }
 
   frame(ts: number): void {
