@@ -116,11 +116,10 @@ export class Map extends polymer.Base {
     this.metersPerPx = (-this.zoom * (MAX_METERS_PER_PX - MIN_METERS_PER_PX)) +
         MAX_METERS_PER_PX;
 
-    if (this.follow == null) {
+    const pos = this.db.positions[this.follow];
+    if (this.follow == null || !pos) {
       this.followGC.x = this.followGC.y = 0;
-
     } else {
-      const pos = this.db.positions[this.follow];
       let prev = this.db.prevPositions[this.follow];
       if (prev == null) {
         prev = pos;

@@ -20,7 +20,12 @@ export class Power extends polymer.Base {
   private subsystemLevel(
       powerDb: {[id: string]: Components.Power}, shipId: string,
       subsystem: string): any {
-    return 'height: ' + powerDb[shipId][subsystem] + '%';
+    const power = powerDb[shipId];
+    let level = 0;
+    if (power) {
+      level = power[subsystem];
+    }
+    return 'height: ' + level.toFixed(3) + '%';
   }
 
   private subsystemActive(curSubsystem: string, subsystem: string): boolean {

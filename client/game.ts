@@ -287,7 +287,10 @@ class Game extends polymer.Base {
           if (commands) {
             this.input.apply(this.shipId, commands, false);
           }
-          this.motion.tickOne(this.shipId);
+          // Make sure the ship exists before ticking the motion.
+          if (this.db.velocities[this.shipId]) {
+            this.motion.tickOne(this.shipId);
+          }
         }
       }
       this.latestSnapshot = null;
@@ -307,7 +310,10 @@ class Game extends polymer.Base {
 
       if (this.settings.localPredict && this.shipId != null) {
         this.input.apply(this.shipId, commands, false);
-        this.motion.tickOne(this.shipId);
+        // Make sure the ship exists before ticking the motion.
+        if (this.db.velocities[this.shipId]) {
+          this.motion.tickOne(this.shipId);
+        }
       }
       this.lag -= this.settings.tickInterval;
       this.seq++;
