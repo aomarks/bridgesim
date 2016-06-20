@@ -198,7 +198,11 @@ class Game extends polymer.Base {
     });
   }
 
-  onMessage(msg: Net.Message) {
+  onMessage(msg: Net.Message, reliable: boolean, bytes: number) {
+    if (this.settings.showMetrics) {
+      this.$$('#metrics').recv(bytes);
+    }
+
     if (msg.welcome) {
       console.log('game: got welcome', msg.welcome.playerId);
       this.size = msg.welcome.galaxySize;
@@ -222,9 +226,6 @@ class Game extends polymer.Base {
       this.$.chat.receiveMsg(msg.receiveChat);
 
     } else if (msg.snapshot) {
-      if (this.settings.showMetrics) {
-        this.$$('#metrics').recv();
-      }
       if (msg.snapshot.seq > this.latestSeq) {
         this.latestSnapshotMs = performance.now();
         this.latestSnapshot = msg.snapshot;
@@ -294,8 +295,8 @@ class Game extends polymer.Base {
       return;
     }
 
-    if (this.settings.showMetrics) {
-      this.$$('#metrics').draw();
+    if (this.settings.showMetrics && elapsed > 0) {
+      this.$$('#metrics').draw(ts, elapsed);
     }
 
     if (this.latestSnapshot) {
@@ -340,9 +341,6 @@ class Game extends polymer.Base {
     }
     if (commands) {
       this.conn.send({commands: commands}, false);
-      if (this.settings.showMetrics) {
-        this.$$('#metrics').send();
-      }
     }
 
     const station = this.$.stations.selectedItem;

@@ -10,20 +10,20 @@
         border: 2px solid rgba(255, 255, 255, .2);
         border-radius: 10px;
       }
-      th {
+      [value] {
         text-align: right;
-        font-weight: normal;
-      }
-      td {
-        min-width: 37px;
+        min-width: 46px;
         color: #FFE200;
+      }
+      [unit] {
+        text-align: left;
+        color: #FFA700;
       }
     </style>
 
     <table>
-      <tr><th>draw/sec:</th><td>[[drawRate]]</td></tr>
-      <tr><th>send/sec:</th><td>[[sendRate]]</td></tr>
-      <tr><th>recv/sec:</th><td>[[recvRate]]</td></tr>
+      <tr><td value>[[drawRate]]</td><td unit>fps</td></tr>
+      <tr><td value>[[recvRate]]</td><td unit>kB/s&darr;</td></tr>
     </table>
   </template>
 </dom-module>

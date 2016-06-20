@@ -25,7 +25,7 @@ interface MetaMessage {
 }
 
 export class WebRTCConnection implements Connection {
-  onMessage: (msg: Message, reliable?: boolean) => void;
+  onMessage: (msg: Message, reliable: boolean, bytes: number) => void;
   onOpen: () => void;
   onClose: () => void;
 
@@ -141,13 +141,15 @@ export class WebRTCConnection implements Connection {
           }
           return;
         }
-        const meta = unpack(buf.length ? buf : ev.data);
+        const data = buf.length ? buf : ev.data;
+        const meta = unpack(data);
         if (meta.pieces > 0) {
           buf = '';
           remaining = meta.pieces;
           return;
         }
-        this.onMessage(meta.msg, reliable);
+        // WebRTC transmits strings as UTF-8.
+        this.onMessage(meta.msg, reliable, data.length);
         if (buf.length) {
           buf = '';
         }

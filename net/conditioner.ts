@@ -9,7 +9,7 @@ export class Conditioner implements Connection {
   // Rate [0,1] of artificially dropped messages (unreliable channel only).
   packetLoss: number = 0;
 
-  onMessage: (msg: Message, reliable?: boolean) => void;
+  onMessage: (msg: Message, reliable: boolean, bytes: number) => void;
   onOpen: () => void;
   onClose: () => void;
   private conn: Connection;
@@ -29,17 +29,18 @@ export class Conditioner implements Connection {
     };
   }
 
-  proxyOnMessage(msg: Message, reliable: boolean): void {
+  proxyOnMessage(msg: Message, reliable: boolean, bytes: number): void {
     if (!this.onMessage) {
       return;
     }
     if (!reliable && Math.random() < this.packetLoss) {
       return;
     }
-    window.setTimeout(() => {this.onMessage(msg)}, this.latency);
+    window.setTimeout(
+        () => {this.onMessage(msg, reliable, bytes)}, this.latency);
   }
 
-  send(msg: Message, reliable: boolean): void {
+  send(msg: Message, reliable: boolean) {
     if (!reliable && Math.random() < this.packetLoss) {
       return;
     }

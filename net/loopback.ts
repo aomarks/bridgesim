@@ -26,7 +26,7 @@ export class Loopback {
 }
 
 class LoopbackConnection implements Connection {
-  onMessage: (msg: Message, reliable?: boolean) => void;
+  onMessage: (msg: Message, reliable: boolean, bytes: number) => void;
   onOpen: () => void;
   onClose: () => void;
   receiver: LoopbackConnection;
@@ -38,8 +38,12 @@ class LoopbackConnection implements Connection {
       return;
     }
     if (this.receiver.onMessage) {
-      const copy = JSON.parse(JSON.stringify(msg));
-      this.receiver.onMessage(copy, reliable);
+      // Make a copy so that we don't accidentally share memory.
+      const copy = JSON.stringify(msg);
+      // TODO We don't have any actual network traffic bytes to report, but
+      // let's pretend we're doing UTF-8 JSON over WebRTC.
+      const bytes = copy.length;
+      this.receiver.onMessage(JSON.parse(copy), reliable, bytes);
     }
   }
 
