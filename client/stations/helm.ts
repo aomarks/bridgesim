@@ -1,26 +1,20 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../../typings/index.d.ts" />
 
-@component("helm-station")
-class Helm extends polymer.Base {
-  @property({type: Number, notify: true}) zoom: number;
+import {clamp} from '../../core/math';
 
-  @listen("wheel")
+@component('helm-station')
+class Helm extends polymer.Base {
+  @property({type: Number, value: 0.8}) zoom: number;
+
+  @listen('wheel')
   handleZoom(e: any) {
-    let zoom = this.zoom + e.deltaY / 1000;
-    if (zoom < 0) {
-      zoom = 0;
-    } else if (zoom > 1) {
-      zoom = 1;
-    }
-    this.zoom = zoom;
+    this.zoom = clamp(this.zoom + e.deltaY / 1000, 0, 1);
     e.preventDefault();
   }
 
-  @listen("map-tap")
-  handleMapTap(e: any) {
-    console.log("map-tap", e.detail.x, e.detail.y);
-  }
+  @listen('map-tap')
+  handleMapTap(e: any) { console.log('map-tap', e.detail.x, e.detail.y); }
 
   draw(localAlpha: number, remoteAlpha: number) {
     this.$.map.draw(localAlpha, remoteAlpha);

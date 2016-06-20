@@ -1,8 +1,9 @@
 ///<reference path='../bower_components/polymer-ts/polymer-ts.d.ts' />
 
+import {Db} from '../core/entity/db';
+
 import * as color from './colors';
 import {snap} from './util';
-import {Db} from '../core/entity/db';
 
 const OUTER_RING_WIDTH = 10;
 
@@ -36,7 +37,7 @@ export class HeadingIndicator extends polymer.Base {
     }
   }
 
-   public draw(alpha: number): void {
+  public draw(alpha: number): void {
     if (this.drawn) {
       return;
     }
@@ -85,7 +86,8 @@ export class HeadingIndicator extends polymer.Base {
     ctx.restore();
   }
 
-  private drawTicks(radius: number, degreeIncrements: number, tickLength: number) {
+  private drawTicks(
+      radius: number, degreeIncrements: number, tickLength: number) {
     const ctx = this.ctx;
     ctx.save();
     ctx.strokeStyle = color.AQUA;

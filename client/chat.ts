@@ -1,6 +1,6 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 
-import {ReceiveChat} from "../net/message";
+import {ReceiveChat} from '../net/message';
 
 export interface ChatEvent { text: string }
 

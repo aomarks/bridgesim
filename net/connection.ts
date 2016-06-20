@@ -1,4 +1,4 @@
-import {Message} from "./message";
+import {Message} from './message';
 
 export interface Connection {
   onMessage: (msg: Message, reliable?: boolean) => void;

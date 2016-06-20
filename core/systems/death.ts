@@ -16,6 +16,6 @@ export class Death {
     }
     if (shouldUpdateRoster) {
       this.host.broadcastRoster();
-  }
+    }
   }
 }

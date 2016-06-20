@@ -1,6 +1,7 @@
-import {Db} from "./db";
-import {DebrisType} from "../components";
-import {randInt} from "../math";
+import {DebrisType} from '../components';
+import {randInt} from '../math';
+
+import {Db} from './db';
 
 const MIN_DEBRIS_METERS = 1000;
 const MAX_DEBRIS_METERS = 100;

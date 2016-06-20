@@ -1,5 +1,6 @@
-import {Db} from './db';
 import {Resource} from '../resources';
+
+import {Db} from './db';
 
 export function SpawnShip(
     db: Db, name: string, x: number, y: number, ai: boolean): string {

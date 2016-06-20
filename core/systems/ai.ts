@@ -1,5 +1,5 @@
-import {Db} from "../entity/db";
-import {Position} from "../components";
+import {Position} from '../components';
+import {Db} from '../entity/db';
 
 export class Ai {
   constructor(private db: Db) {}

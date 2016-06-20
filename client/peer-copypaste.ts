@@ -1,10 +1,11 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/index.d.ts" />
 
-import {WebRTCConnection, encodeRSD, decodeRSD} from "../net/webrtc";
-import {RTC_CONFIG} from "./webrtc-config";
+import {WebRTCConnection, decodeRSD, encodeRSD} from '../net/webrtc';
 
-@component("bridgesim-peer-copypaste")
+import {RTC_CONFIG} from './webrtc-config';
+
+@component('bridgesim-peer-copypaste')
 class PeerCopypaste extends polymer.Base {
   private copyOffer: string;
   private copyAnswer: string;
@@ -20,7 +21,7 @@ class PeerCopypaste extends polymer.Base {
     this.conn = new WebRTCConnection(RTC_CONFIG);
     this.conn.onOpen = () => {
       this.conn.onOpen = null;
-      this.fire("connection", this.conn);
+      this.fire('connection', this.conn);
       this.$.clientDialog.close();
     };
     this.conn.makeOffer().then(offer => { this.copyOffer = encodeRSD(offer); });
@@ -28,39 +29,32 @@ class PeerCopypaste extends polymer.Base {
 
   connect(e: any): void {
     const id = e.model.item.ID;
-    let password = "";
+    let password = '';
     if (e.model.item.RequiresPassword) {
-      password = prompt("Server Password");
+      password = prompt('Server Password');
     }
     this.lobbyListConnect(id, password);
   }
 
-  onStopConnecting() {
-    this.connecting = false;
-  }
+  onStopConnecting() { this.connecting = false; }
 
-  lobbyListConnect(id: string, password: string = "") {
+  lobbyListConnect(id: string, password: string = '') {
     this.error = null;
     this.connecting = true;
-    const done = () => {
-      this.connecting = false;
-    };
+    const done = () => { this.connecting = false; };
     return this.$.lobbyList.connect(id, this.copyOffer, password)
-      .then((resp: {Answer: string}) => { this.pasteAnswer = resp.Answer; })
-      .catch((err) => {
-        this.error = err;
-      }).then(done, done);
+        .then((resp: {Answer: string}) => { this.pasteAnswer = resp.Answer; })
+        .catch((err) => { this.error = err; })
+        .then(done, done);
   }
 
-  connectByID(e: any): void {
-    this.lobbyListConnect(this.hostID);
-  }
+  connectByID(e: any): void { this.lobbyListConnect(this.hostID); }
 
   refreshList(): void { this.$.lobbyList.refresh(); }
 
   openHostDialog(): void { this.$.hostDialog.open(); }
 
-  @observe("pasteOffer")
+  @observe('pasteOffer')
   onPasteOffer(offer: string): void {
     if (!offer) {
       return;
@@ -72,7 +66,7 @@ class PeerCopypaste extends polymer.Base {
     const conn = new WebRTCConnection(RTC_CONFIG);
     conn.onOpen = () => {
       conn.onOpen = null;
-      this.fire("connection", conn);
+      this.fire('connection', conn);
       this.$.hostDialog.close();
     };
     return conn.takeOffer(decodeRSD(offer)).then(answer => {
@@ -81,7 +75,7 @@ class PeerCopypaste extends polymer.Base {
     });
   }
 
-  @observe("pasteAnswer")
+  @observe('pasteAnswer')
   onPasteAnswer(answer: string): void {
     if (!answer) {
       return;
@@ -91,15 +85,15 @@ class PeerCopypaste extends polymer.Base {
 
   clear(): void {
     this.conn = null;
-    this.copyOffer = "";
-    this.copyAnswer = "";
-    this.pasteOffer = "";
-    this.pasteAnswer = "";
+    this.copyOffer = '';
+    this.copyAnswer = '';
+    this.pasteOffer = '';
+    this.pasteAnswer = '';
   }
 
   selectAndCopy(event: Event): void {
     (<HTMLTextAreaElement>event.target).select();
-    document.execCommand("copy");
+    document.execCommand('copy');
   }
 }
 PeerCopypaste.register();

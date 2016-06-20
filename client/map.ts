@@ -1,12 +1,13 @@
 ///<reference path='../bower_components/polymer-ts/polymer-ts.d.ts' />
 
-import * as color from './colors';
+import {Position} from '../core/components';
 import {Db} from '../core/entity/db';
+import {SECTOR_METERS} from '../core/galaxy';
+import {radians} from '../core/math';
+
+import * as color from './colors';
 import {HP} from './const';
 import {lerp, snap} from './util';
-import {radians} from '../core/math';
-import {Position} from '../core/components';
-import {SECTOR_METERS} from '../core/galaxy';
 
 interface Coord2D {
   x: number;
@@ -24,8 +25,6 @@ export class Map extends polymer.Base {
   @property({type: String}) follow: string;
   @property({type: Number, value: 2}) size: number;
   @property({type: Number, value: 0}) zoom: number;
-  @property({type: Number, value: 0}) panX: number;
-  @property({type: Number, value: 0}) panY: number;
   @property({type: Boolean, value: false}) showBoundingBoxes: boolean;
 
   private can: HTMLCanvasElement;
@@ -153,7 +152,8 @@ export class Map extends polymer.Base {
     const gridTop = Math.max(0, topLeft.y);
     const gridBottom = Math.min(this.h, galaxyPx + topLeft.y);
     const gridLeft = Math.max(0, topLeft.x);
-    const gridRight = Math.min(this.w, galaxyPx + topLeft.x); let x = 0;
+    const gridRight = Math.min(this.w, galaxyPx + topLeft.x);
+    let x = 0;
     let y = 0;
     ctx.beginPath();
     for (let i = 0; i <= this.size; i++) {

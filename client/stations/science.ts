@@ -1,7 +1,7 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
 
 import {Db} from '../../core/entity/db';
-import {dist, heading, formatNumber} from '../../core/util';
+import {dist, formatNumber, heading} from '../../core/util';
 
 @component('science-station')
 class Science extends polymer.Base {

@@ -1,6 +1,6 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 
-import {Settings} from "./settings";
+import {Settings} from './settings';
 
 @component('bridgesim-settings-menu')
 class SettingsMenu extends polymer.Base {

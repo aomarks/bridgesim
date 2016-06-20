@@ -1,5 +1,5 @@
-import {Connection} from "./connection";
-import {Message} from "./message";
+import {Connection} from './connection';
+import {Message} from './message';
 
 // Simulates poor network conditions.
 export class Conditioner implements Connection {

@@ -1,8 +1,9 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 
-import * as Net from '../net/message';
 import {Power} from '../core/components';
 import {Db} from '../core/entity/db';
+import * as Net from '../net/message';
+
 
 // TODO: Key codes are kind of a mess. This should work for Chrome at least.
 // See http://unixpapa.com/js/key.html
@@ -15,9 +16,6 @@ class Input extends polymer.Base {
   @property({type: Object}) db: Db;
   @property({type: String}) shipId: string;
   @property({type: String, notify: true}) curSubsystem: string;
-  @property({type: Number, notify: true}) zoom: number;
-  @property({type: Number, notify: true}) panX: number;
-  @property({type: Number, notify: true}) panY: number;
 
   private keys: {
     [key: number]: {
@@ -49,12 +47,6 @@ class Input extends polymer.Base {
       [keyCode('L')]: {binding: () => this.nextSubsystem()},
       [keyCode(' ')]: {binding: () => this.commands.fireLaser = true},
       [keyCode('M')]: {binding: () => this.commands.fireMissile = true},
-      [187]: {binding: () => this.zoom += 10},
-      [189]: {binding: () => this.zoom -= 10},
-      [38]: {binding: () => this.panY += 10},
-      [40]: {binding: () => this.panY -= 10},
-      [37]: {binding: () => this.panX -= 10},
-      [39]: {binding: () => this.panX += 10},
     };
   }
 

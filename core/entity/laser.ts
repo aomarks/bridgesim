@@ -1,5 +1,6 @@
-import {Db} from "./db";
-import {Resource} from "../resources";
+import {Resource} from '../resources';
+
+import {Db} from './db';
 
 export function SpawnLaser(
     db: Db, origin: string, x: number, y: number, yaw: number) {

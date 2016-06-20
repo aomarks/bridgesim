@@ -1,9 +1,10 @@
 ///<reference path="../../bower_components/babylonjs/dist/babylon.2.4.d.ts" />
 
-import {AssetPack} from "../asset-pack";
-import {Db} from "../../core/entity/db";
-import {SKYBOX_EXTENSIONS} from "./renderer";
-import {lerp} from "../util";
+import {Db} from '../../core/entity/db';
+import {AssetPack} from '../asset-pack';
+import {lerp} from '../util';
+
+import {SKYBOX_EXTENSIONS} from './renderer';
 
 export class Ship {
   public mesh: BABYLON.Mesh;
@@ -21,7 +22,7 @@ export class Ship {
     console.log(shipAsset);
 
     const reflectionTexture = new BABYLON.CubeTexture(
-        "textures/skybox/box", scene, SKYBOX_EXTENSIONS);
+        'textures/skybox/box', scene, SKYBOX_EXTENSIONS);
 
 
     assetPack.loadShip(shipAsset).then((mesh: BABYLON.Mesh) => {
@@ -67,7 +68,7 @@ export class Ship {
     });
 
     // Shield effects
-    const material = new BABYLON.StandardMaterial("kosh", scene);
+    const material = new BABYLON.StandardMaterial('kosh', scene);
     material.reflectionTexture = reflectionTexture;
     material.diffuseColor = new BABYLON.Color3(0.5, 0.95, 1);
     material.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);

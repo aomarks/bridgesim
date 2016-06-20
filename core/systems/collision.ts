@@ -1,5 +1,5 @@
-import {Db} from "../entity/db";
-import {BoxCollider} from "../collision/box-collider";
+import {BoxCollider} from '../collision/box-collider';
+import {Db} from '../entity/db';
 
 export class Collision {
   constructor(private db: Db) {}

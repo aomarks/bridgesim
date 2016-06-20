@@ -1,5 +1,5 @@
-import {Connection} from "./connection";
-import {Message} from "./message";
+import {Connection} from './connection';
+import {Message} from './message';
 
 /** Pass messages between two local connections. */
 export class Loopback {

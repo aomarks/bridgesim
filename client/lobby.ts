@@ -1,8 +1,8 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 
-import * as Net from "../net/message";
-import {Db} from "../core/entity/db";
-import {Player} from "../core/components";
+import {Player} from '../core/components';
+import {Db} from '../core/entity/db';
+import * as Net from '../net/message';
 
 @component('bridgesim-lobby')
 class Lobby extends polymer.Base {

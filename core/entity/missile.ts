@@ -1,4 +1,4 @@
-import {Db} from "./db";
+import {Db} from './db';
 
 export function SpawnMissile(
     db: Db, origin: string, x: number, y: number, yaw: number) {

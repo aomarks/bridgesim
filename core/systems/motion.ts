@@ -1,6 +1,7 @@
-import {Db} from "../entity/db";
-import {radians, clamp} from "../math";
-import {maxCoord} from "../galaxy";
+import {Db} from '../entity/db';
+import {maxCoord} from '../galaxy';
+import {clamp, radians} from '../math';
+
 
 // Updates the position and previous position of entities according to their
 // velocity.

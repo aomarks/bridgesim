@@ -1,7 +1,12 @@
-import * as Net from '../net/message';
 import {Connection} from '../net/connection';
-import {randCoord} from './galaxy';
+import * as Net from '../net/message';
 
+// Entities
+import {Db} from './entity/db';
+import {SpawnAstroidBelt} from './entity/debris';
+import {SpawnShip} from './entity/ship';
+import {SpawnStation} from './entity/station';
+import {randCoord} from './galaxy';
 // Systems
 import {Ai} from './systems/ai';
 import {Collision} from './systems/collision';
@@ -11,12 +16,6 @@ import {Laser} from './systems/laser';
 import {Missile} from './systems/missile';
 import {Motion} from './systems/motion';
 import {Station} from './systems/station';
-
-// Entities
-import {Db} from './entity/db';
-import {SpawnAstroidBelt} from './entity/debris';
-import {SpawnShip} from './entity/ship';
-import {SpawnStation} from './entity/station';
 
 export interface Settings {
   // The play field will have this many sectors across and down.

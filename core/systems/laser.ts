@@ -1,4 +1,4 @@
-import {Db} from "../entity/db";
+import {Db} from '../entity/db';
 
 const RANGE = 10000;
 

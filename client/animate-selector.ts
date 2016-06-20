@@ -14,13 +14,13 @@ class AnimateSelector extends polymer.Base {
 
   public sel: Selected;
 
-  public computeSelected(sel: Selected) { return sel && sel .animate; }
+  public computeSelected(sel: Selected) { return sel && sel.animate; }
 
   public ids(dict: any): string[] {
     const ids = Object.keys(dict);
     ids.sort((a, b) => {
-      const nameA = (this.db.names[a]||'').toUpperCase();
-      const nameB = (this.db.names[b]||'').toUpperCase();
+      const nameA = (this.db.names[a] || '').toUpperCase();
+      const nameB = (this.db.names[b] || '').toUpperCase();
       if (nameA < nameB) {
         return -1;
       }

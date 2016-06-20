@@ -1,8 +1,8 @@
-import * as Net from "../../net/message";
-import {Db} from "../entity/db";
-import {SpawnLaser} from "../entity/laser";
-import {SpawnMissile} from "../entity/missile";
-import {clamp} from "../math";
+import * as Net from '../../net/message';
+import {Db} from '../entity/db';
+import {SpawnLaser} from '../entity/laser';
+import {SpawnMissile} from '../entity/missile';
+import {clamp} from '../math';
 
 // Applies player input.
 export class Input {

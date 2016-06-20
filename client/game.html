@@ -50,10 +50,7 @@
     <bridgesim-input id="input"
       db="{{db}}"
       ship-id="[[shipId]]"
-      cur-subsystem="{{curSubsystem}}"
-      zoom="{{zoom}}"
-      pan-x="{{panX}}"
-      pan-y="{{panY}}">
+      cur-subsystem="{{curSubsystem}}">
     </bridgesim-input>
 
     <style include="iron-flex iron-flex-alignment iron-flex-factors">
@@ -67,7 +64,7 @@
         color: #fff;
 
         --bridgesim-font: {
-          font-family: 'Share Tech Mono', monospace;
+          font-family: "Share Tech Mono", monospace;
         };
         @apply(--bridgesim-font);
         --paper-font-common-base: {
@@ -193,12 +190,12 @@
                       attr-for-selected="name"
                       hidden="[[!showStations]]"
                       class="flex-2">
-            <paper-tab name='helm'>HLM</paper-tab>
-            <paper-tab name='comms'>COM</paper-tab>
-            <paper-tab name='science'>SCI</paper-tab>
-            <paper-tab name='weapons'>WEP</paper-tab>
-            <paper-tab name='engineering'>ENG</paper-tab>
-            <paper-tab name='viewscreen'>EXT</paper-tab>
+            <paper-tab name="helm">HLM</paper-tab>
+            <paper-tab name="comms">COM</paper-tab>
+            <paper-tab name="science">SCI</paper-tab>
+            <paper-tab name="weapons">WEP</paper-tab>
+            <paper-tab name="engineering">ENG</paper-tab>
+            <paper-tab name="viewscreen">EXT</paper-tab>
           </paper-tabs>
         </div>
 
@@ -216,10 +213,7 @@
             db="[[db]]"
             size="[[size]]"
             ship-id="[[shipId]]"
-            zoom="{{zoom}}"
-            show-bounding-boxes="[[settings.showBoundingBoxes]]"
-            pan-x="[[panX]]"
-            pan-y="[[panY]]">
+            show-bounding-boxes="[[settings.showBoundingBoxes]]">
           </helm-station>
 
           <comms-station name="comms"

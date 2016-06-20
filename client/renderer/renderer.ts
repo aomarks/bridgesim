@@ -1,12 +1,12 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../../bower_components/babylonjs/dist/babylon.2.4.d.ts" />
 
-import {Db} from "../../core/entity/db";
-import {Ship} from "./ship";
+import {Db} from '../../core/entity/db';
+import {Ship} from './ship';
 
 export const SKYBOX_EXTENSIONS = [
-  "_right1.png", "_top3.png", "_front5.png", "_left2.png", "_bottom4.png",
-  "_back6.png"
+  '_right1.png', '_top3.png', '_front5.png', '_left2.png', '_bottom4.png',
+  '_back6.png'
 ];
 
 @component('bridgesim-renderer')
@@ -43,7 +43,7 @@ export class Renderer extends polymer.Base {
     this.camera.upperRadiusLimit = 50;
 
     var hdr = new BABYLON.HDRRenderingPipeline(
-        "hdr", this.scene, 1.0, null, [this.camera]);
+        'hdr', this.scene, 1.0, null, [this.camera]);
     hdr.brightThreshold = 0.7;  // Minimum luminance needed to compute HDR
     hdr.gaussCoeff =
         0.5;            // Gaussian coefficient = gaussCoeff * theEffectOutput;
@@ -62,7 +62,7 @@ export class Renderer extends polymer.Base {
 
     // Grid
     const gridMaterial =
-        new BABYLON.StandardMaterial("Grid Material", this.scene);
+        new BABYLON.StandardMaterial('Grid Material', this.scene);
     gridMaterial.diffuseColor = new BABYLON.Color3(0, 1, 0);
     gridMaterial.emissiveColor = new BABYLON.Color3(0, 1, 0);
     gridMaterial.wireframe = true;
@@ -77,11 +77,11 @@ export class Renderer extends polymer.Base {
     grid.position.y = -1;
 
     // Skybox
-    const skybox = BABYLON.Mesh.CreateBox("skyBox", 500.0, this.scene);
-    const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", this.scene);
+    const skybox = BABYLON.Mesh.CreateBox('skyBox', 500.0, this.scene);
+    const skyboxMaterial = new BABYLON.StandardMaterial('skyBox', this.scene);
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture(
-        "textures/skybox/box", this.scene, SKYBOX_EXTENSIONS);
+        'textures/skybox/box', this.scene, SKYBOX_EXTENSIONS);
     skyboxMaterial.reflectionTexture.coordinatesMode =
         BABYLON.Texture.SKYBOX_MODE;
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
@@ -116,21 +116,21 @@ export class Renderer extends polymer.Base {
     sunBlur.parent = skybox;
 
     const lensFlareSystem =
-        new BABYLON.LensFlareSystem("lensFlareSystem", sun, this.scene);
+        new BABYLON.LensFlareSystem('lensFlareSystem', sun, this.scene);
     const flare01 = new BABYLON.LensFlare(
-        0.5, 0.2, new BABYLON.Color3(0.5, 0.5, 1), "textures/Flare.png",
+        0.5, 0.2, new BABYLON.Color3(0.5, 0.5, 1), 'textures/Flare.png',
         lensFlareSystem);
     const flare02 = new BABYLON.LensFlare(
-        0.2, 1.0, new BABYLON.Color3(1, 1, 1), "textures/Flare.png",
+        0.2, 1.0, new BABYLON.Color3(1, 1, 1), 'textures/Flare.png',
         lensFlareSystem);
     const flare03 = new BABYLON.LensFlare(
-        0.4, 0.4, new BABYLON.Color3(1, 0.5, 1), "textures/Flare.png",
+        0.4, 0.4, new BABYLON.Color3(1, 0.5, 1), 'textures/Flare.png',
         lensFlareSystem);
     const flare04 = new BABYLON.LensFlare(
-        0.1, 0.6, new BABYLON.Color3(1, 1, 1), "textures/Flare.png",
+        0.1, 0.6, new BABYLON.Color3(1, 1, 1), 'textures/Flare.png',
         lensFlareSystem);
     const flare05 = new BABYLON.LensFlare(
-        0.3, 0.8, new BABYLON.Color3(1, 1, 1), "textures/Flare.png",
+        0.3, 0.8, new BABYLON.Color3(1, 1, 1), 'textures/Flare.png',
         lensFlareSystem);
 
 
@@ -142,7 +142,7 @@ export class Renderer extends polymer.Base {
   resize() {
     const canvas = this.$.renderCanvas;
     const height = window.innerHeight - this.offsetTop;
-    canvas.setAttribute("height", height + 'px');
+    canvas.setAttribute('height', height + 'px');
     this.engine.resize();
   }
 

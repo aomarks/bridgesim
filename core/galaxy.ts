@@ -1,4 +1,4 @@
-import {randInt} from "./math";
+import {randInt} from './math';
 
 export const SECTOR_METERS = 10000;
 

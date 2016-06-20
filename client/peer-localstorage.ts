@@ -1,8 +1,8 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/index.d.ts" />
 
-import {WebRTCConnection} from "../net/webrtc";
-import {RTC_CONFIG} from "./webrtc-config";
+import {WebRTCConnection} from '../net/webrtc';
+import {RTC_CONFIG} from './webrtc-config';
 
 interface handshake {
   offer: RTCSessionDescriptionInit;

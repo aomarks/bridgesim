@@ -1,4 +1,4 @@
-import * as Components from "../core/components";
+import * as Components from '../core/components';
 
 export interface Message {
   hello?: Hello;

@@ -1,5 +1,6 @@
-import * as Components from "../components";
-import * as Net from "../../net/message";
+import * as Net from '../../net/message';
+import * as Components from '../components';
+
 
 // Database of entity components.
 export class Db {

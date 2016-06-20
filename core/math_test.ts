@@ -1,7 +1,8 @@
 ///<reference path="../typings/index.d.ts" />
 
 import {expect} from 'chai';
-import {radians, clamp} from './math';
+
+import {clamp, radians} from './math';
 
 describe('radians', () => {
   it('should convert from degrees', () => {

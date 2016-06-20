@@ -22,9 +22,7 @@ export class AssetPack extends polymer.Base {
   private modelPromises: {[model: string]: Promise<BABYLON.Mesh>} = {};
 
   @computed()
-  baseURL(manifest: string): string {
-    return this.urlDir(manifest);
-  }
+  baseURL(manifest: string): string { return this.urlDir(manifest); }
 
   @property({type: Object, computed: 'computeShips(manifestBody)'})
   ships: Ship[];
@@ -35,12 +33,12 @@ export class AssetPack extends polymer.Base {
 
   urlDir(url: string): string {
     return url.substring(
-               0, Math.max(url.lastIndexOf("/"), url.lastIndexOf("\\"))) +
+               0, Math.max(url.lastIndexOf('/'), url.lastIndexOf('\\'))) +
         '/';
   }
 
   urlBase(url: string): string {
-    return url.substring(url.lastIndexOf("/") + 1);
+    return url.substring(url.lastIndexOf('/') + 1);
   }
 
   loadShip(ship: Ship): Promise<BABYLON.Mesh> {
@@ -65,7 +63,7 @@ export class AssetPack extends polymer.Base {
           const rootURL = this.urlDir(model);
           const baseURL = this.urlBase(model);
           BABYLON.SceneLoader.ImportMesh(
-              "", rootURL, baseURL, this.scene,
+              '', rootURL, baseURL, this.scene,
               (meshes: BABYLON.AbstractMesh[],
                particleSystems: BABYLON.ParticleSystem[],
                skeletons: BABYLON.Skeleton[]) => {
