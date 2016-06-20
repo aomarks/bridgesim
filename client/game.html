@@ -31,6 +31,7 @@
 <link rel="import" href="./stations/science.html">
 <link rel="import" href="./stations/viewscreen.html">
 <link rel="import" href="./stations/weapons.html">
+<link rel="import" href="./debug-metrics.html">
 
 <dom-module id="bridgesim-game">
   <template>
@@ -107,6 +108,12 @@
       paper-toggle-button {
         cursor: pointer;
       }
+      debug-metrics {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 1;
+      }
       bridgesim-chat {
         margin: 0 !important;
         height: 98px;
@@ -136,6 +143,10 @@
         font-weight: 100;
       }
     </style>
+
+    <template is="dom-if" if="[[settings.showMetrics]]" restamp>
+      <debug-metrics id="metrics"></debug-metrics>
+    </template>
 
     <paper-dialog id="settingsDialog">
       <bridgesim-settings-menu settings="{{settings}}">

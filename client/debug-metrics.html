@@ -1,0 +1,29 @@
+<link rel="import" href="deps.html">
+
+<dom-module id="debug-metrics">
+  <template>
+    <style>
+      :host {
+        margin: 10px;
+        padding: 5px;
+        background-color: rgba(0, 0, 0, .5);
+        border: 2px solid rgba(255, 255, 255, .2);
+        border-radius: 10px;
+      }
+      th {
+        text-align: right;
+        font-weight: normal;
+      }
+      td {
+        min-width: 37px;
+        color: #FFE200;
+      }
+    </style>
+
+    <table>
+      <tr><th>draw/sec:</th><td>[[drawRate]]</td></tr>
+      <tr><th>send/sec:</th><td>[[sendRate]]</td></tr>
+      <tr><th>recv/sec:</th><td>[[recvRate]]</td></tr>
+    </table>
+  </template>
+</dom-module>

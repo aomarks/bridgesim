@@ -32,16 +32,28 @@
     <paper-toggle-button checked="{{settings.showBoundingBoxes}}">
       Show bounding boxes</paper-toggle-button>
 
+    <paper-toggle-button checked="{{settings.showMetrics}}">
+      Show metrics</paper-toggle-button>
+
     <paper-input label="Fake latency"
                  value="{{settings.fakeLatency}}"
-                 type="number" min="0">
+                 type="number" min="0"
+                 auto-validate prevent-invalid-input>
       <div suffix>ms</div>
     </paper-input>
 
     <paper-input label="Fake packet loss"
                  value="{{settings.fakePacketLoss}}"
-                 type="number" min="0" max="100">
+                 type="number" min="0" max="100"
+                 auto-validate prevent-invalid-input>
       <div suffix>%</div>
+    </paper-input>
+
+    <paper-input label="Frame limit"
+                 value="{{settings.frameLimit}}"
+                 type="number" min="0"
+                 auto-validate prevent-invalid-input>
+      <div suffix>FPS</div>
     </paper-input>
 
     <iron-localstorage name="settings-name"

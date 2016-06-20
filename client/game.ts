@@ -51,11 +51,13 @@ class Game extends polymer.Base {
       remoteInterpolate: true,
       fakeLatency: 0,
       fakePacketLoss: 0,
+      frameLimit: 0,
       tickInterval: 0,      // Server controlled.
       snapshotInterval: 0,  // Server controlled.
       commandBufferSize: 100,
       name: null,
       showBoundingBoxes: false,
+      showMetrics: true,
     };
 
     if (this.urlQuery.indexOf('host') != -1) {
@@ -220,6 +222,9 @@ class Game extends polymer.Base {
       this.$.chat.receiveMsg(msg.receiveChat);
 
     } else if (msg.snapshot) {
+      if (this.settings.showMetrics) {
+        this.$$('#metrics').recv();
+      }
       if (msg.snapshot.seq > this.latestSeq) {
         this.latestSnapshotMs = performance.now();
         this.latestSnapshot = msg.snapshot;
@@ -282,6 +287,17 @@ class Game extends polymer.Base {
   frame(ts: number): void {
     this.animationRequestId = requestAnimationFrame(this.frame.bind(this));
 
+    const elapsed = ts - this.prevTs;
+
+    if (this.settings.frameLimit > 0 &&
+        elapsed < 1000 / this.settings.frameLimit) {
+      return;
+    }
+
+    if (this.settings.showMetrics) {
+      this.$$('#metrics').draw();
+    }
+
     if (this.latestSnapshot) {
       this.applySnapshot(this.latestSnapshot);
       if (this.settings.localPredict && this.shipId != null) {
@@ -301,7 +317,6 @@ class Game extends polymer.Base {
       this.latestSnapshot = null;
     }
 
-    const elapsed = ts - this.prevTs;
     this.lag += elapsed;
 
     let commands: Net.Commands;
@@ -325,6 +340,9 @@ class Game extends polymer.Base {
     }
     if (commands) {
       this.conn.send({commands: commands}, false);
+      if (this.settings.showMetrics) {
+        this.$$('#metrics').send();
+      }
     }
 
     const station = this.$.stations.selectedItem;

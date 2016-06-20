@@ -23,6 +23,9 @@ export interface Settings {
   // will be artificially dropped.
   fakePacketLoss: number;
 
+  // Maximum frames per second to draw. Unlimited when < 1.
+  frameLimit: number;
+
   // Milliseconds between simulation ticks. Must match host.
   tickInterval: number;
 
@@ -40,4 +43,7 @@ export interface Settings {
 
   // Whether to draw bounding boxes on collidable entities.
   showBoundingBoxes: boolean;
+
+  // Whether to display debugging metrics (FPS, host snapshot rate, etc.).
+  showMetrics: boolean;
 }
