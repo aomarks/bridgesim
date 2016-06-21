@@ -51,8 +51,8 @@ export class Map extends polymer.Base {
   }
 
   resize(): void {
-    this.w = this.can.clientWidth;
-    this.h = this.can.clientHeight;
+    this.w = this.clientWidth;
+    this.h = this.clientHeight;
     this.centerCC.x = this.w / 2;
     this.centerCC.y = this.h / 2;
 
@@ -64,6 +64,7 @@ export class Map extends polymer.Base {
     this.can.width = this.w * pixelRatio;
     this.can.height = this.h * pixelRatio;
     this.ctx.scale(pixelRatio, pixelRatio);
+    this.can.style.transform = 'scale(' + (1 / window.devicePixelRatio) + ')';
   }
 
   @listen('tap')
@@ -155,22 +156,17 @@ export class Map extends polymer.Base {
     const gridRight = Math.min(this.w, galaxyPx + topLeft.x);
     let x = 0;
     let y = 0;
-    ctx.beginPath();
+    ctx.fillStyle = color.GREEN;
     for (let i = 0; i <= this.size; i++) {
       x = i * sectorPx + topLeft.x;
       if (x >= 0 && x <= this.w) {
-        ctx.moveTo(x, gridTop);
-        ctx.lineTo(x, gridBottom);
+        ctx.fillRect(x, gridTop, 1, gridBottom - gridTop);
       }
       y = i * sectorPx + topLeft.y;
       if (y >= 0 && y <= this.h) {
-        ctx.moveTo(gridLeft, y);
-        ctx.lineTo(gridRight, y);
+        ctx.fillRect(gridLeft, y, gridRight - gridLeft, 1);
       }
     }
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = color.GREEN;
-    ctx.stroke();
   }
 
   private drawDebris(alpha: number): void {
@@ -187,6 +183,10 @@ export class Map extends polymer.Base {
         continue;
       }
       const radius = Math.max(.5, collidable.length / this.metersPerPx / 2);
+      if (coords.x + radius < 0 || coords.x - radius > this.w ||
+          coords.y + radius < 0 || coords.y - radius > this.h) {
+        continue;
+      }
       ctx.moveTo(coords.x + radius, coords.y);
       ctx.arc(coords.x, coords.y, radius, 0, 2 * Math.PI);
     }
