@@ -43,7 +43,8 @@ export class Host {
 
   // Systems
   private ai: Ai = new Ai(this.db);
-  private collision: Collision = new Collision(this.db);
+  private collision: Collision =
+      new Collision(this.db, this.settings.galaxySize);
   private death: Death = new Death(this.db, this);
   private input: Input = new Input(this.db);
   private laser: Laser = new Laser(this.db);

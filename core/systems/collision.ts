@@ -1,26 +1,40 @@
 import {BoxCollider} from '../collision/box-collider';
 import {Db} from '../entity/db';
+import {Quadtree} from '../quadtree';
+import {maxCoord} from '../galaxy';
 
 export class Collision {
-  constructor(private db: Db) {}
+  private quadtree: Quadtree<string>;
+  constructor(private db: Db, galaxySize: number) {
+    const max = maxCoord(galaxySize);
+    this.quadtree = new Quadtree<string>(-max, -max, max, max);
+  }
 
   tick(): void {
+    this.quadtree.clear();
     const colliders = {};
     for (let a in this.db.collidables) {
-      const aCol = this.db.collidables[a];
-      const aPos = this.db.positions[a];
-      colliders[a] =
-          new BoxCollider(aPos.x, aPos.y, aCol.length, aCol.width, aCol.mass);
+      const {length, width, mass} = this.db.collidables[a];
+      const {x, y} = this.db.positions[a];
+      colliders[a] = new BoxCollider(x, y, length, width, mass);
+      this.quadtree.insert(a, x, y, x + length, y + width);
     }
     const collidables = Object.keys(this.db.collidables);
+    const collided = {};
     for (let i = 0; i < collidables.length; i++) {
       const a = collidables[i];
       const aCol = this.db.collidables[a];
       const aPos = this.db.positions[a];
       const aBox = colliders[a];
+      collided[a] = true;
 
-      for (let j = i + 1; j < collidables.length; j++) {
-        const b = collidables[j];
+      const {x, y} = aPos;
+      const {length, width} = aCol;
+      const potentialCol = this.quadtree.retrieve(x, y, x + length, y + width);
+      for (let b of potentialCol) {
+        if (collided[b]) {
+          continue;
+        }
         const bCol = this.db.collidables[b];
         if (aCol.ignore == b || bCol.ignore == a) {
           continue;
