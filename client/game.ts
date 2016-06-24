@@ -57,6 +57,7 @@ class Game extends polymer.Base {
       commandBufferSize: 100,
       name: null,
       showBoundingBoxes: false,
+      showQuadtree: false,
       showMetrics: true,
     };
 
