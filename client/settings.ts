@@ -44,6 +44,9 @@ export interface Settings {
   // Whether to draw bounding boxes on collidable entities.
   showBoundingBoxes: boolean;
 
+  // Whether to render the collidable entries quadtree.
+  showQuadtree: boolean;
+
   // Whether to display debugging metrics (FPS, host snapshot rate, etc.).
   showMetrics: boolean;
 }

@@ -2,8 +2,9 @@
 
 import {Position} from '../core/components';
 import {Db} from '../core/entity/db';
-import {SECTOR_METERS} from '../core/galaxy';
+import {SECTOR_METERS, maxCoord} from '../core/galaxy';
 import {radians} from '../core/math';
+import {Quadtree} from '../core/quadtree';
 
 import * as color from './colors';
 import {HP} from './const';
@@ -26,6 +27,7 @@ export class Map extends polymer.Base {
   @property({type: Number, value: 2}) size: number;
   @property({type: Number, value: 0}) zoom: number;
   @property({type: Boolean, value: false}) showBoundingBoxes: boolean;
+  @property({type: Boolean, value: false}) showQuadtree: boolean;
 
   private can: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -39,6 +41,7 @@ export class Map extends polymer.Base {
   private metersPerPx: number;
   private left: number;
   private top: number;
+  private quadtree: Quadtree<string>;
 
   ready(): void {
     this.can = this.$.canvas;
@@ -137,6 +140,9 @@ export class Map extends polymer.Base {
     this.drawLocalShip(localAlpha);
     if (this.showBoundingBoxes) {
       this.drawBoundingBoxes(localAlpha, remoteAlpha);
+    }
+    if (this.showQuadtree) {
+      this.drawQuadtree();
     }
   }
 
@@ -276,6 +282,7 @@ export class Map extends polymer.Base {
 
   private drawBoundingBoxes(localAlpha: number, remoteAlpha: number): void {
     const ctx = this.ctx;
+    ctx.beginPath()
     ctx.strokeStyle = color.YELLOW;
     ctx.lineWidth = 1;
     for (let id in this.db.collidables) {
@@ -291,6 +298,35 @@ export class Map extends polymer.Base {
           snap(pos.x - width / 2), snap(pos.y - height / 2), width, height);
     }
     ctx.stroke();
+  }
+
+  private drawQuadtree(): void {
+    if (!this.quadtree) {
+      const max = maxCoord(this.size);
+      this.quadtree = new Quadtree<string>(-max, -max, max, max);
+    }
+    for (let a in this.db.collidables) {
+      const {length, width} = this.db.collidables[a];
+      const {x, y} = this.db.positions[a];
+      this.quadtree.insert(a, x, y, x + length, y + width);
+    }
+
+    const ctx = this.ctx;
+    ctx.beginPath()
+    ctx.strokeStyle = color.YELLOW;
+    ctx.lineWidth = 1;
+    let todo: Quadtree<string>[] = [this.quadtree];
+    while (todo.length > 0) {
+      const tree = todo.pop();
+      todo = todo.concat(tree.subtrees);
+      const {x: left, y: top} = this.worldToScreen(tree.left, tree.top);
+      const {x: right, y: bottom} = this.worldToScreen(tree.right, tree.bottom);
+      ctx.rect(
+          snap(left), snap(top), Math.round(right - left),
+          Math.round(bottom - top));
+    }
+    ctx.stroke();
+    this.quadtree.clear();
   }
 
   private drawText(x: number, y: number, text: string): void {
