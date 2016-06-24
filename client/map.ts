@@ -7,7 +7,7 @@ import {radians} from '../core/math';
 import {Quadtree} from '../core/quadtree';
 
 import * as color from './colors';
-import {HP} from './const';
+import {HP, CANVAS_FONT} from './const';
 import {lerp, snap} from './util';
 
 interface Coord2D {
@@ -332,7 +332,7 @@ export class Map extends polymer.Base {
   private drawText(x: number, y: number, text: string): void {
     const ctx = this.ctx;
     ctx.beginPath();
-    ctx.font = '12px Share Tech Mono';
+    ctx.font = CANVAS_FONT;
     ctx.fillStyle = '#FFF';
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 3;

@@ -4,6 +4,7 @@ import {Db} from '../core/entity/db';
 
 import * as color from './colors';
 import {snap} from './util';
+import {CANVAS_FONT} from './const';
 
 const OUTER_RING_WIDTH = 10;
 
@@ -105,7 +106,7 @@ export class HeadingIndicator extends polymer.Base {
   private drawLabels(radius: number, degreeIncrements: number) {
     const ctx = this.ctx;
     ctx.save();
-    ctx.font = '12px Share Tech Mono';
+    ctx.font = CANVAS_FONT;
     ctx.fillStyle = color.AQUA;
     ctx.translate(this.centerX, this.centerY);
     const radians = degreeIncrements * Math.PI / 180;
