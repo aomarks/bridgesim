@@ -47,6 +47,9 @@ export interface Settings {
   // Whether to render the collidable entries quadtree.
   showQuadtree: boolean;
 
+  // Whether to render the paths that AI take.
+  showPathfinding: boolean;
+
   // Whether to display debugging metrics (FPS, host snapshot rate, etc.).
   showMetrics: boolean;
 }

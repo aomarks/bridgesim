@@ -5,6 +5,7 @@ import {Db} from '../core/entity/db';
 import {SECTOR_METERS, maxCoord} from '../core/galaxy';
 import {radians} from '../core/math';
 import {Quadtree} from '../core/quadtree';
+import {Pathfinder} from '../core/pathfinding';
 
 import * as color from './colors';
 import {HP, CANVAS_FONT} from './const';
@@ -28,6 +29,7 @@ export class Map extends polymer.Base {
   @property({type: Number, value: 0}) zoom: number;
   @property({type: Boolean, value: false}) showBoundingBoxes: boolean;
   @property({type: Boolean, value: false}) showQuadtree: boolean;
+  @property({type: Boolean, value: false}) showPathfinding: boolean;
 
   private can: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -143,6 +145,9 @@ export class Map extends polymer.Base {
     }
     if (this.showQuadtree) {
       this.drawQuadtree();
+    }
+    if (this.showPathfinding) {
+      this.drawPathfinding();
     }
   }
 
@@ -328,6 +333,26 @@ export class Map extends polymer.Base {
     ctx.stroke();
     this.quadtree.clear();
   }
+
+  private drawPathfinding() {
+    const finder = new Pathfinder(this.db, this.size);
+    const start = this.db.positions[this.shipId];
+    if (!start) {
+      return;
+    }
+    const end = {x: 0, y: 0};
+    const path = finder.find(start, end, this.shipId);
+    const ctx = this.ctx;
+    ctx.beginPath()
+    ctx.strokeStyle = color.YELLOW;
+    ctx.lineWidth = 1;
+    for (let p of path) {
+      const {x, y} = this.worldToScreen(p.x, p.y);
+      ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
 
   private drawText(x: number, y: number, text: string): void {
     const ctx = this.ctx;

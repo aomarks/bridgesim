@@ -58,6 +58,7 @@ class Game extends polymer.Base {
       name: null,
       showBoundingBoxes: false,
       showQuadtree: false,
+      showPathfinding: false,
       showMetrics: true,
     };
 
