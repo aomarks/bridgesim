@@ -7,7 +7,7 @@ import {radians} from '../core/math';
 import {Quadtree} from '../core/quadtree';
 
 import * as color from './colors';
-import {HP, CANVAS_FONT} from './const';
+import {CANVAS_FONT, HP} from './const';
 import {lerp, snap} from './util';
 
 interface Coord2D {
@@ -162,17 +162,21 @@ export class Map extends polymer.Base {
     const gridRight = Math.min(this.w, galaxyPx + topLeft.x);
     let x = 0;
     let y = 0;
-    ctx.fillStyle = color.GREEN;
+    ctx.strokeStyle = color.GREEN;
+    ctx.beginPath();
     for (let i = 0; i <= this.size; i++) {
       x = i * sectorPx + topLeft.x;
       if (x >= 0 && x <= this.w) {
-        ctx.fillRect(x, gridTop, 1, gridBottom - gridTop);
+        ctx.moveTo(x, gridTop);
+        ctx.lineTo(x, gridBottom);
       }
       y = i * sectorPx + topLeft.y;
       if (y >= 0 && y <= this.h) {
-        ctx.fillRect(gridLeft, y, gridRight - gridLeft, 1);
+        ctx.moveTo(gridLeft, y);
+        ctx.lineTo(gridRight, y);
       }
     }
+    ctx.stroke();
   }
 
   private drawDebris(alpha: number): void {
