@@ -1,3 +1,5 @@
+import {overlap} from '../math';
+
 // Axis-aligned bounding box with mass
 export class BoxCollider {
   x: number;
@@ -15,17 +17,7 @@ export class BoxCollider {
     this.mass = mass;
   }
 
-  isOverlap(other: BoxCollider): boolean {
-    // Get distance between the center of two aabb's and check if they are
-    // close enough
-    // to be overlapping.
-    if (Math.abs(this.x - other.x) * 2 <= this.width + other.width &&
-        Math.abs(this.y - other.y) * 2 <= this.height + other.height) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  isOverlap(other: BoxCollider): boolean { return overlap(this, other); }
 
   resolveCollision(other: BoxCollider) {
     // Simplistic non-realistic resolution of a collision

@@ -8,12 +8,22 @@ export interface Player {
   latestSeq: number;
 }
 
-// An entity's position and orientation in space.
-export interface Position {
+// Point represents a single x, y position.
+export interface Point {
   x: number;
   y: number;
+}
+
+// An entity's position and orientation in space.
+export interface Position extends Point{
   yaw: number;
   roll: number;
+}
+
+// Region is a point, width and height.
+export interface Region extends Point {
+  width: number;
+  height: number;
 }
 
 // An entity's bounding box in collision space.

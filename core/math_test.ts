@@ -2,7 +2,8 @@
 
 import {expect} from 'chai';
 
-import {clamp, radians} from './math';
+import {clamp, radians, overlap} from './math';
+import {Region} from './components';
 
 describe('radians', () => {
   it('should convert from degrees', () => {
@@ -20,5 +21,44 @@ describe('clamp', () => {
     expect(clamp(1, 0, 1)).to.equals(1);
     expect(clamp(-0.1, 0, 1)).to.equals(0);
     expect(clamp(1.1, 0, 1)).to.equals(1);
+  });
+});
+
+describe('overlap', () => {
+  const testData: {a: Region; b: Region; overlap: boolean;}[] = [
+    {
+      a: {x: 0, y: 0, width: 0.5, height: 0.5},
+      b: {x: 0, y: 0, width: 1, height: 1},
+      overlap: true
+    },
+    {
+      a: {x: 0, y: 0, width: 1, height: 1},
+      b: {x: 1, y: 1, width: 1, height: 1},
+      overlap: true
+    },
+    {
+      a: {x: 0, y: 0, width: 1, height: 1},
+      b: {x: -1, y: -1, width: 1, height: 1},
+      overlap: true
+    },
+    {
+      a: {x: 0, y: 0, width: 1, height: 1},
+      b: {x: 2, y: 2, width: 1, height: 1},
+      overlap: false
+    },
+  ];
+
+  it('should compute overlaps', () => {
+    for (let td of testData) {
+      expect(overlap(td.a, td.b)).to.equal(td.overlap);
+      expect(overlap(td.b, td.a)).to.equal(td.overlap);
+    }
+  });
+
+  it('should compute overlaps with self', () => {
+    for (let td of testData) {
+      expect(overlap(td.a, td.a)).to.be.true;
+      expect(overlap(td.b, td.b)).to.be.true;
+    }
   });
 });

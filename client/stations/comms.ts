@@ -2,7 +2,7 @@
 
 import {Db} from '../../core/entity/db';
 import {Resource} from '../../core/resources';
-import {dist} from '../../core/util';
+import {dist} from '../../core/math';
 
 @component('comms-station')
 class Comms extends polymer.Base {

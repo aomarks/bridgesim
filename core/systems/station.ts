@@ -1,5 +1,6 @@
 import {Db} from '../entity/db';
-import {dist, every} from '../util';
+import {every} from '../util';
+import {dist} from '../math';
 
 export class Station {
   private lastTick: number;

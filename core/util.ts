@@ -1,21 +1,3 @@
-import {Position} from './components';
-
-const hypot = (Math as any).hypot || function(x: number, y: number) {
-  return Math.sqrt(x * x + y * y);
-};
-
-export function dist(a: Position, b: Position): number {
-  if (!a || !b) {
-    return -1;
-  }
-  return hypot(a.x - b.x, a.y - b.y);
-}
-
-// This returns the compass heading to point a from point b.
-export function heading(a: Position, b: Position): number {
-  return (Math.atan2(a.x - b.x, a.y - b.y) * (180 / Math.PI) + 360) % 360;
-}
-
 // every runs the specified function every duration number of seconds.
 export function every<T>(duration: number, fn: () => T): () => T {
   let lastTime = 0;
