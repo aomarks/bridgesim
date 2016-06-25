@@ -1,3 +1,5 @@
+import {overlap} from './math';
+
 // Based off of
 // http://gamedevelopment.tutsplus.com/tutorials/quick-tip-use-quadtrees-to-detect-likely-collisions-in-2d-space--gamedev-374
 
@@ -6,6 +8,11 @@ interface Position {
   top: number;
   right: number;
   bottom: number;
+}
+
+interface RetrievePos<T> {
+  children: T[];
+  pos: Position[];
 }
 
 export class Quadtree<T> {
@@ -54,9 +61,33 @@ export class Quadtree<T> {
     }
   }
 
-  public retrieve(left: number, top: number, right: number, bottom: number):
-      T[] {
+  // retrieve returns all items that are potentially in provided area. If exact
+  // is true, only overlapping objects will be returned.
+  public retrieve(
+      left: number, top: number, right: number, bottom: number,
+      exact: boolean = false): T[] {
+    const retPos = this.retrievePos(left, top, right, bottom, exact);
+    if (exact) {
+      return retPos.children.filter((child: T, i: number): boolean => {
+        const pos = retPos.pos[i];
+        return overlap(
+            {
+              x: pos.left,
+              y: pos.top,
+              width: pos.right - pos.left,
+              height: pos.bottom - pos.top
+            },
+            {x: left, y: top, width: right - left, height: bottom - top});
+      });
+    }
+    return retPos.children;
+  }
+
+  private retrievePos(
+      left: number, top: number, right: number, bottom: number,
+      returnPos: boolean): RetrievePos<T> {
     let children = [];
+    let pos = [];
     let todo: Quadtree<T>[] = [this];
     let next: Quadtree<T>;
     while (todo.length > 0) {
@@ -71,8 +102,11 @@ export class Quadtree<T> {
         }
       }
       children = children.concat(next.children);
+      if (returnPos) {
+        pos = pos.concat(next.childrenPos);
+      }
     }
-    return children;
+    return {children, pos};
   }
 
   private split() {
