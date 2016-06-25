@@ -4,8 +4,6 @@
     "module": "commonjs",
     "experimentalDecorators": true,
     "noImplicitReturns": true,
-    // TODO babylon.2.3.d.ts has a couple noImplicitAny errors
-    "noImplicitAny": false,
     "pretty": true
   },
   "exclude": [
