@@ -1,16 +1,16 @@
+import {Update} from '../core/comdb';
 import * as Components from '../core/components';
 
 export interface Message {
   hello?: Hello;
   welcome?: Welcome;
-  roster?: Roster;
   sendChat?: SendChat;
   receiveChat?: ReceiveChat;
   commands?: Commands;
-  snapshot?: Snapshot;
   createShip?: CreateShip;
   joinCrew?: JoinCrew;
   updatePlayer?: UpdatePlayer;
+  update?: Update;
 }
 
 export enum Station {
@@ -25,18 +25,10 @@ export interface Hello { name: string; }
 
 export interface Welcome {
   playerId: string;
-  roster: Roster;
-  snapshot: Snapshot;
+  snapshot: Update;
   snapshotInterval: number;
   tickInterval: number;
   galaxySize: number;
-}
-
-export interface Roster {
-  ships: {[id: string]: boolean};
-  names: {[id: string]: string};
-  players: {[id: string]: Components.Player};
-  ais: {[id: string]: boolean};
 }
 
 export interface SendChat { text: string; }
@@ -56,20 +48,6 @@ export interface Commands {
   power: Components.Power;
   fireLaser: boolean;
   fireMissile: boolean;
-}
-
-export interface Snapshot {
-  seq: number;
-  lasers: {[id: string]: boolean};
-  missiles: {[id: string]: boolean};
-  positions: {[id: string]: Components.Position};
-  collidables: {[id: string]: Components.Collidable};
-  velocities: {[id: string]: number};
-  healths: {[id: string]: Components.Health};
-  power: {[id: string]: Components.Power};
-  debris: {[id: string]: Components.Debris};
-  stations: {[id: string]: Components.Station};
-  resources: {[id: string]: {[type: string]: number}};
 }
 
 export interface CreateShip {}

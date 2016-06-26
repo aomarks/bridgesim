@@ -1,8 +1,8 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
 
 import {Db} from '../../core/entity/db';
-import {formatNumber} from '../../core/util';
 import {dist, heading} from '../../core/math';
+import {formatNumber} from '../../core/util';
 
 @component('science-station')
 class Science extends polymer.Base {
@@ -12,7 +12,9 @@ class Science extends polymer.Base {
   @property({type: Boolean}) scanning: boolean;
   @property({type: String}) scanResults: string;
 
-  public animateName(names: any, id: string): string { return names[id] || ''; }
+  public animateName(names: any, id: string): string {
+    return names[id].name || '';
+  }
 
   public hp(healths: any, id: string): number { return healths[id].hp || 0; }
 

@@ -1,48 +1,56 @@
-import * as Net from '../../net/message';
-import * as Components from '../components';
+import {Commands} from '../../net/message';
+import {Database} from '../comdb';
+import * as C from '../components';
 
+export class Db extends Database {
+  @Database.table(C.Ai) ais: {[id: string]: C.Ai} = {};
+  newAi(id: string): C.Ai { return this['newAis_'](id); }
 
-// Database of entity components.
-export class Db {
-  private nextId: number = 0;
-
-  ais: {[id: string]: boolean} = {};
-  collidables: {[id: string]: Components.Collidable} = {};
-  healths: {[id: string]: Components.Health} = {};
-  inputs: {[id: string]: Net.Commands[]} = {};
-  missiles: {[id: string]: boolean} = {};
-  lasers: {[id: string]: boolean} = {};
-  names: {[id: string]: string} = {};
-  odometers: {[id: string]: number} = {};
-  players: {[id: string]: Components.Player} = {};
-  positions: {[id: string]: Components.Position} = {};
-  power: {[id: string]: Components.Power} = {};
-  prevPositions: {[id: string]: Components.Position} = {};
-  ships: {[id: string]: boolean} = {};
-  velocities: {[id: string]: number} = {};
-  debris: {[id: string]: Components.Debris} = {};
-  stations: {[id: string]: Components.Station} = {};
-  resources: {[id: string]: {[type: string]: number}} = {};
-
-  spawn(): string { return (this.nextId++).toString(); }
-
-  remove(id: string): void {
-    delete this.ais[id];
-    delete this.collidables[id];
-    delete this.healths[id];
-    delete this.inputs[id];
-    delete this.lasers[id];
-    delete this.missiles[id];
-    delete this.names[id];
-    delete this.odometers[id];
-    delete this.players[id];
-    delete this.positions[id];
-    delete this.power[id];
-    delete this.prevPositions[id];
-    delete this.ships[id];
-    delete this.velocities[id];
-    delete this.debris[id];
-    delete this.stations[id];
-    delete this.resources[id];
+  @Database.table(C.Collidable) collidables: {[id: string]: C.Collidable} = {};
+  newCollidable(id: string): C.Collidable {
+    return this['newCollidables_'](id);
   }
+
+  @Database.table(C.Debris) debris: {[id: string]: C.Debris} = {};
+  newDebris(id: string): C.Debris { return this['newDebris_'](id); }
+
+  @Database.table(C.Health) healths: {[id: string]: C.Health} = {};
+  newHealth(id: string): C.Health { return this['newHealths_'](id); }
+
+  @Database.table(C.Laser) lasers: {[id: string]: C.Laser} = {};
+  newLaser(id: string): C.Laser { return this['newLasers_'](id); }
+
+  @Database.table(C.Missile) missiles: {[id: string]: C.Missile} = {};
+  newMissile(id: string): C.Missile { return this['newMissiles_'](id); }
+
+  @Database.table(C.Name) names: {[id: string]: C.Name} = {};
+  newName(id: string): C.Name { return this['newNames_'](id); }
+
+  @Database.table(C.Odometer) odometers: {[id: string]: C.Odometer} = {};
+  newOdometer(id: string): C.Odometer { return this['newOdometers_'](id); }
+
+  @Database.table(C.Player) players: {[id: string]: C.Player} = {};
+  newPlayer(id: string): C.Player { return this['newPlayers_'](id); }
+
+  @Database.table(C.Position) positions: {[id: string]: C.Position} = {};
+  newPosition(id: string): C.Position { return this['newPositions_'](id); }
+
+  @Database.table(C.Power) power: {[id: string]: C.Power} = {};
+  newPower(id: string): C.Power { return this['newPower_'](id); }
+
+  @Database.table(C.Resource) resources: {[id: string]: C.Resource} = {};
+  newResource(id: string): C.Resource { return this['newResources_'](id); }
+
+  @Database.table(C.Ship) ships: {[id: string]: C.Ship} = {};
+  newShip(id: string): C.Ship { return this['newShips_'](id); }
+
+  @Database.table(C.Station) stations: {[id: string]: C.Station} = {};
+  newStation(id: string): C.Station { return this['newStations_'](id); }
+
+  @Database.table(C.Velocity) velocities: {[id: string]: C.Velocity} = {};
+  newVelocity(id: string): C.Velocity { return this['newVelocities_'](id); }
+
+  // Not synchronized.
+  inputs: {[id: string]: Commands[]} = {};
+  prevPositions: {[id: string]: C.Position} = {};
 }

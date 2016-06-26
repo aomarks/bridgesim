@@ -1,5 +1,6 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 
+import {Resource as ResourceCom} from '../core/components';
 import {Db} from '../core/entity/db';
 import {Resource} from '../core/resources';
 
@@ -10,8 +11,11 @@ export class ResourceDisplay extends polymer.Base {
 
   ready(): void {}
 
-  resources(resourcesDb: {[id: string]: {[type: string]: number}}) {
-    const stationResources = resourcesDb[this.shipId];
+  resources(resourcesDb: {[id: string]: ResourceCom}) {
+    if (!this.shipId) {
+      return;
+    }
+    const stationResources = resourcesDb[this.shipId].amount;
     const resources = [];
     for (let resource in stationResources) {
       resources.push({

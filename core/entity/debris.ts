@@ -8,16 +8,22 @@ const MAX_DEBRIS_METERS = 100;
 
 export function SpawnDebris(db: Db, x: number, y: number): string {
   const id = db.spawn();
-  const yaw = Math.random() * 360;
-  const roll = Math.random() * 360;
-  const size = randInt(MIN_DEBRIS_METERS, MAX_DEBRIS_METERS);
-  db.positions[id] = {x: x, y: y, yaw: yaw, roll: roll};
-  db.prevPositions[id] = {x: x, y: y, yaw: yaw, roll: roll};
-  db.velocities[id] = 0;
-  db.healths[id] = {hp: 10000, shields: false};
-  db.collidables[id] = {length: size, width: size, mass: 10000, damage: 20};
-  db.debris[id] = {type: DebrisType.ASTEROID};
-  console.log('entity.debris: spawned debris', id);
+  const deb = db.newDebris(id);
+  deb.type = DebrisType.ASTEROID;
+  const vel = db.newVelocity(id);
+  const hel = db.newHealth(id);
+  hel.hp = 10000;
+  const pos = db.newPosition(id);
+  pos.x = x;
+  pos.y = y;
+  pos.yaw = Math.random() * 360;
+  pos.roll = Math.random() * 360;
+  const col = db.newCollidable(id);
+  col.length = randInt(MIN_DEBRIS_METERS, MAX_DEBRIS_METERS);
+  col.width = col.length;
+  col.mass = 10000;
+  col.damage = 20;
+  // console.log('entity.debris: spawned debris', id);
   return id;
 }
 

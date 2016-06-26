@@ -1,6 +1,8 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/index.d.ts" />
 
+import {Update} from '../core/comdb';
+import {Position} from '../core/components';
 import {Db} from '../core/entity/db';
 import {Host} from '../core/host';
 import {Input} from '../core/systems/input';
@@ -30,7 +32,6 @@ class Game extends polymer.Base {
   private conditioner: Conditioner;
   private motion: Motion;
   private input: Input;
-  private latestSnapshot: Net.Snapshot;
   private latestSnapshotMs: number = 0;
   private latestSeq = -1;
   private seq: number = 0;
@@ -41,12 +42,14 @@ class Game extends polymer.Base {
   private animationRequestId: number;
   private welcomed: boolean;
   private showStations: boolean;
+  private updateBuffer: Update[] = [];
 
   ready(): void {
     console.log('game: ready');
 
     this.settings = {
-      localPredict: true,
+      // TODO Re-enable prediction once it works with deltas.
+      localPredict: false,
       localInterpolate: true,
       remoteInterpolate: true,
       fakeLatency: 0,
@@ -134,7 +137,7 @@ class Game extends polymer.Base {
       this.animationRequestId = null;
     }
     this.shipId = null;
-    this.latestSnapshot = null;
+    this.updateBuffer = [];
     this.latestSeq = -1;
     this.prevTs = 0;
     this.lag = 0;
@@ -212,45 +215,16 @@ class Game extends polymer.Base {
       this.settings.tickInterval = msg.welcome.tickInterval;
       this.settings.snapshotInterval = msg.welcome.snapshotInterval;
       this.playerId = msg.welcome.playerId;
-      this.applyRoster(msg.welcome.roster);
-      this.applySnapshot(msg.welcome.snapshot);
+      this.applyUpdate(msg.welcome.snapshot);
       this.welcomed = true;
       this.frame(0);
-
-    } else if (!this.welcomed) {
-      return;
-
-    } else if (msg.roster) {
-      console.log('game: got roster');
-      this.applyRoster(msg.roster);
 
     } else if (msg.receiveChat) {
       this.$.chat.receiveMsg(msg.receiveChat);
 
-    } else if (msg.snapshot) {
-      if (msg.snapshot.seq > this.latestSeq) {
-        this.latestSnapshotMs = performance.now();
-        this.latestSnapshot = msg.snapshot;
-        this.latestSeq = msg.snapshot.seq;
-      }
-    } else if (msg.updatePlayer) {
-      const updatePlayer = msg.updatePlayer;
-      const player = this.db.players[updatePlayer.playerId];
-      if (updatePlayer.name) {
-        player.name = updatePlayer.name;
-      }
-    }
-  }
-
-  applyRoster(roster: Net.Roster) {
-    this.set('db.ships', roster.ships);
-    this.set('db.ais', roster.ais);
-    this.set('db.names', roster.names);
-    this.set('db.players', roster.players);
-    for (let playerId in this.db.players) {
-      if (playerId === this.playerId) {
-        this.shipId = this.db.players[playerId].shipId;
-      }
+    } else if (msg.update) {
+      this.updateBuffer.push(msg.update);
+      this.latestSnapshotMs = performance.now();
     }
   }
 
@@ -266,25 +240,59 @@ class Game extends polymer.Base {
     this.conn.send({createShip: {}}, true);
   }
 
-  applySnapshot(snapshot: Net.Snapshot): void {
-    this.db.healths = snapshot.healths;
-    this.db.lasers = snapshot.lasers;
-    this.db.missiles = snapshot.missiles;
-    this.db.prevPositions = this.db.positions;
-    this.db.positions = snapshot.positions;
-    this.db.collidables = snapshot.collidables;
-    this.db.velocities = snapshot.velocities;
-    this.db.power = snapshot.power;
-    this.db.debris = snapshot.debris;
-    this.db.stations = snapshot.stations;
-    this.db.resources = snapshot.resources;
+  applyUpdate(update: Update): void {
+    // Copy previous positions for interpolation.
+    // TODO Something smarter.
+    if (update.components) {
+      if (update.components['positions']) {
+        const positions = update.components['positions'];
+        for (const id in positions) {
+          let prev = this.db.prevPositions[id];
+          if (!prev) {
+            prev = this.db.prevPositions[id] = new Position();
+          }
+          let cur = this.db.positions[id];
+          if (!cur) {
+            cur = positions[id];
+          }
+          prev.x = cur.x;
+          prev.y = cur.y;
+          prev.roll = cur.roll;
+          prev.yaw = cur.yaw;
+        }
+      }
+    }
 
-    // Let polymer know that we've changed certain paths.
-    this.notifyPath('db.healths', this.db.healths);
-    this.notifyPath('db.positions', this.db.positions);
-    this.notifyPath('db.power', this.db.power);
-    this.notifyPath('db.stations', this.db.stations);
-    this.notifyPath('db.resources', this.db.resources);
+    this.db.apply(update);
+    this.shipId = this.db.players[this.playerId].shipId;
+
+    // Many elements are observing the top-level component map, e.g. the crew
+    // selection screen listens on the ships and players map changing (the map
+    // itself, not its contents). To make this work with the current code, we
+    // need to clone some of the component maps so that the changes propagate.
+    //
+    // TODO Refactor elements to listen deeper (i.e. not on the component map
+    // itself changing), and notify correctly through Polymer. Or figure out
+    // some different notification system if Polymer's is not powerful enough
+    // here.
+    const clone = [
+      'ais',
+      'healths',
+      'names',
+      'players',
+      'positions',
+      'power',
+      'resources',
+      'ships',
+      'stations',
+    ];
+    for (const component of clone) {
+      const clone = {};
+      for (const id in this.db[component]) {
+        clone[id] = this.db[component][id];
+      }
+      this.set('db.' + component, clone);
+    }
   }
 
   frame(ts: number): void {
@@ -301,10 +309,17 @@ class Game extends polymer.Base {
       this.$$('#metrics').draw(ts, elapsed);
     }
 
-    if (this.latestSnapshot) {
-      this.applySnapshot(this.latestSnapshot);
-      if (this.settings.localPredict && this.shipId != null) {
-        const offset = this.seq - this.latestSnapshot.seq;
+    this.updateBuffer.sort(function(a: Update, b: Update) {
+      return a.hostSeq - b.hostSeq;
+    });
+
+    while (this.updateBuffer.length) {
+      const update = this.updateBuffer.shift();
+      this.applyUpdate(update);
+      // TODO Prediction is broken with deltas.
+      if (this.settings.localPredict && this.shipId != null &&
+          !this.updateBuffer.length) {
+        const offset = this.seq - update.clientSeq;
         const length = this.commandBuffer.length;
         for (let i = length - offset + 1; i < length; i++) {
           const commands = this.commandBuffer[i];
@@ -317,7 +332,6 @@ class Game extends polymer.Base {
           }
         }
       }
-      this.latestSnapshot = null;
     }
 
     this.lag += elapsed;

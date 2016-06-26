@@ -5,22 +5,33 @@ import {Db} from './db';
 export function SpawnShip(
     db: Db, name: string, x: number, y: number, ai: boolean): string {
   const id = db.spawn();
-  db.ships[id] = true;
+  db.newShip(id);
   if (!name) {
     name = 'S' + id;
   }
-  db.names[id] = name;
-  db.positions[id] = {x: x, y: y, yaw: 120, roll: 0};
-  db.prevPositions[id] = db.positions[id];
-  db.velocities[id] = 0;
+  const dbName = db.newName(id);
+  dbName.name = name;
+  const pos = db.newPosition(id);
+  pos.x = x;
+  pos.y = y;
+  pos.yaw = 120;
+  db.newVelocity(id);
   db.inputs[id] = [];
-  db.collidables[id] = {length: 300, width: 300, mass: 10, damage: 10};
-  db.healths[id] = {hp: 100, shields: true};
-  db.power[id] = {engine: 100, maneuvering: 100};
-  const resources = db.resources[id] = {};
-  resources[Resource.Energy] = 1000;
+  const col = db.newCollidable(id);
+  col.length = 300;
+  col.width = 300;
+  col.mass = 10;
+  col.damage = 10;
+  const hel = db.newHealth(id);
+  hel.hp = 100;
+  hel.shields = true;
+  const power = db.newPower(id);
+  power.engine = 100;
+  power.maneuvering = 100;
+  const res = db.newResource(id);
+  res.amount[Resource.Energy] = 1000;
   if (ai) {
-    db.ais[id] = true;
+    db.newAi(id);
   }
   console.log('entity.ship: spawned ship', id, name);
   return id;

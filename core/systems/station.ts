@@ -1,6 +1,6 @@
 import {Db} from '../entity/db';
-import {every} from '../util';
 import {dist} from '../math';
+import {every} from '../util';
 
 export class Station {
   private lastTick: number;
@@ -38,8 +38,8 @@ export class Station {
   }
 
   private transferResources(from: string, to: string) {
-    const fromRes = this.db.resources[from];
-    const toRes = this.db.resources[to];
+    const fromRes = this.db.resources[from].amount;
+    const toRes = this.db.resources[to].amount;
     for (let res in fromRes) {
       toRes[res] = (toRes[res] || 0) + (fromRes[res] || 0);
       delete fromRes[res];
@@ -48,7 +48,7 @@ export class Station {
 
   private tickOne(thisId: string, diff: number): void {
     const station = this.db.stations[thisId];
-    const resources = this.db.resources[thisId];
+    const resources = this.db.resources[thisId].amount;
 
     // Resource production
     for (let resource in station.produces) {

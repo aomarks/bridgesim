@@ -4,6 +4,7 @@ import {SpawnLaser} from '../entity/laser';
 import {SpawnMissile} from '../entity/missile';
 import {clamp} from '../math';
 
+
 // Applies player input.
 export class Input {
   constructor(private db: Db) {}
@@ -31,7 +32,8 @@ export class Input {
     }
 
     if (velocity != null) {
-      this.db.velocities[id] = clamp(velocity + (.01 * input.thrust), 0, 1);
+      this.db.velocities[id].mps =
+          clamp(velocity.mps + (.01 * input.thrust), 0, 1);
     }
 
     if (pos != null) {

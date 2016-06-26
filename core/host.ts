@@ -45,7 +45,7 @@ export class Host {
   private ai: Ai = new Ai(this.db);
   private collision: Collision =
       new Collision(this.db, this.settings.galaxySize);
-  private death: Death = new Death(this.db, this);
+  private death: Death = new Death(this.db);
   private input: Input = new Input(this.db);
   private laser: Laser = new Laser(this.db);
   private missile: Missile = new Missile(this.db);
@@ -58,6 +58,7 @@ export class Host {
   private tickLag: number = 0;
   private snapshotLag: number = 0;
   private snapshotStale: boolean = false;
+  private seq: number = -1;
 
   public addConnection(conn: Connection) {
     const connId = this.db.spawn();  // TODO
@@ -68,7 +69,6 @@ export class Host {
       console.log('host: connection closed', connId);
       this.db.remove(connId);
       delete this.conns[connId];
-      this.broadcastRoster();
       this.announce('player ' + connId + ' disconnected');
     };
   }
@@ -101,10 +101,6 @@ export class Host {
 
   private spawnShip(name: string, x: number, y: number, ai: boolean): string {
     return SpawnShip(this.db, name, x, y, ai);
-  }
-
-  public broadcastRoster() {
-    this.broadcast({roster: this.makeRoster()}, true);
   }
 
   private broadcast(msg: Net.Message, reliable: boolean) {
@@ -161,47 +157,26 @@ export class Host {
 
     if (this.snapshotStale &&
         this.snapshotLag >= this.settings.snapshotInterval) {
-      const snapshot = this.takeSnapshot();
-      for (let id in this.db.players) {
-        snapshot.seq = this.db.players[id].latestSeq;
-        this.conns[id].send({snapshot: snapshot}, false);
+      const update = this.db.changes();
+      if (update) {
+        this.seq++;
+        for (let id in this.db.players) {
+          update.hostSeq = this.seq;
+          update.clientSeq = this.db.players[id].latestSeq;
+          this.conns[id].send({update: update}, false);
+        }
+        this.snapshotLag = 0;
+        this.snapshotStale = false;
       }
-      this.snapshotLag = 0;
-      this.snapshotStale = false;
     }
 
     this.prevTs = ts;
-  }
-
-  private takeSnapshot(): Net.Snapshot {
-    return {
-      seq: 0,
-      lasers: this.db.lasers,
-      missiles: this.db.missiles,
-      positions: this.db.positions,
-      collidables: this.db.collidables,
-      velocities: this.db.velocities,
-      healths: this.db.healths,
-      power: this.db.power,
-      debris: this.db.debris,
-      stations: this.db.stations,
-      resources: this.db.resources,
-    };
   }
 
   private announce(text: string) {
     this.broadcast(
         {receiveChat: {timestamp: Date.now(), announce: true, text: text}},
         true);
-  }
-
-  private makeRoster(): Net.Roster {
-    return {
-      ships: this.db.ships,
-      names: this.db.names,
-      players: this.db.players,
-      ais: this.db.ais
-    };
   }
 
   private onMessage(connId: string, msg: Net.Message) {
@@ -221,24 +196,19 @@ export class Host {
   }
 
   private onHello(connId: string, hello: Net.Hello) {
-    const player = this.db.players[connId] = {
-      name: hello.name,
-      shipId: null,
-      station: null,
-      inputs: [],
-      latestSeq: null,
-    };
+    const player = this.db.newPlayer(connId);
+    player.name = hello.name;
+    const snapshot = this.db.full();
+    snapshot.hostSeq = this.seq;
     const welcome: Net.Welcome = {
       playerId: connId,
-      snapshot: this.takeSnapshot(),
-      roster: this.makeRoster(),
+      snapshot: snapshot,
       snapshotInterval: this.settings.snapshotInterval,
       tickInterval: this.settings.tickInterval,
       galaxySize: this.settings.galaxySize,
     };
     console.log('host: sending welcome', connId);
     this.conns[connId].send({welcome: welcome}, true);
-    this.broadcastRoster();
     this.announce('player ' + player.name + ' (' + connId + ') joined');
 
     // TODO Don't create a ship for every player once client supports not
@@ -254,13 +224,10 @@ export class Host {
     this.announce(
         'player ' + oldName + ' (' + connId + ') has changed their name to ' +
         player.name);
-    updatePlayer.playerId = connId;
-    this.broadcast({updatePlayer: updatePlayer}, true);
   }
 
   private onCreateShip(playerId: string, createShip: Net.CreateShip) {
     this.spawnShip(null, 0, 0, false);
-    this.broadcastRoster();
   }
 
   private onJoinCrew(playerId: string, joinCrew: Net.JoinCrew) {
@@ -273,7 +240,6 @@ export class Host {
     const player = this.db.players[playerId];
     player.shipId = joinCrew.shipId;
     player.station = joinCrew.station;
-    this.broadcastRoster();
   }
 
   private onSendChat(connId: string, sendChat: Net.SendChat) {

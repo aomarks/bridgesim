@@ -8,14 +8,7 @@ export class Power extends polymer.Base {
   @property({type: Object}) db: Db;
   @property({type: String}) shipId: string;
   @property({type: String}) curSubsystem: string;
-  @property({computed: 'computeSubsystemNames(db.power)'})
-  subsystemNames: string[];
-
-  private computeSubsystemNames(powerDb: Components.Power): string[] {
-    const power = powerDb[this.shipId] || {};
-    const names = Object.keys(power);
-    return names.sort();
-  }
+  subsystemNames: string[] = ['engine', 'maneuvering'];
 
   private subsystemLevel(
       powerDb: {[id: string]: Components.Power}, shipId: string,

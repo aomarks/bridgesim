@@ -3,8 +3,8 @@
 import {Db} from '../core/entity/db';
 
 import * as color from './colors';
-import {snap} from './util';
 import {CANVAS_FONT} from './const';
+import {snap} from './util';
 
 const OUTER_RING_WIDTH = 10;
 

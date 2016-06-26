@@ -1,12 +1,6 @@
-import * as Net from '../net/message';
-
-export interface Player {
-  name: string;
-  shipId: string;
-  station: Net.Station;
-  inputs: Net.Commands[];
-  latestSeq: number;
-}
+import {Station as CrewStation} from '../net/message';
+import {Commands} from '../net/message';
+import {Component} from './comdb';
 
 // Point represents a single x, y position.
 export interface Point {
@@ -15,7 +9,8 @@ export interface Point {
 }
 
 // An entity's position and orientation in space.
-export interface Position extends Point{
+// TODO Name collides with Position component.
+export interface PositionInterface extends Point {
   yaw: number;
   roll: number;
 }
@@ -26,34 +21,65 @@ export interface Region extends Point {
   height: number;
 }
 
-// An entity's bounding box in collision space.
-export interface Collidable {
-  length: number;
-  width: number;
-  ignore?: string;
+export class Ai extends Component {}
 
-  // TODO Move to other systems.
-  mass: number;
-  damage: number;
+export class Collidable extends Component {
+  @Component.prop length: number = 0;
+  @Component.prop width: number = 0;
+  @Component.prop ignore: string = '';
+  @Component.prop mass: number = 0;
+  @Component.prop damage: number = 0;
 }
 
-export interface Health {
-  hp: number;
-  shields: boolean;
-}
-
-export interface Power {
-  engine: number;
-  maneuvering: number;
-}
+export class Debris extends Component { @Component.prop type: DebrisType; }
 
 export enum DebrisType {
   ASTEROID,
 }
 
-export interface Debris { type: DebrisType; }
-
-export interface Station {
-  // station produces one resource every n seconds.
-  produces: {[type: string]: number};
+export class Health extends Component {
+  @Component.prop hp: number = 0;
+  @Component.prop shields: boolean = false;
 }
+
+export class Laser extends Component {}
+
+export class Name extends Component { @Component.prop name: string = ''; }
+
+export class Odometer extends Component { @Component.prop meters: number = 0; }
+
+export class Missile extends Component {}
+
+export class Player extends Component {
+  @Component.prop name: string = '';
+  @Component.prop shipId: string = '';
+  @Component.prop station: CrewStation;
+
+  inputs: Commands[] = [];
+  latestSeq: number = null;
+}
+
+export class Position extends Component {
+  @Component.prop x: number = 0;
+  @Component.prop y: number = 0;
+  @Component.prop yaw: number = 0;
+  @Component.prop roll: number = 0;
+}
+
+export class Power extends Component {
+  @Component.prop engine: number = 0;
+  @Component.prop maneuvering: number = 0;
+}
+
+export class Resource extends Component {
+  @Component.prop amount: {[type: string]: number} = {};
+}
+
+export class Ship extends Component {}
+
+export class Station extends Component {
+  // station produces one resource every n seconds.
+  @Component.prop produces: {[type: string]: number} = {};
+}
+
+export class Velocity extends Component { @Component.prop mps: number = 0; }

@@ -7,10 +7,7 @@ export class Laser {
 
   tick(): void {
     for (let id in this.db.lasers) {
-      if (this.db.healths[id].hp < 0) {
-        this.db.remove(id);
-      }
-      if (this.db.odometers[id] > RANGE) {
+      if (this.db.odometers[id].meters > RANGE) {
         this.db.remove(id);
       }
     }

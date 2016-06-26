@@ -1,7 +1,7 @@
 import {BoxCollider} from '../collision/box-collider';
 import {Db} from '../entity/db';
-import {Quadtree} from '../quadtree';
 import {maxCoord} from '../galaxy';
+import {Quadtree} from '../quadtree';
 
 export class Collision {
   private quadtree: Quadtree<string>;

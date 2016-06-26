@@ -31,7 +31,7 @@ export class Ai {
       }
     }
     if (nearestId === null || nearestDist < 0.1) {
-      this.db.velocities[thisId] = 0;
+      this.db.velocities[thisId].mps = 0;
       return;
     }
     const friendliness = -1;  // TODO
@@ -40,6 +40,6 @@ export class Ai {
     const thetaDegrees = (thetaRadians + Math.PI * (friendliness / 2 + 0.5)) *
         360.0 / (2.0 * Math.PI);
     thisPos.yaw = thisPos.yaw * (59 / 60) + thetaDegrees * (1 / 60);
-    this.db.velocities[thisId] = 0.1;
+    this.db.velocities[thisId].mps = 0.1;
   }
 }

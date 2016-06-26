@@ -1,11 +1,11 @@
 ///<reference path='../bower_components/polymer-ts/polymer-ts.d.ts' />
 
-import {Position} from '../core/components';
+import {PositionInterface} from '../core/components';
 import {Db} from '../core/entity/db';
 import {SECTOR_METERS, maxCoord} from '../core/galaxy';
 import {radians} from '../core/math';
-import {Quadtree} from '../core/quadtree';
 import {Pathfinder} from '../core/pathfinding';
+import {Quadtree} from '../core/quadtree';
 
 import * as color from './colors';
 import {CANVAS_FONT, HP} from './const';
@@ -97,7 +97,7 @@ export class Map extends polymer.Base {
     };
   }
 
-  lerpScreenPos(id: string, alpha: number): Position {
+  lerpScreenPos(id: string, alpha: number): PositionInterface {
     const pos = this.db.positions[id];
     if (pos == null) {
       return null;
@@ -215,7 +215,7 @@ export class Map extends polymer.Base {
         continue;
       }
       this.drawImage(coords.x, coords.y, this.stationImage, 0, 1 / 2);
-      const name = this.db.names[id];
+      const name = this.db.names[id].name;
       this.drawText(coords.x + 10, coords.y + 5, name);
       const health = this.db.healths[id];
       if (health != null) {
@@ -235,7 +235,7 @@ export class Map extends polymer.Base {
       }
       this.ctx.beginPath();
       this.drawBlip(coords.x, coords.y, '#FF0000');
-      const name = this.db.names[id];
+      const name = this.db.names[id].name;
       this.drawText(coords.x + 10, coords.y + 5, name);
       const health = this.db.healths[id];
       if (health != null) {

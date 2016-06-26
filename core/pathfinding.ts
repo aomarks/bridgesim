@@ -1,9 +1,10 @@
+import {PriorityQueue, Set} from 'typescript-collections';
+
+import {Point} from './components';
 import {Db} from './entity/db';
-import {Quadtree} from './quadtree';
 import {maxCoord} from './galaxy';
 import {dist} from './math';
-import {Point} from './components';
-import {Set, PriorityQueue} from 'typescript-collections';
+import {Quadtree} from './quadtree';
 
 // Based off of https://en.wikipedia.org/wiki/A*_search_algorithm
 

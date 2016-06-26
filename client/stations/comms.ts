@@ -1,8 +1,8 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
 
+import {dist} from '../../core/math';
 import {Db} from '../../core/entity/db';
 import {Resource} from '../../core/resources';
-import {dist} from '../../core/math';
 
 @component('comms-station')
 class Comms extends polymer.Base {
@@ -12,20 +12,20 @@ class Comms extends polymer.Base {
 
   private selected: string;
 
-  public idName(names: any, id: string): string { return names[id] || ''; }
+  public idName(names: any, id: string): string { return names[id].name || ''; }
 
   public requestAssistance(e: Event): void {
-    const name = this.db.names[this.selected];
+    const name = this.db.names[this.selected].name;
     this.logUs(name + ': Please assist us!');
   }
 
   public requestSurrender(e: Event): void {
-    const name = this.db.names[this.selected];
+    const name = this.db.names[this.selected].name;
     this.logUs(name + ': We request your unconditional surrender!');
   }
 
   public requestResources(e: Event): void {
-    const name = this.db.names[this.selected];
+    const name = this.db.names[this.selected].name;
     this.logUs(name + ': Do you have any resources that we can use?');
     setTimeout(() => {
       const stationResources = this.db.resources[this.selected];
@@ -39,7 +39,7 @@ class Comms extends polymer.Base {
   }
 
   public requestDock(e: Event): void {
-    const name = this.db.names[this.selected];
+    const name = this.db.names[this.selected].name;
     this.logUs(name + ': We are requesting permission to dock.');
     setTimeout(() => {
       const pos = this.db.positions[this.shipId];

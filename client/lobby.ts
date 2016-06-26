@@ -1,6 +1,7 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 
 import {Player} from '../core/components';
+import {Name} from '../core/components';
 import {Db} from '../core/entity/db';
 import * as Net from '../net/message';
 
@@ -35,8 +36,8 @@ class Lobby extends polymer.Base {
 
   private isHuman(shipId: string): boolean { return !this.db.ais[shipId]; }
 
-  private shipName(names: {[id: string]: string}, id: string): string {
-    return names[id] || '';
+  private shipName(names: {[id: string]: Name}, id: string): string {
+    return names[id].name || '';
   }
 
   private stationName(station: Net.Station): string {

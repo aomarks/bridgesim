@@ -1,6 +1,6 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 
-import {Db} from '..//core/entity/db';
+import {Db} from '../core/entity/db';
 
 interface Selected {
   animate: string;
@@ -19,8 +19,8 @@ class AnimateSelector extends polymer.Base {
   public ids(dict: any): string[] {
     const ids = Object.keys(dict);
     ids.sort((a, b) => {
-      const nameA = (this.db.names[a] || '').toUpperCase();
-      const nameB = (this.db.names[b] || '').toUpperCase();
+      const nameA = this.getName(a).toUpperCase();
+      const nameB = this.getName(b).toUpperCase();
       if (nameA < nameB) {
         return -1;
       }
@@ -32,7 +32,12 @@ class AnimateSelector extends polymer.Base {
     return ids;
   }
 
-  public idName(names: any, id: string): string { return names[id] || ''; }
+  public getName(id): string {
+    const com = this.db.names[id];
+    return com ? com.name : '';
+  }
+
+  public idName(names: any, id: string): string { return this.getName(id); }
 }
 
 AnimateSelector.register();
