@@ -84,9 +84,9 @@ describe('Database', () => {
   beforeEach(() => { db = new TestDb(); });
 
   it('should create sequential ids', () => {
+    expect(db.spawn()).to.equal('0');
     expect(db.spawn()).to.equal('1');
     expect(db.spawn()).to.equal('2');
-    expect(db.spawn()).to.equal('3');
   });
 
   it('should have newFoo_ helpers', () => {
