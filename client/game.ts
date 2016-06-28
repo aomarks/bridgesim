@@ -4,12 +4,10 @@
 import {Update} from '../core/comdb';
 import {Position} from '../core/components';
 import {Db} from '../core/entity/db';
-import {Host} from '../core/host';
 import {Input} from '../core/systems/input';
 import {Motion} from '../core/systems/motion';
 import {Conditioner} from '../net/conditioner';
 import {Connection} from '../net/connection';
-import {Loopback} from '../net/loopback';
 import * as Net from '../net/message';
 
 import {ChatEvent} from './chat';
@@ -27,7 +25,6 @@ class Game extends polymer.Base {
   @property({type: String}) shipId: string;
   @property({type: String, value: 'engine'}) curSubsystem: string;
 
-  private host: Host;
   private conn: Connection;
   private conditioner: Conditioner;
   private motion: Motion;
@@ -86,27 +83,16 @@ class Game extends polymer.Base {
 
   openLobbyDialog(): void { this.$.lobbyDialog.open(); }
 
-  closeHostIDToast(): void { this.$.hostIDToast.close(); }
-
   @observe('isHost')
   isHostChanged(isHost: boolean): void {
     this.resetSimulation();
     this.resetNetwork();
     if (isHost) {
-      this.host = new Host();
-      this.host.start();
-
-      const loopback = new Loopback();
-      this.conn = loopback.a;
-      this.setupConn();
-      this.host.addConnection(loopback.b);
-      console.log('game: opening loopback connection');
-      loopback.open();
-
-      setTimeout(
-          () => { this.$$('#lobbyHost').offer = this.offer.bind(this); }, 1);
-
-      this.$.hostIDToast.open();
+      // TODO Ugly.
+      this.async(() => {
+        const host = this.$$('#host');
+        this.$.peerLocalstorage.takeOffer = host.onOffer.bind(host);
+      });
     }
   }
 
@@ -153,26 +139,13 @@ class Game extends polymer.Base {
       this.conn.close();
       this.conn = null;
     }
-    if (this.host) {
-      this.host.stop();
-      this.host = null;
-    }
     this.playerId = null;
     console.log('game: reset network');
   }
 
+  @listen('connection')
   onConnection(event: {detail: Connection}): void {
-    if (this.isHost) {
-      this.host.addConnection(event.detail);
-    } else {
-      this.conn = event.detail;
-      this.setupConn();
-      this.switchToStation();
-    }
-  }
-
-  setupConn() {
-    this.conditioner = new Conditioner(this.conn);
+    this.conditioner = new Conditioner(event.detail);
     this.conditioner.latency = this.settings.fakeLatency;
     this.conditioner.packetLoss = this.settings.fakePacketLoss;
     this.conn = this.conditioner;
@@ -185,6 +158,8 @@ class Game extends polymer.Base {
 
     console.log('game: sending hello');
     this.conn.send({hello: {name: this.settings.name}}, true);
+
+    this.switchToStation();
   }
 
   switchToStation(station: string = 'helm'): void {

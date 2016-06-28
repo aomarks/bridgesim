@@ -1,0 +1,20 @@
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/webrtc-lobby-elements/webrtc-lobby-elements.html">
+<link rel="import" href="./deps.html">
+
+<dom-module id="bridgesim-host">
+  <template>
+    <paper-toast id="toast" duration="0">
+      Have others connect to ID: <span>[[serverToken]]</span>
+      <paper-button on-tap="closeToast">Close</paper-button>
+    </paper-toast>
+
+    <webrtc-lobby-host id="lobby"
+      url="wss://fn.lc/lobby"
+      service="bridgesim"
+      name="[[serverName]]"
+      token="{{serverToken}}"
+      hidden="[[serverHidden]]">
+    </webrtc-lobby-host>
+  </template>
+</dom-module>

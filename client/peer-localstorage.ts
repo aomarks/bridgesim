@@ -1,12 +1,13 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/index.d.ts" />
 
-import {WebRTCConnection} from '../net/webrtc';
+import {WebRTCConnection, decodeRSD, encodeRSD} from '../net/webrtc';
+
 import {RTC_CONFIG} from './webrtc-config';
 
 interface handshake {
-  offer: RTCSessionDescriptionInit;
-  answer: RTCSessionDescriptionInit;
+  offer: string;
+  answer: string;
   accepted: boolean;
 }
 
@@ -14,6 +15,7 @@ interface handshake {
 class PeerLocalstorage extends polymer.Base {
   @property({type: Boolean}) isHost: boolean;
   @property({type: Object}) handshakes: {[key: string]: handshake};
+  @property({type: Object}) takeOffer: (string)=> Promise<string>;
   private key: string;
   private conn: WebRTCConnection;
 
@@ -24,7 +26,7 @@ class PeerLocalstorage extends polymer.Base {
     this.key = Math.floor(Math.random() * 10000).toString();
     this.conn = new WebRTCConnection(RTC_CONFIG);
     this.conn.makeOffer().then(offer => {
-      this.set('handshakes.' + this.key, {offer: offer});
+      this.set('handshakes.' + this.key, {offer: encodeRSD(offer)});
       console.log('localstorage: sent offer', this.key);
     });
   }
@@ -50,17 +52,10 @@ class PeerLocalstorage extends polymer.Base {
       }
       console.log('localstorage: found offer', key);
       handshake.accepted = true;
-      const conn = new WebRTCConnection(RTC_CONFIG);
-      conn.onOpen = () => {
-        console.log('localstorage: connection to client open', key);
-        conn.onOpen = null;
-        this.fire('connection', conn);
-      };
-      conn.takeOffer(new RTCSessionDescription(handshake.offer))
-          .then(answer => {
-            this.set('handshakes.' + key + '.answer', answer);
-            console.log('localstorage: set answer', key);
-          });
+      this.takeOffer(handshake.offer).then(answer => {
+        this.set('handshakes.' + key + '.answer', answer);
+        console.log('localstorage: set answer', key);
+      });
     }
   }
 
@@ -75,7 +70,7 @@ class PeerLocalstorage extends polymer.Base {
         conn.onOpen = null;
         this.fire('connection', conn);
       };
-      conn.takeAnswer(new RTCSessionDescription(handshake.answer));
+      conn.takeAnswer(decodeRSD(handshake.answer));
       this.conn = null;
       this.key = null;
       // TODO delete offer from localstorage

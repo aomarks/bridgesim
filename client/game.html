@@ -13,11 +13,11 @@
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../bower_components/webrtc-lobby-elements/webrtc-lobby-elements.html">
 
 <link rel="import" href="./deps.html">
+<link rel="import" href="./host.html">
 <link rel="import" href="./input.html">
 <link rel="import" href="./chat.html">
 <link rel="import" href="./settings-menu.html">
@@ -39,13 +39,10 @@
 
     <bridgesim-peer-localstorage
       id="peerLocalstorage"
-      is-host="[[isHost]]"
-      on-connection="onConnection">
+      is-host="[[isHost]]">
     </bridgesim-peer-localstorage>
 
-    <bridgesim-peer-copypaste
-      id="peerCopypaste"
-      on-connection="onConnection">
+    <bridgesim-peer-copypaste id="peerCopypaste">
     </bridgesim-peer-copypaste>
 
     <bridgesim-input id="input"
@@ -144,6 +141,13 @@
       }
     </style>
 
+    <template is="dom-if" if="[[isHost]]" restamp>
+      <bridgesim-host id="host"
+        server-name="[[serverName]]"
+        server-hidden="[[serverHidden]]">
+      </bridgesim-host>
+    </template>
+
     <template is="dom-if" if="[[settings.showMetrics]]" restamp>
       <debug-metrics id="metrics"></debug-metrics>
     </template>
@@ -179,14 +183,6 @@
           ID: <span>[[serverToken]]</span>
           <paper-toggle-button checked="{{serverHidden}}">Hidden</paper-toggle-button>
           <paper-input hidden$="[[serverHidden]]" label="Server Name" value="{{serverName}}"></paper-input>
-
-          <webrtc-lobby-host id="lobbyHost"
-            url="wss://fn.lc/lobby"
-            service="bridgesim"
-            name="{{serverName}}"
-            token="{{serverToken}}"
-            hidden="{{serverHidden}}"
-            ></webrtc-lobby-host>
         </template>
       </div>
 
@@ -271,10 +267,6 @@
           </div>
         </div>
 
-        <paper-toast id="hostIDToast" duration="0">
-          Have others connect to ID: <span>[[serverToken]]</span>
-          <paper-button on-tap="closeHostIDToast">Close</paper-button>
-        </paper-toast>
       </div>
     </paper-drawer-panel>
 
