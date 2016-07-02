@@ -58,7 +58,7 @@ export class Host {
   private tickLag: number = 0;
   private snapshotLag: number = 0;
   private snapshotStale: boolean = false;
-  private seq: number = -1;
+  private seq: number = 0;
 
   public addConnection(conn: Connection) {
     const connId = this.db.spawn();  // TODO

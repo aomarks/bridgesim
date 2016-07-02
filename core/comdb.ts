@@ -120,7 +120,7 @@ export class Database {
           if (!update.components) {
             update.components = {};
           }
-          if (!update[component]) {
+          if (!update.components[component]) {
             update.components[component] = {};
           }
           update.components[component][id] = com.change;

@@ -109,13 +109,18 @@ describe('Database', () => {
   it('should generate changes', () => {
     const id1 = db.spawn();
     const id2 = db.spawn();
+    const id3 = db.spawn();
 
     const a1 = db.newA(id1);
     const b2 = db.newB(id2);
+    const b3 = db.newB(id3);
     expect(db.changes()).to.deep.equal({
       components: {
         a: {[id1]: {x: 0, y: 0}},
-        b: {[id2]: {foo: ''}},
+        b: {
+          [id2]: {foo: ''},
+          [id3]: {foo: ''},
+        },
       },
     });
 
@@ -124,10 +129,14 @@ describe('Database', () => {
 
     a1.x = 1;
     b2.foo = 'foo';
+    b3.foo = 'bar';
     expect(db.changes()).to.deep.equal({
       components: {
         a: {[id1]: {x: 1}},
-        b: {[id2]: {foo: 'foo'}},
+        b: {
+          [id2]: {foo: 'foo'},
+          [id3]: {foo: 'bar'},
+        },
       },
     });
 
