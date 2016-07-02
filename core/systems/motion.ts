@@ -46,6 +46,9 @@ export class Motion {
     pos.y = clamp(pos.y, this.minCoord, this.maxCoord);
 
     pos.roll *= .95;
+    if (pos.roll < 0.01) {
+      pos.roll = 0;
+    }
 
     const odometer = this.db.odometers[id];
     if (odometer != null) {

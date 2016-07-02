@@ -17,7 +17,6 @@ export function SpawnDebris(db: Db, x: number, y: number): string {
   pos.x = x;
   pos.y = y;
   pos.yaw = Math.random() * 360;
-  pos.roll = Math.random() * 360;
   const col = db.newCollidable(id);
   col.length = randInt(MIN_DEBRIS_METERS, MAX_DEBRIS_METERS);
   col.width = col.length;
