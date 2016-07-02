@@ -241,6 +241,30 @@ class Game extends polymer.Base {
     this.db.apply(update);
     this.shipId = this.db.players[this.playerId].shipId;
 
+
+    // Notify Polymer of changes in components for which elements may be
+    // observing.
+    const notify = [
+      'ais',
+      'names',
+      'players',
+      'ships',
+    ];
+    if (update.components) {
+      for (const com of notify) {
+        if (!update.components[com]) {
+          continue;
+        }
+        for (const id in update.components[com]) {
+          this.notifyPath('db.' + com + '.' + id, this.db[com][id]);
+          for (const prop in update.components[com][id]) {
+            this.notifyPath(
+                'db.' + com + '.' + id + '.' + prop, this.db[com][id][prop]);
+          }
+        }
+      }
+    }
+
     // Many elements are observing the top-level component map, e.g. the crew
     // selection screen listens on the ships and players map changing (the map
     // itself, not its contents). To make this work with the current code, we
@@ -251,10 +275,8 @@ class Game extends polymer.Base {
     // some different notification system if Polymer's is not powerful enough
     // here.
     const clone = [
-      'ais',
       'healths',
       'names',
-      'players',
       'positions',
       'power',
       'resources',

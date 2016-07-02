@@ -22,22 +22,23 @@
 
     <h3>Ships</h3>
 
-    <template is="dom-repeat" id="ships"
-              items="[[shipIds(db.ships)]]" filter="isHuman" as="shipId">
-      <h4>[[shipName(db.names, shipId)]]</h4>
-      <template is="dom-repeat" items="[[stations]]" as="station">
+    <template is="dom-repeat" items="[[ships]]" as="ship" id="ships">
+      <h4>[[ship.name]]</h4>
+      <template is="dom-repeat" items="[[ship.stations]]" as="station">
         <paper-button on-tap="joinCrew" raised
-                      disabled="[[assigned(db.players, shipId, station)]]">
-          <span>[[stationName(station)]]</span>
-          <span>[[playerName(db.players, shipId, station)]]</span>
+                      disabled="[[station.playerName]]">
+          <span>[[station.name]]</span>
+          <template is="dom-if" if="[[station.playerName]]">
+            ([[station.playerName]])
+          </template>
         </paper-button>
       </template>
     </template>
 
-    <br>
-
-    <paper-button id="createShip" on-tap="createShip" raised>
-      Create ship
-    </paper-button>
+    <div>
+      <paper-button id="createShip" on-tap="createShip" raised>
+        Create ship
+      </paper-button>
+    </div>
   </template>
 </dom-module>

@@ -5,68 +5,81 @@ import {Name} from '../core/components';
 import {Db} from '../core/entity/db';
 import * as Net from '../net/message';
 
+interface Ship {
+  id: string;
+  name: string;
+  stations: Station[];
+}
+
+interface Station {
+  id: Net.Station;
+  name: string;
+  playerName: string;
+}
+
+const STATION_IDS = [
+  Net.Station.Helm,
+  Net.Station.Comms,
+  Net.Station.Science,
+  Net.Station.Weapons,
+  Net.Station.Engineering,
+];
+
 @component('bridgesim-lobby')
 class Lobby extends polymer.Base {
   @property({type: Object}) db: Db;
-  @property({type: Array}) stations: Net.Station[];
-
-  ready(): void {
-    this.stations = [
-      Net.Station.Helm,
-      Net.Station.Comms,
-      Net.Station.Science,
-      Net.Station.Weapons,
-      Net.Station.Engineering,
-    ];
-  }
+  @property({type: Array}) ships: Ship[];
 
   private createShip(): void { this.fire('create-ship', <Net.CreateShip>{}); }
 
   private joinCrew(e: any) {
-    const shipId = this.$.ships.modelForElement(e.target).shipId;
-    const station = e.model.station;
-    this.fire('join-crew', <Net.JoinCrew>{shipId: shipId, station: station});
+    const ship: Ship = this.$.ships.modelForElement(e.target).ship;
+    const station: Station = e.model.station;
+    this.fire('join-crew', <Net.JoinCrew>{
+      shipId: ship.id,
+      station: station.id,
+    });
   }
 
-  private shipIds(ships: {[id: string]: any}): string[] {
-    const ids = Object.keys(ships);
-    ids.sort();
-    return ids;
-  }
-
-  private isHuman(shipId: string): boolean { return !this.db.ais[shipId]; }
-
-  private shipName(names: {[id: string]: Name}, id: string): string {
-    return names[id].name || '';
-  }
-
-  private stationName(station: Net.Station): string {
-    return Net.Station[station];
-  };
-
-  private assigned(
-      players: {[id: string]: Player}, shipId: string,
-      station: Net.Station): boolean {
-    return !!this.playerFromStation(players, shipId, station);
-  }
-
-  private playerName(
-      players: {[id: string]: Player}, shipId: string,
-      station: Net.Station): string {
-    const player = this.playerFromStation(players, shipId, station);
-    return player ? player.name : '';
-  }
-
-  private playerFromStation(
-      players: {[id: string]: Player}, shipId: string,
-      station: Net.Station): Player {
-    for (let playerId in players) {
-      const player = players[playerId];
-      if (player.shipId === shipId && player.station === station) {
-        return player;
+  @observe('db.ships.*, db.players.*, db.ais.*, db.names.*')
+  private recompute() {
+    // Map from shipId -> stationId -> playerId.
+    const crews = {};
+    for (const playerId in this.db.players) {
+      const player = this.db.players[playerId];
+      if (player.shipId == null) {
+        continue;
       }
+      if (!crews[player.shipId]) {
+        crews[player.shipId] = {};
+      }
+      crews[player.shipId][player.station] = playerId;
     }
-    return;
+
+    const ships = [];
+    for (const shipId in this.db.ships) {
+      if (this.db.ais[shipId]) {
+        continue;
+      }
+      const stations = [];
+      for (const stationId of STATION_IDS) {
+        const playerId = (crews[shipId] || {})[stationId];
+        const playerName =
+            playerId == null ? null : this.db.players[playerId].name;
+        stations.push({
+          id: stationId,
+          name: Net.Station[stationId],
+          playerName: playerName,
+        });
+      }
+      ships.push({
+        id: shipId,
+        name: this.db.names[shipId].name,
+        stations: stations,
+      });
+    }
+
+    this.ships = ships;
   }
 }
 Lobby.register();
