@@ -1,5 +1,7 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 
+import {numberToSI} from '../core/util';
+
 // Millisecond interval between metric calculations.
 const UPDATE_INTERVAL = 1000 / 3;
 
@@ -18,8 +20,10 @@ interface point {
 export class DebugMetrics extends polymer.Base {
   // Average frame rate over the past second.
   @property({type: String}) drawRate: string;
-  // Total kilobytes transferred in the past second.
+  // Total <recvRatePrefix>bytes transferred in the past second.
   @property({type: String}) recvRate: string;
+  // The SI prefix for the recvRate.
+  @property({type: String}) recvRatePrefix: string;
 
   private handle: number;
   private drawPoints: point[] = [];
@@ -32,7 +36,7 @@ export class DebugMetrics extends polymer.Base {
       this.drawPoints.push({ts: ts, val: 1000 / elapsed})};
 
   recv(bytes: number) {
-    this.recvPoints.push({ts: performance.now(), val: bytes / 1000});
+    this.recvPoints.push({ts: performance.now(), val: bytes});
   }
 
   private update(): void {
@@ -48,7 +52,9 @@ export class DebugMetrics extends polymer.Base {
       recvRate =
           this.sum(this.recvPoints) / this.timespan(this.recvPoints) * 1000;
     }
-    this.recvRate = recvRate.toFixed(1);
+    const {n, prefix} = numberToSI(recvRate);
+    this.recvRate = n.toFixed(1);
+    this.recvRatePrefix = prefix;
   }
 
   private prune(points: point[], minTime: number) {

@@ -22,11 +22,26 @@ const ranges = [
   {divider: 1e6, suffix: 'M'},
   {divider: 1e3, suffix: 'k'},
 ];
-export function formatNumber(n: number, precision: number = 2) {
+
+interface SINumber {
+  n: number;
+  prefix: string;
+}
+
+export function numberToSI(n: number): SINumber {
+  const sign = (n >= 0) ? 1 : -1;
+  if (n < 0) {
+    n *= -1;
+  }
   for (let range of ranges) {
     if (n >= range.divider) {
-      return (n / range.divider).toFixed(precision) + range.suffix;
+      return {n: sign * (n / range.divider), prefix: range.suffix};
     }
   }
-  return n.toFixed(precision);
+  return {n: sign * n, prefix: ''};
+}
+
+export function formatNumber(num: number, precision: number = 2): string {
+  const {n, prefix} = numberToSI(num);
+  return n.toFixed(precision) + prefix;
 }
