@@ -248,6 +248,7 @@ class Game extends polymer.Base {
       'ais',
       'names',
       'players',
+      'power',
       'ships',
     ];
     if (update.components) {
@@ -278,7 +279,6 @@ class Game extends polymer.Base {
       'healths',
       'names',
       'positions',
-      'power',
       'resources',
       'ships',
       'stations',

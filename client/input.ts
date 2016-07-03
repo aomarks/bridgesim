@@ -125,8 +125,7 @@ class Input extends polymer.Base {
     if (!power) {
       return;
     }
-    const names = Object.keys(power);
-    names.sort();
+    const names = Power.prototype.props;
     let newIdx = (names.indexOf(this.curSubsystem) + advance + names.length) %
         names.length;
     this.curSubsystem = names[newIdx];

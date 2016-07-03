@@ -42,10 +42,10 @@
 
     <h3>Power Levels</h3>
     <div id="container">
-      <template is="dom-repeat" items="[[subsystemNames]]">
-        <div class="subsystem" active$="[[subsystemActive(curSubsystem, item)]]">
-          <div class="bar" style$="[[subsystemLevel(db.power, shipId, item)]]"></div>
-          <label>[[item]]</label>
+      <template is="dom-repeat" items="[[subsystems]]">
+        <div class="subsystem" active$="[[item.active]]">
+          <div class="bar" style$="[[height(item.level)]]"></div>
+          <label>[[item.name]]</label>
         </div>
       </template>
     </div>

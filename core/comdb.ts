@@ -14,7 +14,7 @@
  */
 export class Component {
   /** Set on the prototype by @Component.prop. */
-  private props: string[];
+  props: string[];
 
   /**
    * Whether any change has occured since the last clearChange(). True at
