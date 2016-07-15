@@ -11,26 +11,50 @@ import {Quadtree} from './quadtree';
 export class Pathfinder {
   private quadtree: Quadtree<string>;
   private max: number;
+  private nodes: string[][][];
 
   constructor(
       private db: Db, galaxySize: number, private precision: number = 1200) {
     const max = maxCoord(galaxySize);
     this.max = max;
-    this.quadtree = new Quadtree<string>(-max, -max, max, max);
+
+    const arrSize = max * 2 / precision;
+    const nodes = Array(arrSize);
+    for (let i = 0; i < arrSize; i++) {
+      nodes[i] = Array(arrSize);
+    }
+    const padding = this.precision / 2;
+    for (let a in this.db.collidables) {
+      const {length, width} = this.db.collidables[a];
+      const radius = Math.max(length, width) / 2;
+      const {x, y} = this.db.positions[a];
+      const topLeft =
+          this.xyToArr({x: x - padding - radius, y: y - padding - radius});
+      const bottomRight =
+          this.xyToArr({x: x + padding + radius, y: y + padding + radius});
+      for (let x = Math.max(0, topLeft.x); x <= bottomRight.x && x < arrSize;
+           x++) {
+        for (let y = Math.max(0, topLeft.y); y <= bottomRight.y && y < arrSize;
+             y++) {
+          if (!nodes[x][y]) {
+            nodes[x][y] = [];
+          }
+          nodes[x][y].push(a);
+        }
+      }
+    }
+    this.nodes = nodes;
+  }
+
+  // xyToArr converts the point into the position in the nodes array.
+  private xyToArr(a: Point): Point {
+    return {
+      x: Math.floor((a.x + this.max) / this.precision),
+      y: Math.floor((a.y + this.max) / this.precision),
+    };
   }
 
   public find(startP: Point, endP: Point, ignore: string = ''): Point[] {
-    this.quadtree.clear();
-
-    for (let a in this.db.collidables) {
-      if (ignore === a) {
-        continue;
-      }
-      const {length, width} = this.db.collidables[a];
-      const {x, y} = this.db.positions[a];
-      this.quadtree.insert(a, x, y, x + length, y + width);
-    }
-
     const start = this.node(startP);
     const end = this.node(endP);
     const startID = this.nodeID(start);
@@ -43,7 +67,7 @@ export class Pathfinder {
     const gScore: {[key: string]: number} = {};
     gScore[startID] = 0;
     const fScore: {[key: string]: number} = {};
-    fScore[startID] = this.heuristic(start, end);
+    fScore[startID] = this.heuristic(start, end, ignore);
 
     const openQueue = new PriorityQueue<Point>((a: Point, b: Point) => {
       return fScore[this.nodeID(b)] - fScore[this.nodeID(a)];
@@ -68,8 +92,11 @@ export class Pathfinder {
         }
 
         // The distance from start to a neighbor
-        const tentative_gScore =
-            gScore[currentID] + this.heuristic(current, neighbor);
+        const heuristic = this.heuristic(current, neighbor, ignore);
+        if (heuristic < 0) {
+          continue;  // No path.
+        }
+        const tentative_gScore = gScore[currentID] + heuristic;
         // Discover a new node
         // This is not a better path.
         if (openSet.contains(neighborID) &&
@@ -78,7 +105,8 @@ export class Pathfinder {
         }
         cameFrom[neighborID] = currentID;
         gScore[neighborID] = tentative_gScore;
-        fScore[neighborID] = gScore[neighborID] + this.heuristic(neighbor, end);
+        fScore[neighborID] =
+            gScore[neighborID] + this.heuristic(neighbor, end, ignore);
         if (!openSet.contains(neighborID)) {
           openSet.add(neighborID);
           openQueue.enqueue(neighbor);
@@ -106,6 +134,10 @@ export class Pathfinder {
       this.node(p, 0, 1),
       this.node(p, -1, 0),
       this.node(p, 0, -1),
+      this.node(p, 1, 1),
+      this.node(p, -1, -1),
+      this.node(p, -1, 1),
+      this.node(p, 1, -1),
     ].filter((a: Point): boolean => {
       // Don't navigate off the edge of the map. This limits the search space
       // and stops infinite loops.
@@ -117,20 +149,32 @@ export class Pathfinder {
   private node(p: Point, dx: number = 0, dy: number = 0): Point {
     return {
       x: (Math.floor(p.x / this.precision) + dx) * this.precision,
-          y: (Math.floor(p.y / this.precision) + dy) * this.precision
+          y: (Math.floor(p.y / this.precision) + dy) * this.precision,
     }
   }
 
   private nodeID(p: Point): string { return JSON.stringify(this.node(p)); }
 
-  private heuristic(from: Point, to: Point): number {
-    const {x, y} = this.node(to);
-    const objects = this.quadtree.retrieve(
-        x, y, x + this.precision, y + this.precision, true);
+  private heuristic(from: Point, to: Point, ignore: string): number {
+    const padding = 0.5 * this.precision;
     let score = dist(from, to);
-    if (objects.length > 0) {
-      score += 1000000000;
+
+    const {x, y} = this.xyToArr(to);
+    const objects = this.nodes[x][y];
+
+    if (objects) {
+      let containsIgnore = false;
+      for (let obj of objects) {
+        if (obj === ignore) {
+          containsIgnore = true;
+          break;
+        }
+      }
+      if (!containsIgnore && objects.length > 0) {
+        return -1;
+      }
     }
+
     return score;
   }
 }

@@ -341,20 +341,27 @@ export class Map extends polymer.Base {
 
   private drawPathfinding() {
     const finder = new Pathfinder(this.db, this.size);
-    const start = this.db.positions[this.shipId];
-    if (!start) {
-      return;
-    }
-    const end = {x: 0, y: 0};
-    const path = finder.find(start, end, this.shipId);
+
     const ctx = this.ctx;
     ctx.beginPath();
     ctx.strokeStyle = color.YELLOW;
     ctx.lineWidth = 1;
-    for (let p of path) {
-      const {x, y} = this.worldToScreen(p.x, p.y);
-      ctx.lineTo(x, y);
+
+    for (let id in this.db.ais) {
+      const start = this.db.positions[id];
+      if (!start) {
+        return;
+      }
+      const end = this.db.ais[id].targetPos;
+      const path = finder.find(start, end, this.shipId);
+      const coords = this.worldToScreen(start.x, start.y);
+      ctx.moveTo(coords.x, coords.y);
+      for (let p of path) {
+        const {x, y} = this.worldToScreen(p.x, p.y);
+        ctx.lineTo(x, y);
+      }
     }
+
     ctx.stroke();
   }
 

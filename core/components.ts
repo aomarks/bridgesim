@@ -21,7 +21,9 @@ export interface Region extends Point {
   height: number;
 }
 
-export class Ai extends Component {}
+export class Ai extends Component {
+  @Component.prop targetPos: Point;
+}
 
 export class Collidable extends Component {
   @Component.prop length: number = 0;

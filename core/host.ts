@@ -42,7 +42,7 @@ export class Host {
   private db: Db = new Db();
 
   // Systems
-  private ai: Ai = new Ai(this.db);
+  private ai: Ai = new Ai(this.db, this.settings.galaxySize);
   private collision: Collision =
       new Collision(this.db, this.settings.galaxySize);
   private death: Death = new Death(this.db);
