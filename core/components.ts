@@ -71,8 +71,9 @@ export class Power extends Component {
   @Component.prop maneuvering: number = 0;
 }
 
-export class Resource extends Component {
-  @Component.prop amount: {[type: string]: number} = {};
+export class Resources extends Component {
+  @Component.prop energy: number = 0;
+  @Component.prop missile: number = 0;
 }
 
 export class Ship extends Component {}

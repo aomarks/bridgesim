@@ -241,54 +241,24 @@ class Game extends polymer.Base {
     this.db.apply(update);
     this.shipId = this.db.players[this.playerId].shipId;
 
-
     // Notify Polymer of changes in components for which elements may be
     // observing.
-    const notify = [
-      'ais',
-      'names',
-      'players',
-      'power',
-      'ships',
-    ];
     if (update.components) {
-      for (const com of notify) {
-        if (!update.components[com]) {
-          continue;
-        }
+      for (const com in update.components) {
         for (const id in update.components[com]) {
           this.notifyPath('db.' + com + '.' + id, this.db[com][id]);
+          if (!this.welcomed) {
+            // On first update, all the components must be totally new, so
+            // there's no point notifying about sub-properties too (otherwise
+            // startup is slowed by intensive notification that has no effect).
+            continue;
+          }
           for (const prop in update.components[com][id]) {
             this.notifyPath(
                 'db.' + com + '.' + id + '.' + prop, this.db[com][id][prop]);
           }
         }
       }
-    }
-
-    // Many elements are observing the top-level component map, e.g. the crew
-    // selection screen listens on the ships and players map changing (the map
-    // itself, not its contents). To make this work with the current code, we
-    // need to clone some of the component maps so that the changes propagate.
-    //
-    // TODO Refactor elements to listen deeper (i.e. not on the component map
-    // itself changing), and notify correctly through Polymer. Or figure out
-    // some different notification system if Polymer's is not powerful enough
-    // here.
-    const clone = [
-      'healths',
-      'names',
-      'positions',
-      'resources',
-      'ships',
-      'stations',
-    ];
-    for (const component of clone) {
-      const clone = {};
-      for (const id in this.db[component]) {
-        clone[id] = this.db[component][id];
-      }
-      this.set('db.' + component, clone);
     }
   }
 

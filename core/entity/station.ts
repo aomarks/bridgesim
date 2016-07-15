@@ -1,14 +1,12 @@
-import {Resource} from '../resources';
-
 import {Db} from './db';
 
 export function SpawnStation(
     db: Db, name: string, x: number, y: number): string {
   const id = db.spawn();
   const station = db.newStation(id);
-  db.newResource(id);
-  station.produces[Resource.Missile] = 60;
-  station.produces[Resource.Energy] = 1;
+  db.newResources(id);
+  station.produces['missile'] = 60;
+  station.produces['energy'] = 1;
   if (!name) {
     name = 'Station ' + id;
   }

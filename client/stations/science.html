@@ -29,14 +29,14 @@
     <paper-drawer-panel>
       <div drawer>
         <h3>Long Range Sensors</h3>
-        <animate-selector db="{{db}}" selected="{{selected}}"></animate-selector>
+        <animate-selector db="[[db]]" selected-id="{{selectedId}}"></animate-selector>
       </div>
       <div main>
         <template is="dom-if" if="[[selected]]">
-          <h1>[[animateName(db.names, selected)]]</h1>
+          <h1>[[selected.name]]</h1>
           <p>
-          Distance: <span>[[dist(db.positions, selected, shipId)]]</span>,
-          Heading: <span>[[heading(db.positions, selected, shipId)]]</span>
+          Distance: <span>[[selected.distance]]</span>,
+          Heading: <span>[[selected.heading]]</span>
           </p>
           <paper-button disabled="[[scanning]]" on-tap="scan">Scan</paper-button>
           <template is="dom-if" if="[[scanning]]">
@@ -44,10 +44,10 @@
           </template>
           <template is="dom-if" if="[[scanResults]]">
             <h2>Scan Results</h2>
-            <p>HP: <span>[[hp(db.healths, selected)]]</span></p>
-            <p>Shields: <span>[[shields(db.healths, selected)]]</span></p>
+            <p>HP: <span>[[selected.hp]]</span></p>
+            <p>Shields: <span>[[selected.shields]]</span></p>
             <p>[[scanResults]]</p>
-            <resource-display db="[[db]]" ship-id="[[selected]]"></resource-display>
+            <resource-display db="[[db]]" ship-id="[[selectedId]]"></resource-display>
           </template>
         </template>
       </div>

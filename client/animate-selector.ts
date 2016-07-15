@@ -2,42 +2,37 @@
 
 import {Db} from '../core/entity/db';
 
-interface Selected {
-  animate: string;
+interface Entity {
+  id: string;
+  name: string;
+}
+
+function compareId(a: Entity, b: Entity): number {
+  return a.id.localeCompare(b.id);
 }
 
 @component('animate-selector')
 class AnimateSelector extends polymer.Base {
-  @property({type: Object}) public db: Db;
-  @property({type: String, notify: true, computed: 'computeSelected(sel)'})
-  public selected: string;
+  @property({type: Object}) db: Db;
+  @property({type: Array}) ships: Entity[];
+  @property({type: Array}) stations: Entity[];
+  @property({type: String, notify: true}) selectedId: string;
 
-  public sel: Selected;
+  @observe('db.ships.*,db.stations.*,db.names.*')
+  recompute() {
+    const ships = [];
+    for (const id in this.db.ships) {
+      ships.push({id: id, name: this.db.names[id].name});
+    }
+    ships.sort(compareId);
+    this.ships = ships;
 
-  public computeSelected(sel: Selected) { return sel && sel.animate; }
-
-  public ids(dict: any): string[] {
-    const ids = Object.keys(dict);
-    ids.sort((a, b) => {
-      const nameA = this.getName(a).toUpperCase();
-      const nameB = this.getName(b).toUpperCase();
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    });
-    return ids;
+    const stations = [];
+    for (const id in this.db.stations) {
+      stations.push({id: id, name: this.db.names[id].name});
+    }
+    stations.sort(compareId);
+    this.stations = stations;
   }
-
-  public getName(id): string {
-    const com = this.db.names[id];
-    return com ? com.name : '';
-  }
-
-  public idName(names: any, id: string): string { return this.getName(id); }
 }
-
 AnimateSelector.register();

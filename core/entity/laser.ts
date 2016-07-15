@@ -1,5 +1,3 @@
-import {Resource} from '../resources';
-
 import {Db} from './db';
 
 export function SpawnLaser(
@@ -18,7 +16,7 @@ export function SpawnLaser(
   col.width = 10;
   col.damage = 1;
   col.ignore = origin;
-  db.resources[origin].amount[Resource.Energy] -= 10;
+  db.resources[origin].energy -= 10;
   console.log('entity.laser: spawned laser', id);
   return id;
 }

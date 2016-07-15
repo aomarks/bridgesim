@@ -38,8 +38,8 @@ export class Db extends Database {
   @Database.table(C.Power) power: {[id: string]: C.Power} = {};
   newPower(id: string): C.Power { return this['newPower_'](id); }
 
-  @Database.table(C.Resource) resources: {[id: string]: C.Resource} = {};
-  newResource(id: string): C.Resource { return this['newResources_'](id); }
+  @Database.table(C.Resources) resources: {[id: string]: C.Resources} = {};
+  newResources(id: string): C.Resources { return this['newResources_'](id); }
 
   @Database.table(C.Ship) ships: {[id: string]: C.Ship} = {};
   newShip(id: string): C.Ship { return this['newShips_'](id); }

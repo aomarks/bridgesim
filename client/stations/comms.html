@@ -27,18 +27,20 @@
     <paper-drawer-panel>
       <div drawer>
         <h3>Communications</h3>
-        <animate-selector db="{{db}}" selected="{{selected}}"></animate-selector>
+        <animate-selector db="[[db]]" selected-id="{{selectedId}}">
+        </animate-selector>
       </div>
+
       <div main>
         <template is="dom-if" if="[[selected]]">
-          <h1>[[idName(db.names, selected)]]</h1>
+          <h1>[[selected.name]]</h1>
           <h2>Actions</h2>
         </template>
-        <template is="dom-if" if="[[isShip(selected)]]">
+        <template is="dom-if" if="[[isShip(selected.id)]]">
           <paper-button on-tap="requestAssistance">Please Assist</paper-button>
           <paper-button on-tap="requestSurrender">Surrender</paper-button>
         </template>
-        <template is="dom-if" if="[[isStation(selected)]]">
+        <template is="dom-if" if="[[isStation(selected.id)]]">
           <paper-button on-tap="requestResources">Request resources</paper-button>
           <paper-button on-tap="requestDock">Request to dock</paper-button>
         </template>

@@ -1,6 +1,7 @@
 import {Db} from '../entity/db';
 import {dist} from '../math';
 import {every} from '../util';
+import {Resources} from '../components';
 
 export class Station {
   private lastTick: number;
@@ -38,17 +39,17 @@ export class Station {
   }
 
   private transferResources(from: string, to: string) {
-    const fromRes = this.db.resources[from].amount;
-    const toRes = this.db.resources[to].amount;
-    for (let res in fromRes) {
+    const fromRes = this.db.resources[from];
+    const toRes = this.db.resources[to];
+    for (const res of Resources.prototype.props) {
       toRes[res] = (toRes[res] || 0) + (fromRes[res] || 0);
-      delete fromRes[res];
+      fromRes[res] = 0;
     }
   }
 
   private tickOne(thisId: string, diff: number): void {
     const station = this.db.stations[thisId];
-    const resources = this.db.resources[thisId].amount;
+    const resources = this.db.resources[thisId];
 
     // Resource production
     for (let resource in station.produces) {

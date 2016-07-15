@@ -29,8 +29,11 @@ export class HeadingIndicator extends polymer.Base {
     window.addEventListener('resize', this.resize.bind(this));
   }
 
-  @observe('db.positions')
-  public checkYaw(): void {
+  @observe('shipId,db.positions.*')
+  public checkYaw(shipId: string, change: any): void {
+    if (!shipId || change.path.indexOf('db.positions.' + shipId + '.') !== 0) {
+      return;
+    }
     const position = this.db.positions[this.shipId];
     if (position && position.yaw !== this.lastYaw) {
       this.lastYaw = position.yaw;

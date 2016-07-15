@@ -1,5 +1,3 @@
-import {Resource} from '../resources';
-
 import {Db} from './db';
 
 export function SpawnShip(
@@ -28,8 +26,8 @@ export function SpawnShip(
   const power = db.newPower(id);
   power.engine = 100;
   power.maneuvering = 100;
-  const res = db.newResource(id);
-  res.amount[Resource.Energy] = 1000;
+  const res = db.newResources(id);
+  res.energy = 1000;
   if (ai) {
     db.newAi(id);
   }
