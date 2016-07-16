@@ -35,7 +35,7 @@ export class Host {
   private settings: Settings = {
     commandBufferSize: 100,
     galaxySize: 12,
-    updateInterval: 1000 / 15,
+    updateInterval: 1000 / 30,
     tickInterval: 1000 / 30,
   };
 
