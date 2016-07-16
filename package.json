@@ -9,6 +9,7 @@
     "crisper": "^2.0.2",
     "html-minifier": "^2.1.2",
     "mocha": "^2.4.5",
+    "sinon": "^1.17.4",
     "uglify-js": "^2.6.2",
     "vulcanize": "^1.14.8",
     "watchify": "^3.7.0"

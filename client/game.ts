@@ -1,11 +1,9 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../typings/index.d.ts" />
 
+import {Client} from '../core/client';
 import {Update} from '../core/comdb';
-import {Position} from '../core/components';
 import {Db} from '../core/entity/db';
-import {Input} from '../core/systems/input';
-import {Motion} from '../core/systems/motion';
 import {Conditioner} from '../net/conditioner';
 import {Connection} from '../net/connection';
 import * as Net from '../net/message';
@@ -25,36 +23,22 @@ class Game extends polymer.Base {
   @property({type: String}) shipId: string;
   @property({type: String, value: 'engine'}) curSubsystem: string;
 
+  private client: Client;
   private conn: Connection;
   private conditioner: Conditioner;
-  private motion: Motion;
-  private input: Input;
-  private latestSnapshotMs: number = 0;
-  private latestSeq = -1;
-  private seq: number = 0;
-  private commandBuffer: Net.Commands[] = [];
   private prevTs: number = 0;
-  private lag: number = 0;
   private urlQuery: string;
   private animationRequestId: number;
-  private welcomed: boolean;
   private showStations: boolean;
-  private updateBuffer: Update[] = [];
 
   ready(): void {
     console.log('game: ready');
 
     this.settings = {
-      // TODO Re-enable prediction once it works with deltas.
-      localPredict: false,
-      localInterpolate: true,
-      remoteInterpolate: true,
+      interpolate: true,
       fakeLatency: 0,
       fakePacketLoss: 0,
       frameLimit: 0,
-      tickInterval: 0,      // Server controlled.
-      snapshotInterval: 0,  // Server controlled.
-      commandBufferSize: 100,
       name: null,
       showBoundingBoxes: false,
       showQuadtree: false,
@@ -76,6 +60,12 @@ class Game extends polymer.Base {
       } else {
         window.location.hash = '/welcome';
       }
+    }
+  }
+
+  detached() {
+    if (this.client) {
+      this.client.stop();
     }
   }
 
@@ -123,14 +113,7 @@ class Game extends polymer.Base {
       this.animationRequestId = null;
     }
     this.shipId = null;
-    this.updateBuffer = [];
-    this.latestSeq = -1;
     this.prevTs = 0;
-    this.lag = 0;
-    this.welcomed = false;
-    this.db = new Db();
-    this.motion = null;
-    this.input = new Input(this.db);
     console.log('game: reset simulation');
   }
 
@@ -151,6 +134,9 @@ class Game extends polymer.Base {
     this.conn = this.conditioner;
 
     this.conn.onMessage = this.onMessage.bind(this);
+    this.client =
+        new Client(this.conn, this.$.input.process.bind(this.$.input));
+
     this.conn.onClose = () => {
       console.log('game: disconnected from host');
       this.resetSimulation();
@@ -170,8 +156,11 @@ class Game extends polymer.Base {
     this.isHost = true;
     this.switchToStation();
   }
+
   joinGame(): void { this.$.peerCopypaste.openClientDialog(); }
+
   invitePlayer(): void { this.$.peerCopypaste.openHostDialog(); }
+
   offer(offer: any, resolve: (resp: any) => void): void {
     this.$.peerCopypaste.handleOffer(offer.Offer).then((answer: string) => {
       resolve({Answer: answer});
@@ -186,20 +175,17 @@ class Game extends polymer.Base {
     if (msg.welcome) {
       console.log('game: got welcome', msg.welcome.playerId);
       this.size = msg.welcome.galaxySize;
-      this.motion = new Motion(this.db, this.size);
-      this.settings.tickInterval = msg.welcome.tickInterval;
-      this.settings.snapshotInterval = msg.welcome.snapshotInterval;
       this.playerId = msg.welcome.playerId;
-      this.applyUpdate(msg.welcome.snapshot);
-      this.welcomed = true;
+      this.db = this.client.db;
+      // Throw away initial changes so that we don't do a big unneccessary
+      // notify on the first frame. The db object itself has just been set, so
+      // every deep listener will already have been notified.
+      this.db.changes();
+      // Start the rendering loop.
       this.frame(0);
 
     } else if (msg.receiveChat) {
       this.$.chat.receiveMsg(msg.receiveChat);
-
-    } else if (msg.update) {
-      this.updateBuffer.push(msg.update);
-      this.latestSnapshotMs = performance.now();
     }
   }
 
@@ -215,44 +201,13 @@ class Game extends polymer.Base {
     this.conn.send({createShip: {}}, true);
   }
 
-  applyUpdate(update: Update): void {
-    // Copy previous positions for interpolation.
-    // TODO Something smarter.
-    if (update.components) {
-      if (update.components['positions']) {
-        const positions = update.components['positions'];
-        for (const id in positions) {
-          let prev = this.db.prevPositions[id];
-          if (!prev) {
-            prev = this.db.prevPositions[id] = new Position();
-          }
-          let cur = this.db.positions[id];
-          if (!cur) {
-            cur = positions[id];
-          }
-          prev.x = cur.x;
-          prev.y = cur.y;
-          prev.roll = cur.roll;
-          prev.yaw = cur.yaw;
-        }
-      }
-    }
-
-    this.db.apply(update);
-    this.shipId = this.db.players[this.playerId].shipId;
-
+  notifyChanges(update: Update): void {
     // Notify Polymer of changes in components for which elements may be
     // observing.
     if (update.components) {
       for (const com in update.components) {
         for (const id in update.components[com]) {
           this.notifyPath('db.' + com + '.' + id, this.db[com][id]);
-          if (!this.welcomed) {
-            // On first update, all the components must be totally new, so
-            // there's no point notifying about sub-properties too (otherwise
-            // startup is slowed by intensive notification that has no effect).
-            continue;
-          }
           for (const prop in update.components[com][id]) {
             this.notifyPath(
                 'db.' + com + '.' + id + '.' + prop, this.db[com][id][prop]);
@@ -276,73 +231,21 @@ class Game extends polymer.Base {
       this.$$('#metrics').draw(ts, elapsed);
     }
 
-    this.updateBuffer.sort(function(a: Update, b: Update) {
-      return a.hostSeq - b.hostSeq;
-    });
-
-    while (this.updateBuffer.length) {
-      const update = this.updateBuffer.shift();
-      this.applyUpdate(update);
-      // TODO Prediction is broken with deltas.
-      if (this.settings.localPredict && this.shipId != null &&
-          !this.updateBuffer.length) {
-        const offset = this.seq - update.clientSeq;
-        const length = this.commandBuffer.length;
-        for (let i = length - offset + 1; i < length; i++) {
-          const commands = this.commandBuffer[i];
-          if (commands) {
-            this.input.apply(this.shipId, commands, false);
-          }
-          // Make sure the ship exists before ticking the motion.
-          if (this.db.velocities[this.shipId]) {
-            this.motion.tickOne(this.shipId);
-          }
-        }
-      }
+    let alpha = this.client.update(ts);
+    if (!this.settings.interpolate) {
+      alpha = 1;
     }
 
-    this.lag += elapsed;
-
-    let commands: Net.Commands;
-    while (this.lag >= this.settings.tickInterval) {
-      commands = this.$.input.process();
-      commands.seq = this.seq;
-      if (this.commandBuffer.length === this.settings.commandBufferSize) {
-        this.commandBuffer.shift();
-      }
-      this.commandBuffer.push(commands);
-
-      if (this.settings.localPredict && this.shipId != null) {
-        this.input.apply(this.shipId, commands, false);
-        // Make sure the ship exists before ticking the motion.
-        if (this.db.velocities[this.shipId]) {
-          this.motion.tickOne(this.shipId);
-        }
-      }
-      this.lag -= this.settings.tickInterval;
-      this.seq++;
-    }
-    if (commands) {
-      this.conn.send({commands: commands}, false);
+    const changes = this.db.changes();
+    if (changes) {
+      this.notifyChanges(changes);
     }
 
+    this.shipId = this.db.players[this.playerId].shipId;
     const station = this.$.stations.selectedItem;
     if (station && this.shipId != null) {
-      let localAlpha = this.lag / this.settings.tickInterval;
-      let remoteAlpha = Math.min(
-          1, (ts - this.latestSnapshotMs) / this.settings.snapshotInterval);
-
-      if (!this.settings.localInterpolate) {
-        localAlpha = 1;
-      } else if (!this.settings.localPredict) {
-        localAlpha = remoteAlpha;
-      }
-      if (!this.settings.remoteInterpolate) {
-        remoteAlpha = 1;
-      }
-
       if (station.draw) {
-        station.draw(localAlpha, remoteAlpha);
+        station.draw(alpha, alpha);
       }
     }
 

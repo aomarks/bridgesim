@@ -24,8 +24,8 @@ export interface Settings {
   // Milliseconds between simulation ticks.
   tickInterval: number;
 
-  // Milliseconds between snapshot broadcasts.
-  snapshotInterval: number;
+  // Milliseconds between update broadcasts.
+  updateInterval: number;
 
   // How many command messages to store per player.
   commandBufferSize: number;
@@ -35,7 +35,7 @@ export class Host {
   private settings: Settings = {
     commandBufferSize: 100,
     galaxySize: 12,
-    snapshotInterval: 1000 / 15,
+    updateInterval: 1000 / 15,
     tickInterval: 1000 / 30,
   };
 
@@ -156,7 +156,7 @@ export class Host {
     }
 
     if (this.snapshotStale &&
-        this.snapshotLag >= this.settings.snapshotInterval) {
+        this.snapshotLag >= this.settings.updateInterval) {
       const update = this.db.changes();
       if (update) {
         this.seq++;
@@ -203,7 +203,7 @@ export class Host {
     const welcome: Net.Welcome = {
       playerId: connId,
       snapshot: snapshot,
-      snapshotInterval: this.settings.snapshotInterval,
+      updateInterval: this.settings.updateInterval,
       tickInterval: this.settings.tickInterval,
       galaxySize: this.settings.galaxySize,
     };

@@ -35,6 +35,12 @@ export class Db extends Database {
   @Database.table(C.Position) positions: {[id: string]: C.Position} = {};
   newPosition(id: string): C.Position { return this['newPositions_'](id); }
 
+  // This table is only maintained by a client doing interpolation.
+  @Database.table(C.Position) prevPositions: {[id: string]: C.Position} = {};
+  newPrevPosition(id: string): C.Position {
+    return this['newPrevPositions_'](id);
+  }
+
   @Database.table(C.Power) power: {[id: string]: C.Power} = {};
   newPower(id: string): C.Power { return this['newPower_'](id); }
 
@@ -52,5 +58,4 @@ export class Db extends Database {
 
   // Not synchronized.
   inputs: {[id: string]: Commands[]} = {};
-  prevPositions: {[id: string]: C.Position} = {};
 }

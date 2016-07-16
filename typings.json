@@ -5,5 +5,8 @@
     "chai": "registry:dt/chai#3.4.0+20160317120654",
     "es6-promise": "github:DefinitelyTyped/DefinitelyTyped/es6-promise/es6-promise.d.ts#e1699c41087960df7678f413312213fb1f980307",
     "mocha": "registry:dt/mocha#2.2.5+20160317120654"
+  },
+  "dependencies": {
+    "sinon": "registry:npm/sinon#1.16.0+20160427193336"
   }
 }

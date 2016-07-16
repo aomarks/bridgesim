@@ -20,14 +20,8 @@
 
     <paper-input label="Name" value="{{settings.name::change}}"></paper-input>
 
-    <paper-toggle-button checked="{{settings.localPredict}}">
-      Local prediction</paper-toggle-button>
-
-    <paper-toggle-button checked="{{settings.localInterpolate}}">
-      Local interpolation</paper-toggle-button>
-
-    <paper-toggle-button checked="{{settings.remoteInterpolate}}">
-      Remote interpolation</paper-toggle-button>
+    <paper-toggle-button checked="{{settings.interpolate}}">
+      Interpolation</paper-toggle-button>
 
     <paper-toggle-button checked="{{settings.showBoundingBoxes}}">
       Show bounding boxes</paper-toggle-button>

@@ -24,11 +24,11 @@ export enum Station {
 export interface Hello { name: string; }
 
 export interface Welcome {
-  playerId: string;
+  playerId?: string;
   snapshot: Update;
-  snapshotInterval: number;
-  tickInterval: number;
-  galaxySize: number;
+  updateInterval?: number;
+  tickInterval?: number;
+  galaxySize?: number;
 }
 
 export interface SendChat { text: string; }
@@ -43,11 +43,11 @@ export interface ReceiveChat {
 
 export interface Commands {
   seq?: number;
-  turn: number;
-  thrust: number;
-  power: Components.Power;
-  fireLaser: boolean;
-  fireMissile: boolean;
+  turn?: number;
+  thrust?: number;
+  power?: Components.Power;
+  fireLaser?: boolean;
+  fireMissile?: boolean;
 }
 
 export interface CreateShip {}
