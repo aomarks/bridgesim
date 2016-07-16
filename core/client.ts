@@ -5,8 +5,6 @@ import {Connection} from '../net/connection';
 import * as Msg from '../net/message';
 import {Update} from './comdb';
 
-const COMMAND_BUFFER_SIZE = 100;
-
 // performance.now() is not available in node, so we need a substitute for unit
 // tests.
 let now;
