@@ -1,12 +1,35 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../map.html">
 
 <dom-module id="weapons-station">
   <template>
     <style>
       :host {
-        display: block;
+        display: flex;
+        height: 100%;
+        position: relative;
+      }
+
+      bridgesim-map {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 0;
       }
     </style>
-    weapons station placeholder
+
+    <bridgesim-map id="map"
+      db="[[db]]"
+      size="[[size]]"
+      ship-id="[[shipId]]"
+      follow="[[shipId]]"
+      zoom=".9"
+      show-bounding-boxes="[[showBoundingBoxes]]"
+      show-quadtree="[[showQuadtree]]"
+      show-pathfinding="[[showPathfinding]]">
+    </bridgesim-map>
+
   </template>
 </dom-module>

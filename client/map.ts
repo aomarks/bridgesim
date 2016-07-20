@@ -1,6 +1,6 @@
 ///<reference path='../bower_components/polymer-ts/polymer-ts.d.ts' />
 
-import {PositionInterface} from '../core/components';
+import {PositionInterface, Point} from '../core/components';
 import {Db} from '../core/entity/db';
 import {SECTOR_METERS, maxCoord} from '../core/galaxy';
 import {radians} from '../core/math';
@@ -11,10 +11,7 @@ import * as color from './colors';
 import {CANVAS_FONT, HP} from './const';
 import {lerp, snap} from './util';
 
-interface Coord2D {
-  x: number;
-  y: number;
-}
+export interface MapTap { detail: Point; }
 
 const BLIP_PX = 2;
 const MIN_METERS_PER_PX = 10;   // How far in we can zoom.
@@ -37,8 +34,8 @@ export class Map extends polymer.Base {
   private stationImage: HTMLImageElement;
   private w: number;  // canvas width
   private h: number;  // canvas height
-  private centerCC: Coord2D = {x: 0, y: 0};
-  private followGC: Coord2D = {x: 0, y: 0};
+  private centerCC: Point = {x: 0, y: 0};
+  private followGC: Point = {x: 0, y: 0};
   private drawn: boolean = false;
   private metersPerPx: number;
   private left: number;
@@ -79,7 +76,7 @@ export class Map extends polymer.Base {
         this.screenToWorld(e.detail.x - this.left, e.detail.y - this.top));
   }
 
-  worldToScreen(x: number, y: number): Coord2D {
+  worldToScreen(x: number, y: number): Point {
     return {
       x: this.centerCC.x + x / this.metersPerPx -
           this.followGC.x / this.metersPerPx,
@@ -88,7 +85,7 @@ export class Map extends polymer.Base {
     };
   }
 
-  screenToWorld(x: number, y: number): Coord2D {
+  screenToWorld(x: number, y: number): Point {
     return {
       x: this.followGC.x + x * this.metersPerPx -
           this.centerCC.x * this.metersPerPx,
@@ -291,7 +288,7 @@ export class Map extends polymer.Base {
 
   private drawBoundingBoxes(localAlpha: number, remoteAlpha: number): void {
     const ctx = this.ctx;
-    ctx.beginPath()
+    ctx.beginPath();
     ctx.strokeStyle = color.YELLOW;
     ctx.lineWidth = 1;
     for (let id in this.db.collidables) {
@@ -321,7 +318,7 @@ export class Map extends polymer.Base {
     }
 
     const ctx = this.ctx;
-    ctx.beginPath()
+    ctx.beginPath();
     ctx.strokeStyle = color.YELLOW;
     ctx.lineWidth = 1;
     let todo: Quadtree<string>[] = [this.quadtree];
@@ -347,7 +344,7 @@ export class Map extends polymer.Base {
     const end = {x: 0, y: 0};
     const path = finder.find(start, end, this.shipId);
     const ctx = this.ctx;
-    ctx.beginPath()
+    ctx.beginPath();
     ctx.strokeStyle = color.YELLOW;
     ctx.lineWidth = 1;
     for (let p of path) {

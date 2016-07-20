@@ -46,7 +46,7 @@ export interface Commands {
   turn?: number;
   thrust?: number;
   power?: Components.Power;
-  fireLaser?: boolean;
+  fireLaser?: number;
   fireMissile?: boolean;
 }
 

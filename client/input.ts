@@ -45,7 +45,7 @@ class Input extends polymer.Base {
       },
       [keyCode('H')]: {binding: () => this.prevSubsystem()},
       [keyCode('L')]: {binding: () => this.nextSubsystem()},
-      [keyCode(' ')]: {binding: () => this.commands.fireLaser = true},
+      [keyCode(' ')]: {binding: () => this.commands.fireLaser = 0},
       [keyCode('M')]: {binding: () => this.commands.fireMissile = true},
     };
   }
@@ -87,7 +87,7 @@ class Input extends polymer.Base {
 
   private resetCommands(): void {
     this.commands = {
-      fireLaser: false,
+      fireLaser: null,
       fireMissile: false,
       power: <Power>{},
       thrust: 0,

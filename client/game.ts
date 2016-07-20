@@ -201,6 +201,11 @@ class Game extends polymer.Base {
     this.conn.send({createShip: {}}, true);
   }
 
+  @listen('fire-laser')
+  fireLaser(ev: any) {
+    this.$.input.commands.fireLaser = ev.detail.heading;
+  }
+
   notifyChanges(update: Update): void {
     // Notify Polymer of changes in components for which elements may be
     // observing.

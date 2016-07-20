@@ -48,7 +48,7 @@ export class Input {
 
     if (spawn && pos) {
       if (input.fireLaser) {
-        SpawnLaser(this.db, id, pos.x, pos.y, pos.yaw);
+        SpawnLaser(this.db, id, pos.x, pos.y, input.fireLaser);
       }
       if (input.fireMissile) {
         SpawnMissile(this.db, id, pos.x, pos.y, pos.yaw);

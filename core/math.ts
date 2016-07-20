@@ -12,10 +12,9 @@ export function clamp(val: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, val));
 }
 
+// Get distance between the center of two aabb's and check if they are close
+// enough to be overlapping.
 export function overlap(a: Region, b: Region): boolean {
-  // Get distance between the center of two aabb's and check if they are
-  // close enough
-  // to be overlapping.
   return (
       Math.abs(a.x - b.x) * 2 <= a.width + b.width &&
       Math.abs(a.y - b.y) * 2 <= a.height + b.height);
@@ -32,7 +31,7 @@ export function dist(a: Point, b: Point): number {
   return hypot(a.x - b.x, a.y - b.y);
 }
 
-// This returns the compass heading to point a from point b.
+// Return the compass heading to point a from point b.
 export function heading(a: Point, b: Point): number {
   return (Math.atan2(a.x - b.x, a.y - b.y) * (180 / Math.PI) + 360) % 360;
 }

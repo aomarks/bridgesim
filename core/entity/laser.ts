@@ -17,6 +17,6 @@ export function SpawnLaser(
   col.damage = 1;
   col.ignore = origin;
   db.resources[origin].energy -= 10;
-  console.log('entity.laser: spawned laser', id);
+  // console.log('entity.laser: spawned laser', id);
   return id;
 }
