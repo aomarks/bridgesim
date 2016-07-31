@@ -27,6 +27,7 @@ class Input extends polymer.Base {
   };
 
   private commands: Net.Commands;
+  private turning: number = 0;
 
   public created() {
     this.resetCommands();
@@ -80,6 +81,10 @@ class Input extends polymer.Base {
       }
     }
 
+    if (this.turning) {
+      this.commands.turn = this.turning;
+    }
+
     const prev = this.commands;
     this.resetCommands();
     return prev;
@@ -94,6 +99,12 @@ class Input extends polymer.Base {
       turn: 0,
     };
   }
+
+  private startLeftTurn() { this.turning = -1; }
+
+  private startRightTurn() { this.turning = 1; }
+
+  private stopTurn() { this.turning = 0; }
 
   private onKeydown(event: KeyboardEvent): void {
     if (event.repeat) {

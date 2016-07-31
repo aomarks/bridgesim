@@ -249,6 +249,21 @@ class Game extends polymer.Base {
     this.$.input.commands.fireLaser = ev.detail.heading;
   }
 
+  @listen('start-left-turn')
+  startLeftTurn() {
+    this.$.input.startLeftTurn();
+  }
+
+  @listen('start-right-turn')
+  startRightTurn() {
+    this.$.input.startRightTurn();
+  }
+
+  @listen('stop-turn')
+  stopTurn() {
+    this.$.input.stopTurn();
+  }
+
   notifyChanges(update: Update): void {
     // Notify Polymer of changes in components for which elements may be
     // observing.

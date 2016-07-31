@@ -42,7 +42,22 @@
         background-color: rgba(0, 0, 0, .7);
         border: 2px solid rgba(255, 255, 255, .2);
         border-radius: 10px;
+        z-index: 3;
+      }
+
+      #leftTurner,
+      #rightTurner {
+        position: absolute;
         z-index: 2;
+        width: 50%;
+        height: 100%;
+        top: 0;
+      }
+      #leftTurner {
+        left: 0;
+      }
+      #rightTurner {
+        right: 0;
       }
     </style>
 
@@ -52,6 +67,16 @@
         value="{{zoom}}" immediate-value="{{zoom}}"
         min="0" max="1" step=".01">
       </paper-slider>
+    </div>
+
+    <div id="leftTurner"
+         on-down="startLeftTurn"
+         on-up="stopTurn">
+    </div>
+
+    <div id="rightTurner"
+         on-down="startRightTurn"
+         on-up="stopTurn">
     </div>
 
     <bridgesim-map id="map"

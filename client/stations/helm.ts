@@ -17,6 +17,10 @@ class Helm extends polymer.Base {
     this.$.map.draw(localAlpha, remoteAlpha);
     this.$.headingIndicator.draw(localAlpha);
   }
+
+  startLeftTurn() { this.fire('start-left-turn'); }
+  startRightTurn() { this.fire('start-right-turn'); }
+  stopTurn() { this.fire('stop-turn'); }
 }
 
 Helm.register();
