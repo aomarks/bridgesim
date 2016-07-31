@@ -53,7 +53,7 @@ export class Host {
   private station: Station = new Station(this.db);
 
   private conns: {[id: string]: Connection} = {};
-  private timeoutId: number;
+  private timeoutId: number = null;
   private prevTs: number = 0;
   private tickLag: number = 0;
   private snapshotLag: number = 0;
@@ -89,7 +89,7 @@ export class Host {
   }
 
   public stop() {
-    if (this.timeoutId != null) {
+    if (this.timeoutId !== null) {
       clearTimeout(this.timeoutId);
       this.timeoutId = null;
     }

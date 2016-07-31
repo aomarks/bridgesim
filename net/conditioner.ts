@@ -13,6 +13,8 @@ export class Conditioner implements Connection {
   onOpen: () => void;
   onClose: () => void;
   private conn: Connection;
+  private receiveTimeoutId: number = null;
+  private sendTimeoutId: number = null;
 
   constructor(conn: Connection) {
     this.conn = conn;
@@ -23,6 +25,8 @@ export class Conditioner implements Connection {
       }
     };
     conn.onClose = () => {
+      clearTimeout(this.receiveTimeoutId);
+      clearTimeout(this.sendTimeoutId);
       if (this.onClose) {
         this.onClose();
       }
@@ -36,15 +40,24 @@ export class Conditioner implements Connection {
     if (!reliable && Math.random() < this.packetLoss) {
       return;
     }
-    window.setTimeout(
-        () => {this.onMessage(msg, reliable, bytes)}, this.latency);
+    if (this.latency > 0) {
+      this.receiveTimeoutId = window.setTimeout(
+          () => {this.onMessage(msg, reliable, bytes)}, this.latency);
+    } else {
+      this.onMessage(msg, reliable, bytes);
+    }
   }
 
   send(msg: Message, reliable: boolean) {
     if (!reliable && Math.random() < this.packetLoss) {
       return;
     }
-    window.setTimeout(() => {this.conn.send(msg, reliable)}, this.latency);
+    if (this.latency > 0) {
+      this.sendTimeoutId = window.setTimeout(
+          () => {this.conn.send(msg, reliable)}, this.latency);
+    } else {
+      this.conn.send(msg, reliable);
+    }
   }
 
   close(): void { this.conn.close(); }

@@ -19,7 +19,6 @@ export class Ship {
       assetPack: AssetPack) {
     this.mesh = new BABYLON.Mesh('ship', scene);
     const shipAsset = assetPack.ships[0];
-    console.log(shipAsset);
 
     const reflectionTexture = new BABYLON.CubeTexture(
         'textures/skybox/box', scene, SKYBOX_EXTENSIONS);

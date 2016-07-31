@@ -27,12 +27,29 @@ npm run watch
 
 ### Run
 ```
-http-server                                # Launch webserver on port 8080
-google-chrome http://localhost:8080?host   # Open host tab
-google-chrome http://localhost:8080?client # Open client tab
+http-server
+google-chrome http://localhost:8080/
 ```
 Use WASD to pilot.
 
+### URLs
+
+URL hash determines the game to connect to:
+```
+#host   # Launch host.
+#local  # Connect to a host running in another tab.
+#abc123 # Connect to a game with the given token through the lobby server.
+```
+
+URL query parameters set debugging options:
+```
+?station=weapons # Default to the given station.
+```
+
+Example:
+```
+http://localhost:8080/?station=weapons&metrics#host
+```
 
 ### Test
 Run all tests (includes compilation).
@@ -52,7 +69,6 @@ Output goes into `build/`.
 ```
 node ./build.js
 ```
-
 
 ## Lobby Service
 

@@ -20,9 +20,9 @@ class HostWrapper extends polymer.Base {
     this.host.start();
 
     const loopback = new Loopback();
-    this.fire('connection', loopback.a);
-    this.host.addConnection(loopback.b);
     loopback.open();
+    this.host.addConnection(loopback.b);
+    this.fire('connection', loopback.a);
 
     this.$.lobby.offer = (offer: {Offer: string}, resolve: (any) => void) => {
       this.onOffer(offer.Offer).then((answer: string) => {

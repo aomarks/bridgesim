@@ -13,14 +13,14 @@ interface handshake {
 
 @component('bridgesim-peer-localstorage')
 class PeerLocalstorage extends polymer.Base {
-  @property({type: Boolean}) isHost: boolean;
+  @property({type: Boolean, value: false}) hosting: boolean;
   @property({type: Object}) handshakes: {[key: string]: handshake};
   @property({type: Object}) takeOffer: (string)=> Promise<string>;
   private key: string;
   private conn: WebRTCConnection;
 
   makeOffer(): void {
-    if (this.isHost) {
+    if (this.hosting) {
       return;
     }
     this.key = Math.floor(Math.random() * 10000).toString();
@@ -31,13 +31,19 @@ class PeerLocalstorage extends polymer.Base {
     });
   }
 
+  attached() {
+    if (!this.hosting) {
+      this.makeOffer();
+    }
+  }
+
   @observe('handshakes')
   onHandshakesChanged(): void {
     if (!this.handshakes) {
       this.handshakes = {};
       return;
     }
-    if (this.isHost) {
+    if (this.hosting) {
       this.scanForOffers();
     } else if (this.key != null) {
       this.checkIfAccepted();

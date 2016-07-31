@@ -46,7 +46,7 @@ export class Client {
   // Millisecond timestamp when we last received a host update.
   private lastUpdateTime: number;
 
-  private sendCommandsTimeout: number;
+  private sendCommandsTimeout: number = null;
 
   private fwdMessages:
       (msg: Msg.Message, reliable: boolean, bytes: number) => void;
@@ -59,7 +59,7 @@ export class Client {
 
   stop() {
     console.log('client: stopped');
-    if (this.sendCommandsTimeout) {
+    if (this.sendCommandsTimeout !== null) {
       clearTimeout(this.sendCommandsTimeout);
       this.sendCommandsTimeout = null;
     }

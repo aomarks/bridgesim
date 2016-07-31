@@ -13,11 +13,39 @@ import {Settings} from './settings';
 
 @component('bridgesim-game')
 class Game extends polymer.Base {
+  @property({type: Boolean, value: false}) hosting: boolean;
+  @property({type: Boolean, value: false}) scanLocal: boolean;
+  @property({type: Boolean, value: false}) connecting: boolean;
+  @property({type: Boolean, value: false}) connected: boolean;
+  @property({type: Boolean, value: false}) gameOver: boolean;
+  @property({type: String, value: ''}) token: string;
+  @property({type: String, value: 'helm'}) station: string;
+  @property({type: Object, value: ()=> { return {}; }}) stations: any;
   @property({type: Number, value: 1}) size: number;
-  @property({type: Object}) settings: Settings;
-  @property({type: Object}) routeData: {station: string};
+
+  @property({
+    type: Object,
+    value: ()=> {
+      return {
+        interpolate: true,
+        fakeLatency: 0,
+        fakePacketLoss: 0,
+        frameLimit: 0,
+        name: null,
+        showBoundingBoxes: false,
+        showQuadtree: false,
+        showPathfinding: false,
+        showMetrics: true,
+      };
+    },
+  })
+  settings: Settings;
+
   @property({type: Object}) db: Db;
-  @property({type: Boolean, value: false}) isHost: boolean;
+
+  @property({type: String}) urlHash: string;
+  @property({type: Object}) urlParams: any;
+
   @property({type: Boolean, value: true}) serverHidden: boolean;
   @property({type: String}) playerId: string;
   @property({type: String}) shipId: string;
@@ -29,62 +57,105 @@ class Game extends polymer.Base {
   private prevTs: number = 0;
   private urlQuery: string;
   private animationRequestId: number;
-  private showStations: boolean;
 
-  ready(): void {
-    console.log('game: ready');
+  ready(): void { console.log('game: ready'); }
 
-    this.settings = {
-      interpolate: true,
-      fakeLatency: 0,
-      fakePacketLoss: 0,
-      frameLimit: 0,
-      name: null,
-      showBoundingBoxes: false,
-      showQuadtree: false,
-      showPathfinding: false,
-      showMetrics: true,
-    };
+  detached() { this.disconnect(); }
 
-    if (this.urlQuery.indexOf('host') != -1) {
-      this.isHost = true;
-    } else if (this.urlQuery.indexOf('client') != -1) {
-      this.$.peerLocalstorage.makeOffer();
-    }
+  disconnect() {
+    console.log('game: disconnect');
+    cancelAnimationFrame(this.animationRequestId);
 
-    if (!window.location.hash || !this.isHost) {
-      // TODO Why doesn't iron-location hash binding work?
-      // TODO Is there some smarter way to do this using the route?
-      if (this.isHost) {
-        this.switchToStation();
-      } else {
-        window.location.hash = '/welcome';
-      }
-    }
-  }
-
-  detached() {
     if (this.client) {
       this.client.stop();
     }
+
+    if (this.conn) {
+      this.conn.onClose = null;  // Prevent loops.
+      this.conn.close();
+    }
+
+    this.db = null;
+    this.client = null;
+    this.conn = null;
+    this.conditioner = null;
+    this.playerId = null;
+    this.shipId = null;
+    this.connected = false;
+    this.hosting = false;
+    this.prevTs = 0;
+  }
+
+  @observe('urlHash')
+  urlHashChanged(hash: string) {
+    if (!hash || hash === 'null') {
+      // TODO Why is hash sometimes the string "null"?
+      return;
+    }
+
+    if (hash === 'host') {
+      this.hosting = true;
+
+    } else if (hash === 'local') {
+      this.scanLocal = true;
+      this.connecting = true;
+
+    } else {
+      this.token = hash;
+      this.connecting = true;
+    }
+  }
+
+  @observe('urlParams')
+  urlParamsChanged(params: any) {
+    console.log('urlParamsChanged', params);
+    if (params.station) {
+      this.station = params.station;
+    }
+    if (params.nolerp != null) {
+      this.set('settings.interpolate', false);
+    }
+  }
+
+  @computed()
+  showWelcome(connecting: boolean, connected: boolean): boolean {
+    return !connecting && !connected;
+  }
+
+  @computed()
+  showStations(connected: boolean, gameOver: boolean): boolean {
+    return connected && !gameOver;
+  }
+
+  @observe('hosting')
+  hostingChanged(hosting: boolean) {
+    if (hosting) {
+      this.urlHash = 'host';
+
+      // We should expect an incoming local connection.
+      this.connecting = true;
+
+      // The local storage system needs to know where to send offers. Set this
+      // up async because the elements won't have been stamped out yet.
+      // TODO Do this with data binding more cleanly.
+      this.async(() => {
+        const host = this.$$('#host');
+        this.$$('#peerLocalstorage').takeOffer = host.onOffer.bind(host);
+      });
+
+    } else {
+      this.urlHash = null;
+    }
+  }
+
+  @observe('station')
+  stationChanged(station: string) {
+    this.stations = {[station]: true};
   }
 
   openSettingsDialog(): void { this.$.settingsDialog.open(); }
 
   openLobbyDialog(): void { this.$.lobbyDialog.open(); }
-
-  @observe('isHost')
-  isHostChanged(isHost: boolean): void {
-    this.resetSimulation();
-    this.resetNetwork();
-    if (isHost) {
-      // TODO Ugly.
-      this.async(() => {
-        const host = this.$$('#host');
-        this.$.peerLocalstorage.takeOffer = host.onOffer.bind(host);
-      });
-    }
-  }
 
   @observe('settings.fakeLatency')
   fakeLatencyChanged(val: number) {
@@ -107,27 +178,9 @@ class Game extends polymer.Base {
     }
   }
 
-  resetSimulation() {
-    if (this.animationRequestId != null) {
-      cancelAnimationFrame(this.animationRequestId);
-      this.animationRequestId = null;
-    }
-    this.shipId = null;
-    this.prevTs = 0;
-    console.log('game: reset simulation');
-  }
-
-  resetNetwork() {
-    if (this.conn) {
-      this.conn.close();
-      this.conn = null;
-    }
-    this.playerId = null;
-    console.log('game: reset network');
-  }
-
   @listen('connection')
   onConnection(event: {detail: Connection}): void {
+    console.log('game: got connection');
     this.conditioner = new Conditioner(event.detail);
     this.conditioner.latency = this.settings.fakeLatency;
     this.conditioner.packetLoss = this.settings.fakePacketLoss;
@@ -137,25 +190,13 @@ class Game extends polymer.Base {
     this.client =
         new Client(this.conn, this.$.input.process.bind(this.$.input));
 
-    this.conn.onClose = () => {
-      console.log('game: disconnected from host');
-      this.resetSimulation();
-    };
+    this.conn.onClose = this.disconnect.bind(this);
 
     console.log('game: sending hello');
     this.conn.send({hello: {name: this.settings.name}}, true);
-
-    this.switchToStation();
   }
 
-  switchToStation(station: string = 'helm'): void {
-    window.location.hash = '/station/' + station;
-  }
-
-  hostGame(): void {
-    this.isHost = true;
-    this.switchToStation();
-  }
+  hostGame(): void { this.hosting = true; }
 
   joinGame(): void { this.$.peerCopypaste.openClientDialog(); }
 
@@ -183,6 +224,8 @@ class Game extends polymer.Base {
       this.db.changes();
       // Start the rendering loop.
       this.frame(0);
+      this.connected = true;
+      this.connecting = false;
 
     } else if (msg.receiveChat) {
       this.$.chat.receiveMsg(msg.receiveChat);
@@ -255,8 +298,8 @@ class Game extends polymer.Base {
     }
 
     // Check for ship destruction.
-    if (this.shipId && !this.db.ships[this.shipId] && this.showStations) {
-      window.location.hash = '/gameover';
+    if (this.shipId && !this.db.ships[this.shipId]) {
+      this.gameOver = true;
     }
 
     this.prevTs = ts;

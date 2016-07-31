@@ -1,9 +1,9 @@
 <link rel="import" href="../bower_components/app-route/app-location.html">
-<link rel="import" href="../bower_components/app-route/app-route.html">
+
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../bower_components/iron-location/iron-location.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
@@ -11,19 +11,22 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+
 <link rel="import" href="../bower_components/webrtc-lobby-elements/webrtc-lobby-elements.html">
 
+<link rel="import" href="./chat.html">
+<link rel="import" href="./debug-metrics.html">
 <link rel="import" href="./deps.html">
 <link rel="import" href="./host.html">
 <link rel="import" href="./input.html">
-<link rel="import" href="./chat.html">
-<link rel="import" href="./settings-menu.html">
 <link rel="import" href="./lobby.html">
-<link rel="import" href="./peer-localstorage.html">
 <link rel="import" href="./peer-copypaste.html">
+<link rel="import" href="./peer-localstorage.html">
+<link rel="import" href="./settings-menu.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -31,25 +34,14 @@
 <link rel="import" href="./stations/science.html">
 <link rel="import" href="./stations/viewscreen.html">
 <link rel="import" href="./stations/weapons.html">
-<link rel="import" href="./debug-metrics.html">
 
 <dom-module id="bridgesim-game">
   <template>
-    <iron-location query="{{urlQuery}}"></iron-location>
-
-    <bridgesim-peer-localstorage
-      id="peerLocalstorage"
-      is-host="[[isHost]]">
-    </bridgesim-peer-localstorage>
-
-    <bridgesim-peer-copypaste id="peerCopypaste">
-    </bridgesim-peer-copypaste>
-
-    <bridgesim-input id="input"
-      db="{{db}}"
-      ship-id="[[shipId]]"
-      cur-subsystem="{{curSubsystem}}">
-    </bridgesim-input>
+    <app-location
+      use-hash-as-path
+      path="{{urlHash}}"
+      query-params="{{urlParams}}">
+    </app-location>
 
     <style include="iron-flex iron-flex-alignment iron-flex-factors">
     </style>
@@ -86,117 +78,113 @@
         --paper-input-suffix: {
           @apply(--bridgesim-font);
         }
+        --paper-item: {
+          @apply(--bridgesim-font);
+        }
       }
+
       paper-tab {
         font-size: 16px;
         --paper-tab-ink: #ccc;
       }
+
       paper-tab.iron-selected {
         color: #FFA700;
         text-shadow: 0 0 5px #FFA700;
       }
+
       [drawer] {
         color: black;
         background-color: #fff;
       }
+
       [drawer] > * {
         margin: 10px;
       }
+
+      #topBar {
+        height: 50px;
+      }
+
       paper-toggle-button {
         cursor: pointer;
       }
+
       debug-metrics {
         position: absolute;
         bottom: 0;
         right: 0;
         z-index: 1;
       }
+
       bridgesim-chat {
         margin: 0 !important;
         height: 98px;
       }
+
       iron-pages {
         height: 100%;
         min-width: 400px;
         min-height: 400px;
       }
+
       [hidden] {
         display: none !important;
       }
-      .hero {
-        margin-top: -40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-      }
-      .hero > div {
-        text-align: center;
-        margin: 16px;
-      }
-      .hero h1 {
-        margin: 0 0 50px;
-        font-size: 3rem;
-        font-weight: 100;
+
+      paper-spinner-lite {
+        width: 50px;
+        height: 50px;
       }
     </style>
 
-    <template is="dom-if" if="[[isHost]]" restamp>
-      <bridgesim-host id="host"
-        server-name="[[serverName]]"
-        server-hidden="[[serverHidden]]">
-      </bridgesim-host>
-    </template>
-
-    <template is="dom-if" if="[[settings.showMetrics]]" restamp>
-      <debug-metrics id="metrics"></debug-metrics>
-    </template>
-
-    <paper-dialog id="settingsDialog">
-      <bridgesim-settings-menu settings="{{settings}}">
-      </bridgesim-settings-menu>
-    </paper-dialog>
-
-    <paper-dialog id="lobbyDialog">
-      <paper-dialog-scrollable>
-        <bridgesim-lobby db="[[db]]"
-                         on-join-crew="joinCrew"
-                         on-create-ship="createShip">
-        </bridgesim-lobby>
-      </paper-dialog-scrollable>
-    </paper-dialog>
-
     <paper-drawer-panel force-narrow>
+
       <div drawer class="layout vertical center">
         <h1>BRIDGESIM</h1>
 
         <paper-button on-tap="openSettingsDialog">Settings</paper-button>
-        <paper-button on-tap="openLobbyDialog">Crews</paper-button>
 
-        <paper-button disabled$="[[isHost]]" on-tap="joinGame">
-          Join Game</paper-button>
-        <paper-button disabled$="[[!isHost]]" on-tap="invitePlayer">
-          Invite Player</paper-button>
+        <paper-button on-tap="openLobbyDialog" disabled="[[!connected]]">
+          Crews
+        </paper-button>
 
-        <paper-toggle-button checked="{{isHost}}">HOST</paper-toggle-button>
-        <template is="dom-if" if="[[isHost]]" restamp>
+        <paper-button disabled$="[[hosting]]" on-tap="joinGame">
+          Join Game
+        </paper-button>
+
+        <paper-button disabled$="[[!hosting]]" on-tap="invitePlayer">
+          Invite Player
+        </paper-button>
+
+        <paper-toggle-button checked="{{hosting}}">
+          HOST
+        </paper-toggle-button>
+
+        <template is="dom-if" if="[[hosting]]">
           ID: <span>[[serverToken]]</span>
-          <paper-toggle-button checked="{{serverHidden}}">Hidden</paper-toggle-button>
-          <paper-input hidden$="[[serverHidden]]" label="Server Name" value="{{serverName}}"></paper-input>
+
+          <paper-toggle-button checked="{{serverHidden}}">
+            Hidden
+          </paper-toggle-button>
+
+          <paper-input
+            hidden$="[[serverHidden]]"
+            label="Server Name"
+            value="{{serverName}}">
+          </paper-input>
         </template>
       </div>
 
-      <div main id="panels" class="layout vertical">
-        <div class="layout horizontal center flex-none">
-          <paper-icon-button icon="menu"
-                             paper-drawer-toggle>
+      <div main class="layout vertical">
+        <div id="topBar" class="layout horizontal center flex-none">
+          <paper-icon-button icon="menu" paper-drawer-toggle>
           </paper-icon-button>
 
-          <paper-tabs selected="{{routeData.station}}"
-                      no-bar
+          <paper-tabs no-bar hidden$="[[!showStations]]"
+                      selected="{{station}}"
                       attr-for-selected="name"
-                      hidden="[[!showStations]]"
-                      class="flex-2">
+                      class="flex-1">
             <paper-tab name="helm">HLM</paper-tab>
             <paper-tab name="comms">COM</paper-tab>
             <paper-tab name="science">SCI</paper-tab>
@@ -206,14 +194,39 @@
           </paper-tabs>
         </div>
 
+        <div hidden$="[[!showWelcome]]"
+             class="flex-1 layout vertical center-center flex-1">
+          <h1>BRIDGESIM</h1>
+          <p>Welcome! What would you like to do?</p>
+          <div class="layout horizontal">
+            <paper-button on-tap="hostGame">Host</paper-button>
+            <paper-button on-tap="joinGame">Join</paper-button>
+          </div>
+        </div>
+
+        <div hidden$="[[!connecting]]"
+             class="flex-1 layout vertical center-center flex-1">
+          <paper-spinner-lite active$="[[connecting]]"></paper-spinner-lite>
+          <p>connecting</p>
+        </div>
+
+        <div hidden$="[[!gameOver]]"
+             class="flex-1 layout vertical center-center flex-1">
+          <h1>Game Over</h1>
+          <p>Your ship has been destroyed.</p>
+        </div>
+
         <bridgesim-chat id="chat"
                         hidden="true"
                         on-send-chat="sendChat"
                         class="flex-none">
         </bridgesim-chat>
 
-        <iron-pages id="stations" class="flex" hidden="[[!showStations]]"
-           selected="[[routeData.station]]"
+        <iron-pages
+           id="stations"
+           class="flex"
+           hidden="[[!showStations]]"
+           selected="[[station]]"
            attr-for-selected="name">
 
           <helm-station name="helm"
@@ -256,31 +269,51 @@
             ship-id="[[shipId]]">
           </viewscreen-station>
         </iron-pages>
-
-        <div class="hero" hidden="[[!showWelcome]]">
-          <div>
-            <h1>BRIDGESIM</h1>
-            <p>Welcome! What would you like to do?</p>
-            <paper-button on-tap="hostGame">Host</paper-button>
-            <paper-button on-tap="joinGame">Join</paper-button>
-          </div>
-        </div>
-
-        <div class="hero" hidden="[[!showGameOver]]">
-          <div>
-            <h1>Game Over</h1>
-            <p>Your ship has been destroyed.</p>
-          </div>
-        </div>
-
       </div>
     </paper-drawer-panel>
 
-    <app-location route="{{route}}" use-hash-as-path></app-location>
-    <app-route route="{{route}}" pattern="/station/:station"
-               data="{{routeData}}" active="{{showStations}}"></app-route>
-    <app-route route="{{route}}" pattern="/welcome" active="{{showWelcome}}"></app-route>
-    <app-route route="{{route}}" pattern="/gameover" active="{{showGameOver}}"></app-route>
+    <bridgesim-peer-copypaste id="peerCopypaste">
+    </bridgesim-peer-copypaste>
+
+    <bridgesim-input id="input"
+      db="{{db}}"
+      ship-id="[[shipId]]"
+      cur-subsystem="{{curSubsystem}}">
+    </bridgesim-input>
+
+    <template is="dom-if" if="[[hosting]]" restamp>
+      <bridgesim-host id="host"
+        server-name="[[serverName]]"
+        server-hidden="[[serverHidden]]">
+      </bridgesim-host>
+
+      <bridgesim-peer-localstorage id="peerLocalstorage" hosting>
+      </bridgesim-peer-localstorage>
+    </template>
+
+    <template is="dom-if" if="[[scanLocal]]" restamp>
+      <bridgesim-peer-localstorage id="peerLocalstorage">
+      </bridgesim-peer-localstorage>
+    </template>
+
+    <template is="dom-if" if="[[settings.showMetrics]]" restamp>
+      <debug-metrics id="metrics"></debug-metrics>
+    </template>
+
+    <paper-dialog id="settingsDialog">
+      <bridgesim-settings-menu settings="{{settings}}">
+      </bridgesim-settings-menu>
+    </paper-dialog>
+
+    <paper-dialog id="lobbyDialog">
+      <paper-dialog-scrollable>
+        <bridgesim-lobby db="[[db]]"
+                         on-join-crew="joinCrew"
+                         on-create-ship="createShip">
+        </bridgesim-lobby>
+      </paper-dialog-scrollable>
+    </paper-dialog>
+
   </template>
   <script src="../out.js"></script>
 </dom-module>
