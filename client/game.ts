@@ -36,6 +36,7 @@ class Game extends polymer.Base {
         showQuadtree: false,
         showPathfinding: false,
         showMetrics: true,
+        showMotion: true,
       };
     },
   })

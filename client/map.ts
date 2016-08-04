@@ -27,6 +27,7 @@ export class Map extends polymer.Base {
   @property({type: Boolean, value: false}) showBoundingBoxes: boolean;
   @property({type: Boolean, value: false}) showQuadtree: boolean;
   @property({type: Boolean, value: false}) showPathfinding: boolean;
+  @property({type: Boolean, value: false}) showMotion: boolean;
 
   private can: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
@@ -145,6 +146,9 @@ export class Map extends polymer.Base {
     }
     if (this.showPathfinding) {
       this.drawPathfinding();
+    }
+    if (this.showMotion) {
+      this.drawMotion(remoteAlpha);
     }
   }
 
@@ -354,6 +358,22 @@ export class Map extends polymer.Base {
     ctx.stroke();
   }
 
+  private drawMotion(alpha: number) {
+    const ctx = this.ctx;
+    ctx.strokeStyle = color.YELLOW;
+    ctx.lineWidth = 1;
+    for (let id in this.db.motion) {
+      const mot = this.db.motion[id];
+      const pos = this.lerpScreenPos(id, alpha);
+      if (!pos || !mot) {
+        continue;
+      }
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      ctx.lineTo(pos.x + mot.velocityX / 2, pos.y - mot.velocityY / 2);
+      ctx.stroke();
+    }
+  }
 
   private drawText(x: number, y: number, text: string): void {
     const ctx = this.ctx;

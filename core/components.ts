@@ -83,4 +83,8 @@ export class Station extends Component {
   @Component.prop produces: {[type: string]: number} = {};
 }
 
-export class Velocity extends Component { @Component.prop mps: number = 0; }
+export class Motion extends Component {
+  @Component.prop thrust: number = 0;
+  @Component.prop velocityX = 0;
+  @Component.prop velocityY = 0;
+}

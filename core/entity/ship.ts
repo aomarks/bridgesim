@@ -13,7 +13,7 @@ export function SpawnShip(
   pos.x = x;
   pos.y = y;
   pos.yaw = 120;
-  db.newVelocity(id);
+  db.newMotion(id);
   db.inputs[id] = [];
   const col = db.newCollidable(id);
   col.length = 300;

@@ -8,7 +8,7 @@ export function SpawnLaser(
   pos.x = x;
   pos.y = y;
   pos.yaw = yaw;
-  db.newVelocity(id).mps = 1;
+  db.newMotion(id).thrust = 500;
   db.newOdometer(id);
   db.newHealth(id).hp = 1;
   const col = db.newCollidable(id);

@@ -21,7 +21,7 @@ export class Input {
   apply(id: string, input: Net.Commands, spawn: boolean): void {
     const pos = this.db.positions[id];
     const prevPos = this.db.prevPositions[id];
-    const velocity = this.db.velocities[id];
+    const motion = this.db.motion[id];
     const power = this.db.power[id];
 
     for (let sys in input.power) {
@@ -31,9 +31,8 @@ export class Input {
       }
     }
 
-    if (velocity != null) {
-      this.db.velocities[id].mps =
-          clamp(velocity.mps + (.01 * input.thrust), 0, 1);
+    if (motion != null) {
+      motion.thrust = input.thrust;
     }
 
     if (pos != null) {

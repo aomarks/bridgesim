@@ -52,7 +52,7 @@ describe('client', () => {
     beforeEach(() => {
       id = db.spawn();
       pos = db.newPosition(id);
-      db.newVelocity(id).mps = 10;
+      db.newName(id).name = 'foo';
 
       const snapshot = db.full();
       snapshot.hostSeq = 0;

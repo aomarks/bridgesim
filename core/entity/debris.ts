@@ -10,7 +10,6 @@ export function SpawnDebris(db: Db, x: number, y: number): string {
   const id = db.spawn();
   const deb = db.newDebris(id);
   deb.type = DebrisType.ASTEROID;
-  const vel = db.newVelocity(id);
   const hel = db.newHealth(id);
   hel.hp = 10000;
   const pos = db.newPosition(id);

@@ -53,8 +53,8 @@ export class Db extends Database {
   @Database.table(C.Station) stations: {[id: string]: C.Station} = {};
   newStation(id: string): C.Station { return this['newStations_'](id); }
 
-  @Database.table(C.Velocity) velocities: {[id: string]: C.Velocity} = {};
-  newVelocity(id: string): C.Velocity { return this['newVelocities_'](id); }
+  @Database.table(C.Motion) motion: {[id: string]: C.Motion} = {};
+  newMotion(id: string): C.Motion { return this['newMotion_'](id); }
 
   // Not synchronized.
   inputs: {[id: string]: Commands[]} = {};

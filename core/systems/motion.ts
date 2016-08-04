@@ -2,8 +2,7 @@ import {Db} from '../entity/db';
 import {maxCoord} from '../galaxy';
 import {clamp, radians} from '../math';
 
-
-// Updates the position of entities according to their velocity.
+// Updates the velocity and position of entities in motion.
 export class Motion {
   maxCoord: number;
   minCoord: number;
@@ -14,24 +13,31 @@ export class Motion {
   }
 
   tick(): void {
-    for (let id in this.db.velocities) {
+    for (let id in this.db.motion) {
       this.tickOne(id);
     }
   }
 
   tickOne(id: string): void {
+    const vel = this.db.motion[id];
+    if (!vel) {
+      console.error('motion: entity has no velocity', id);
+      return;
+    }
+
     const pos = this.db.positions[id];
     if (!pos) {
-      console.error('motion: entity has velocity but no position', id);
+      console.error('motion: entity has no position', id);
       return;
     }
 
     const rads = radians(pos.yaw - 90);
-    // TODO Do this curve somewhere else.
-    const velocity = Math.pow(this.db.velocities[id].mps, 2) * 1000;
-    pos.x += velocity * Math.cos(rads);
-    pos.y -= velocity * Math.sin(rads);
-    // console.log('new position', pos.x, pos.y);
+    const accelX = vel.thrust * Math.cos(rads);
+    const accelY = vel.thrust * Math.sin(rads);
+    vel.velocityX += accelX;
+    vel.velocityY -= accelY;
+    pos.x += vel.velocityX;
+    pos.y += vel.velocityY;
 
     // Don't allow movement beyond the galaxy border.
     pos.x = clamp(pos.x, this.minCoord, this.maxCoord);
@@ -44,7 +50,7 @@ export class Motion {
 
     const odometer = this.db.odometers[id];
     if (odometer != null) {
-      odometer.meters += velocity;
+      odometer.meters += Math.abs(vel.velocityX) + Math.abs(vel.velocityY);
     }
   }
 }

@@ -115,7 +115,8 @@ export class Ship {
       this.visualMesh.rotation.z = roll;
     }
     // visual scaling effect when going fast
-    const thrust = this.db.velocities[this.id].mps;
+    const mot = this.db.motion[this.id];
+    const thrust = Math.abs(mot.velocityX) + Math.abs(mot.velocityY);
     this.mesh.scaling.z = 1 /
         ((Math.pow(thrust, 4) * 19) + 1)
         // TODO shield

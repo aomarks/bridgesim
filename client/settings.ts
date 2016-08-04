@@ -29,4 +29,7 @@ export interface Settings {
 
   // Whether to display debugging metrics (FPS, host snapshot rate, etc.).
   showMetrics: boolean;
+
+  // Whether to show motion visualization (e.g. velocity vector).
+  showMotion: boolean;
 }

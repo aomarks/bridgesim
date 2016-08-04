@@ -8,7 +8,11 @@ export function SpawnMissile(
   pos.x = x;
   pos.y = y;
   pos.yaw = yaw;
-  db.newVelocity(id).mps = 0.5;
+  const mot = db.newMotion(id);
+  const originMot = db.motion[origin];
+  mot.thrust = 5;
+  mot.velocityX = originMot.velocityX;
+  mot.velocityY = originMot.velocityY;
   db.newOdometer(id);
   db.newHealth(id).hp = 1;
   const col = db.newCollidable(id);
