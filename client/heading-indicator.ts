@@ -5,6 +5,7 @@ import {Db} from '../core/entity/db';
 import * as color from './colors';
 import {CANVAS_FONT} from './const';
 import {snap} from './util';
+import {degrees} from '../core/math';
 
 const OUTER_RING_WIDTH = 10;
 
@@ -15,39 +16,29 @@ export class HeadingIndicator extends polymer.Base {
 
   private can: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
-  private drawn: boolean = false;
   private w: number;
   private h: number;
   private centerX: number;
   private centerY: number;
   private radius: number;
-  private lastYaw: number;
 
-  public ready(): void {
+  ready(): void {
     this.can = this.$.canvas;
     this.ctx = this.can.getContext('2d');
-    window.addEventListener('resize', this.resize.bind(this));
   }
 
-  @observe('shipId,db.positions.*')
-  public checkYaw(shipId: string, change: any): void {
-    if (!shipId || change.path.indexOf('db.positions.' + shipId + '.') !== 0) {
-      return;
-    }
-    const position = this.db.positions[this.shipId];
-    if (position && position.yaw !== this.lastYaw) {
-      this.lastYaw = position.yaw;
-      this.drawn = false;
-    }
+  attached() {
+    // TODO Initial resize needs to be async, not sure why.
+    this.async(this.resize.bind(this));
+    this.listen(window, 'resize', 'resize');
+  }
+
+  detached() {
+    // TODO Add unlisten to poylmer-ts.d.ts.
+    this['unlisten'](window, 'resize', 'resize');
   }
 
   public draw(alpha: number): void {
-    if (this.drawn) {
-      return;
-    }
-    this.resize();
-    this.drawn = true;
-
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.w, this.h);
 
@@ -58,7 +49,13 @@ export class HeadingIndicator extends polymer.Base {
 
     const position = this.db.positions[this.shipId];
     if (position) {
-      this.drawTick(this.radius, position.yaw, 4);
+      this.drawTick(this.radius, position.yaw, 8, color.AQUA);
+    }
+    const motion = this.db.motion[this.shipId];
+    if (motion) {
+      this.drawTick(
+          this.radius, degrees(Math.atan2(motion.velocityX, motion.velocityY)),
+          8, '#FFF');
     }
   }
 
@@ -73,14 +70,14 @@ export class HeadingIndicator extends polymer.Base {
     this.can.width = this.w * pixelRatio;
     this.can.height = this.h * pixelRatio;
     this.ctx.scale(pixelRatio, pixelRatio);
-
-    this.drawn = false;
   }
 
-  private drawTick(radius: number, degree: number, tickLength: number) {
+  private drawTick(
+      radius: number, degree: number, tickLength: number, c: string) {
     const ctx = this.ctx;
     ctx.save();
-    ctx.strokeStyle = color.AQUA;
+    ctx.strokeStyle = c;
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.translate(this.centerX, this.centerY);
     ctx.rotate(degree * Math.PI / 180);

@@ -19,9 +19,9 @@ export class Motion {
   }
 
   tickOne(id: string): void {
-    const vel = this.db.motion[id];
-    if (!vel) {
-      console.error('motion: entity has no velocity', id);
+    const mot = this.db.motion[id];
+    if (!mot) {
+      console.error('motion: entity has no motion', id);
       return;
     }
 
@@ -32,12 +32,12 @@ export class Motion {
     }
 
     const rads = radians(pos.yaw - 90);
-    const accelX = vel.thrust * Math.cos(rads);
-    const accelY = vel.thrust * Math.sin(rads);
-    vel.velocityX += accelX;
-    vel.velocityY -= accelY;
-    pos.x += vel.velocityX;
-    pos.y += vel.velocityY;
+    const accelX = mot.thrust * Math.cos(rads);
+    const accelY = mot.thrust * Math.sin(rads);
+    mot.velocityX += accelX;
+    mot.velocityY -= accelY;
+    pos.x += mot.velocityX;
+    pos.y += mot.velocityY;
 
     // Don't allow movement beyond the galaxy border.
     pos.x = clamp(pos.x, this.minCoord, this.maxCoord);
@@ -50,7 +50,7 @@ export class Motion {
 
     const odometer = this.db.odometers[id];
     if (odometer != null) {
-      odometer.meters += Math.abs(vel.velocityX) + Math.abs(vel.velocityY);
+      odometer.meters += Math.abs(mot.velocityX) + Math.abs(mot.velocityY);
     }
   }
 }

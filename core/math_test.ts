@@ -2,7 +2,7 @@
 
 import {expect} from 'chai';
 
-import {clamp, radians, overlap} from './math';
+import {clamp, degrees, radians, overlap} from './math';
 import {Region} from './components';
 
 describe('radians', () => {
@@ -11,6 +11,15 @@ describe('radians', () => {
     expect(radians(90)).to.equals(Math.PI / 2);
     expect(radians(180)).to.equals(Math.PI);
     expect(radians(360)).to.equals(Math.PI * 2);
+  });
+});
+
+describe('degrees', () => {
+  it('should convert from radians', () => {
+    expect(degrees(0)).to.equals(0);
+    expect(degrees(Math.PI / 2)).to.equals(90);
+    expect(degrees(Math.PI)).to.equals(180);
+    expect(degrees(Math.PI * 2)).to.equals(360);
   });
 });
 
