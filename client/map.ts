@@ -1,9 +1,9 @@
 ///<reference path='../bower_components/polymer-ts/polymer-ts.d.ts' />
 
-import {PositionInterface, Point} from '../core/components';
+import {Point, PositionInterface} from '../core/components';
 import {Db} from '../core/entity/db';
 import {SECTOR_METERS, maxCoord} from '../core/galaxy';
-import {radians} from '../core/math';
+import {hypot, radians} from '../core/math';
 import {Pathfinder} from '../core/pathfinding';
 import {Quadtree} from '../core/quadtree';
 
@@ -215,6 +215,10 @@ export class Map extends polymer.Base {
       if (coords == null) {
         continue;
       }
+
+      // Draw shield.
+      this.drawShield(id, alpha);
+
       this.drawImage(coords.x, coords.y, this.stationImage, 0, 1 / 2);
       const name = this.db.names[id].name;
       this.drawText(coords.x + 10, coords.y + 5, name);
@@ -234,6 +238,10 @@ export class Map extends polymer.Base {
       if (coords == null) {
         return;
       }
+
+      // Draw shield.
+      this.drawShield(id, alpha);
+
       this.ctx.beginPath();
       this.drawBlip(coords.x, coords.y, '#FF0000');
       const name = this.db.names[id].name;
@@ -287,6 +295,11 @@ export class Map extends polymer.Base {
     if (pos == null) {
       return;
     }
+
+    // Draw shield.
+    this.drawShield(this.shipId, alpha);
+
+    // Draw ship icon.
     this.drawImage(pos.x, pos.y, this.shipImage, pos.yaw, .5);
   }
 
@@ -405,6 +418,22 @@ export class Map extends polymer.Base {
     const height = image.height * scale;
     ctx.drawImage(image, -width / 2, -height / 2, width, height);
     ctx.restore();
+  }
+
+  private drawShield(id: string, alpha: number): void {
+    const health = this.db.healths[id];
+    const collidable = this.db.collidables[id];
+    const pos = this.lerpScreenPos(id, alpha);
+    if (!health || !collidable || !pos || !health.shields) {
+      return;
+    }
+    const radius =
+        hypot(collidable.length / 2, collidable.width / 2) / this.metersPerPx;
+    this.ctx.strokeStyle = color.BLUE;
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI);
+    this.ctx.stroke();
   }
 }
 Map.register();
