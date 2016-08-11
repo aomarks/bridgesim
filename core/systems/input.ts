@@ -23,6 +23,7 @@ export class Input {
     const prevPos = this.db.prevPositions[id];
     const motion = this.db.motion[id];
     const power = this.db.power[id];
+    const health = this.db.healths[id];
 
     for (let sys in input.power) {
       const delta = input.power[sys];
@@ -52,6 +53,10 @@ export class Input {
       if (input.fireMissile) {
         SpawnMissile(this.db, id, pos.x, pos.y, pos.yaw);
       }
+    }
+
+    if (health && input.toggleShield) {
+      health.shields = !health.shields;
     }
   }
 }

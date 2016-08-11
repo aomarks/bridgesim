@@ -24,7 +24,7 @@ export function overlap(a: Region, b: Region): boolean {
       Math.abs(a.y - b.y) * 2 <= a.height + b.height);
 }
 
-const hypot = (Math as any).hypot || function(x: number, y: number) {
+export const hypot = (Math as any).hypot || function(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
 };
 

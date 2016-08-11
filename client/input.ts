@@ -48,6 +48,7 @@ class Input extends polymer.Base {
       [keyCode('L')]: {binding: () => this.nextSubsystem()},
       [keyCode(' ')]: {binding: () => this.commands.fireLaser = 0},
       [keyCode('M')]: {binding: () => this.commands.fireMissile = true},
+      [keyCode('Z')]: {binding: () => this.commands.toggleShield = true},
     };
   }
 

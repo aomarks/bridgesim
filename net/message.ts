@@ -48,6 +48,7 @@ export interface Commands {
   power?: Components.Power;
   fireLaser?: number;
   fireMissile?: boolean;
+  toggleShield?: boolean;
 }
 
 export interface CreateShip {}
