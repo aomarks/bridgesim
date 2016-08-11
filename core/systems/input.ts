@@ -50,8 +50,11 @@ export class Input {
       if (input.fireLaser) {
         SpawnLaser(this.db, id, pos.x, pos.y, input.fireLaser);
       }
-      if (input.fireMissile) {
+
+      const resources = this.db.resources[id];
+      if (input.fireMissile && resources.missile > 0) {
         SpawnMissile(this.db, id, pos.x, pos.y, pos.yaw);
+        resources.missile--;
       }
     }
 

@@ -28,6 +28,7 @@ export function SpawnShip(
   power.maneuvering = 100;
   const res = db.newResources(id);
   res.energy = 1000;
+  res.missile = 2;
   if (ai) {
     db.newAi(id);
   }
