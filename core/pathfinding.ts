@@ -46,6 +46,48 @@ export class Pathfinder {
     this.nodes = nodes;
   }
 
+  public find(from: Point, to: Point, ignore: string = '', previous: Point[] = [
+  ]): Point[] {
+    const cachedPath = this.validate(from, to, previous, ignore);
+    if (cachedPath) {
+      return cachedPath;
+    }
+
+    return this.findInternal(from, to, ignore);
+  }
+
+  // validate ensures that the provided path doesn't have any obstructions and
+  // still satisfies the end point.
+  public validate(from: Point, to: Point, path: Point[], ignore: string = ''):
+      Point[] {
+    if (!path || path.length == 0) {
+      return null;
+    }
+
+    // Make sure endpoint hasn't moved.
+    const end = path[path.length - 1];
+    if (end.x != to.x || end.y != to.y) {
+      return null
+    }
+
+    let minI = 0;
+    let minV = 0;
+    for (let i = 0; i < path.length; i++) {
+      const to = path[i];
+      const val = this.heuristic(from, to, ignore);
+      // Check if the path is blocked.
+      if (val < 0) {
+        return null;
+      }
+      // Check if we've moved along the path.
+      if (i == 0 || val < minV) {
+        minV = val;
+        minI = i;
+      }
+    }
+    return path.slice(minI);
+  }
+
   // xyToArr converts the point into the position in the nodes array.
   private xyToArr(a: Point): Point {
     return {
@@ -54,7 +96,7 @@ export class Pathfinder {
     };
   }
 
-  public find(startP: Point, endP: Point, ignore: string = ''): Point[] {
+  private findInternal(startP: Point, endP: Point, ignore: string): Point[] {
     const start = this.node(startP);
     const end = this.node(endP);
     const startID = this.nodeID(start);
@@ -79,8 +121,8 @@ export class Pathfinder {
       const currentID = this.nodeID(current);
       if (currentID === endID) {
         const path = this.reconstructPath(cameFrom, currentID);
-        path[0] = startP;
-        path[path.length - 1] = endP;
+        path[0] = this.copyPoint(startP);
+        path[path.length - 1] = this.copyPoint(endP);
         return path;
       }
       openSet.remove(currentID);
@@ -116,6 +158,8 @@ export class Pathfinder {
 
     return [];
   }
+
+  private copyPoint(point: Point) { return {x: point.x, y: point.y}; }
 
   private reconstructPath(cameFrom: {[key: string]: string}, currentID: string):
       Point[] {
