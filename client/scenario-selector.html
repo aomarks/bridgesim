@@ -1,0 +1,29 @@
+<link rel="import" href="deps.html">
+
+<dom-module id="scenario-selector">
+  <template>
+    <style>
+      :host {
+        display: block;
+        @apply(--layout-vertical);
+      }
+      .scenario {
+        padding: 0 1em;
+        border: 1px solid transparent;
+        cursor: pointer;
+      }
+      [selected] {
+        border-color: white;
+      }
+    </style>
+
+    <h2>Scenarios</h2>
+
+    <template is="dom-repeat" items="[[scenarios]]">
+      <div class="scenario" on-tap="select" selected$="[[selected(item, scenario)]]">
+        <h3>[[item.name]]</h3>
+        <p>[[item.description]]</p>
+      </div>
+    </template>
+  </template>
+</dom-module>

@@ -27,6 +27,7 @@
 <link rel="import" href="./peer-copypaste.html">
 <link rel="import" href="./peer-localstorage.html">
 <link rel="import" href="./settings-menu.html">
+<link rel="import" href="./scenario-selector.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -199,9 +200,10 @@
           <h1>BRIDGESIM</h1>
           <p>Welcome! What would you like to do?</p>
           <div class="layout horizontal">
-            <paper-button on-tap="hostGame">Host</paper-button>
             <paper-button on-tap="joinGame">Join</paper-button>
+            <paper-button on-tap="hostGame">Host</paper-button>
           </div>
+          <scenario-selector scenario="{{scenario}}"></scenario-selector>
         </div>
 
         <div hidden$="[[!connecting]]"
@@ -285,7 +287,8 @@
     <template is="dom-if" if="[[hosting]]" restamp>
       <bridgesim-host id="host"
         server-name="[[serverName]]"
-        server-hidden="[[serverHidden]]">
+        server-hidden="[[serverHidden]]"
+        scenario="[[scenario]]">
       </bridgesim-host>
 
       <bridgesim-peer-localstorage id="peerLocalstorage" hosting>

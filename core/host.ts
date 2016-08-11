@@ -1,8 +1,7 @@
 import {Connection} from '../net/connection';
 import * as Net from '../net/message';
 // Scenarios
-import {scenarios} from '../scenarios/scenarios';
-
+import {Scenario} from '../scenarios/scenarios';
 // Entities
 import {Db} from './entity/db';
 import {SpawnShip} from './entity/ship';
@@ -72,9 +71,8 @@ export class Host {
     };
   }
 
-  public start() {
+  public start(scenario: Scenario) {
     console.log('host: starting');
-    const scenario = scenarios[0];
     console.log('host: loading scenario', scenario.name);
     scenario.start(this.db, this.settings);
     this.tick();
