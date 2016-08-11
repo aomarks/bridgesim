@@ -17,4 +17,7 @@ export function registerScenario(scenario: Scenario) {
 }
 
 import DefaultScenario from './default';
-registerScenario(new DefaultScenario);
+registerScenario(new DefaultScenario());
+
+import GoodLuckScenario from './goodluck';
+registerScenario(new GoodLuckScenario());
