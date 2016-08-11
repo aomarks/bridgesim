@@ -12,9 +12,9 @@ export default class DefaultScenario {
 
   public start(db: Db, settings: Settings) {
     const rand = () => randCoord(settings.galaxySize);
-    SpawnShip(db, 'Mean', rand(), rand(), true);
-    SpawnShip(db, 'Neutral', rand(), rand(), true);
-    SpawnShip(db, 'Friendly', rand(), rand(), true);
+    SpawnShip(db, 'Mean', rand(), rand(), true, -1);
+    SpawnShip(db, 'Neutral', rand(), rand(), true, 0);
+    SpawnShip(db, 'Friendly', rand(), rand(), true, 1);
     for (let i = 0; i < 2; i++) {
       SpawnStation(db, null, rand(), rand());
     }
