@@ -1,4 +1,5 @@
 import {randInt} from './math';
+import {Point} from './components';
 
 export const SECTOR_METERS = 10000;
 
@@ -11,4 +12,8 @@ export function maxCoord(galaxySize: number): number {
 export function randCoord(galaxySize: number): number {
   const max = maxCoord(galaxySize);
   return randInt(-max, max);
+}
+
+export function randPoint(galaxySize: number): Point {
+  return {x: randCoord(galaxySize), y: randCoord(galaxySize)};
 }

@@ -1,52 +1,47 @@
 import {Position} from '../components';
 import {Db} from '../entity/db';
-import {radians} from '../math';
+import {randPoint} from '../galaxy';
+import {dist, heading, headingToRadians} from '../math';
+import {Pathfinder} from '../pathfinding';
+import {every} from '../util';
 
 export class Ai {
-  constructor(private db: Db) {}
+  constructor(private db: Db, private galaxySize: number) {}
 
-  tick(): void {
+  public tick = every(1, () => {
+    const finder = new Pathfinder(this.db, this.galaxySize);
     for (let id in this.db.ais) {
-      this.tickOne(id);
+      this.tickOne(id, finder);
     }
-  }
+  });
 
-  tickOne(thisId: string): void {
-    // basic swarm logic, move towards/away nearest ship.
+  tickOne(thisId: string, finder: Pathfinder): void {
     const thisPos = this.db.positions[thisId];
-    let nearestId: string = null;
-    let nearestDist = 0;
-    let nearestPos: Position;
-    for (let thatId in this.db.ships) {
-      if (thisId === thatId) {
-        continue;
+    const ai = this.db.ais[thisId];
+    let targetPos = ai.targetPos;
+    if (!targetPos || dist(thisPos, targetPos) < 1200) {
+      const newTarget = randPoint(this.galaxySize);
+      // Make sure there is a valid path.
+      if (finder.find(thisPos, newTarget, thisId).length > 0) {
+        ai.targetPos = targetPos = newTarget;
       }
-      const thatPos = this.db.positions[thatId];
-      const dist = Math.sqrt(
-          Math.pow(thatPos.x - thisPos.x, 2) +
-          Math.pow(thatPos.y - thisPos.y, 2));
-      if (nearestId === null || nearestDist > dist) {
-        nearestId = thatId;
-        nearestDist = dist;
-        nearestPos = thatPos;
-      }
+      return;
     }
     const mot = this.db.motion[thisId];
-    if (nearestId === null || nearestDist < 0.1) {
+    const path = finder.find(thisPos, targetPos, thisId);
+    if (path.length == 0) {
       mot.velocityX = 0;
       mot.velocityY = 0;
       return;
     }
-    const friendliness = -1;  // TODO
-    const thetaRadians =
-        Math.atan2(nearestPos.y - thisPos.y, nearestPos.x - thisPos.x);
-    const thetaDegrees = (thetaRadians + Math.PI * (friendliness / 2 + 0.5)) *
-        360.0 / (2.0 * Math.PI);
-    thisPos.yaw = thisPos.yaw * (59 / 60) + thetaDegrees * (1 / 60);
+
+    let targetIdx = Math.min(2, path.length - 1);
+    const localTarget = path[targetIdx];
+    thisPos.yaw = heading(localTarget, thisPos);
 
     // AIs don't know how to turn and thrust. They just directly set their
     // velocity vector.
-    const rads = radians(thisPos.yaw);
+    const rads = headingToRadians(thisPos.yaw);
     const velocity = 20;
     mot.velocityX = Math.cos(rads) * velocity;
     mot.velocityY = Math.sin(rads) * velocity;

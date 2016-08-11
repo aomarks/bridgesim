@@ -39,3 +39,8 @@ export function dist(a: Point, b: Point): number {
 export function heading(a: Point, b: Point): number {
   return (Math.atan2(a.x - b.x, a.y - b.y) * (180 / Math.PI) + 360) % 360;
 }
+
+// headingToRadians returns the direction in radians.
+export function headingToRadians(heading: number): number {
+  return radians(90-heading);
+}
