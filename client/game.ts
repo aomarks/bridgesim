@@ -152,7 +152,9 @@ class Game extends polymer.Base {
   }
 
   @observe('station')
-  stationChanged(station: string) { this.stations = {[station]: true}; }
+  stationChanged(station: string) {
+    this.stations = {[station]: true};
+  }
 
   openSettingsDialog(): void { this.$.settingsDialog.open(); }
 
@@ -246,16 +248,24 @@ class Game extends polymer.Base {
   }
 
   @listen('fire-laser')
-  fireLaser(ev: any) { this.$.input.commands.fireLaser = ev.detail.heading; }
+  fireLaser(ev: any) {
+    this.$.input.commands.fireLaser = ev.detail.heading;
+  }
 
   @listen('start-left-turn')
-  startLeftTurn() { this.$.input.startLeftTurn(); }
+  startLeftTurn() {
+    this.$.input.startLeftTurn();
+  }
 
   @listen('start-right-turn')
-  startRightTurn() { this.$.input.startRightTurn(); }
+  startRightTurn() {
+    this.$.input.startRightTurn();
+  }
 
   @listen('stop-turn')
-  stopTurn() { this.$.input.stopTurn(); }
+  stopTurn() {
+    this.$.input.stopTurn();
+  }
 
   notifyChanges(update: Update): void {
     // Notify Polymer of changes in components for which elements may be

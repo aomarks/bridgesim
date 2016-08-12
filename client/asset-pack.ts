@@ -21,8 +21,7 @@ export class AssetPack extends polymer.Base {
 
   private modelPromises: {[model: string]: Promise<BABYLON.Mesh>} = {};
 
-  @property({computed: 'computeBaseUrl(manifest)'})
-  baseURL: string
+  @property({computed: 'computeBaseUrl(manifest)'}) baseURL: string;
   computeBaseURL(manifest: string): string { return this.urlDir(manifest); }
 
   @property({type: Object, computed: 'computeShips(manifestBody)'})

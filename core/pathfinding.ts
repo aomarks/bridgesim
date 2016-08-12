@@ -165,7 +165,7 @@ export class Pathfinder {
       Point[] {
     const path: Point[] = [];
     while (currentID) {
-      const {x, y} = JSON.parse(currentID)
+      const {x, y} = JSON.parse(currentID);
       path.push({x: x + this.precision / 2, y: y + this.precision / 2});
       currentID = cameFrom[currentID];
     }

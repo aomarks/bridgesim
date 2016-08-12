@@ -42,5 +42,5 @@ export function heading(a: Point, b: Point): number {
 
 // headingToRadians returns the direction in radians.
 export function headingToRadians(heading: number): number {
-  return radians(90-heading);
+  return radians(90 - heading);
 }
