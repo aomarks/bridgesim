@@ -2,31 +2,23 @@
 
 It's a starship bridge simulator.
 
-## Install Dependencies
-```
-npm -g install bower typescript typings http-server
-npm install
-bower install
-typings install
-```
+## Install/Update Dependencies
+Node.JS and NPM are required.
 
-## Update Dependencies
-```
-npm -g update
-npm update
-bower update
+```sh
+rpm run deps
 ```
 
 ## Developing
 ### Build TypeScript
 This command compiles all `.ts` files in the project and will recompile if
 there are any changes made to them.
-```
+```sh
 npm run watch
 ```
 
 ### Run
-```
+```sh
 http-server
 google-chrome http://localhost:8080/
 ```
@@ -53,12 +45,12 @@ http://localhost:8080/?station=weapons&metrics#host
 
 ### Test
 Run all tests (includes compilation).
-```
+```sh
 npm run test
 ```
 
 Run all tests (includes compilation) and watch for changes.
-```
+```sh
 npm run watch-test
 ```
 
@@ -66,7 +58,7 @@ npm run watch-test
 To build the production version of the app run the build script. This
 automatically compiles the typescript, vulcanizes and minifies the source code.
 Output goes into `build/`.
-```
+```sh
 node ./build.js
 ```
 
