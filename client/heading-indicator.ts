@@ -4,7 +4,7 @@ import {Db} from '../core/entity/db';
 
 import * as color from './colors';
 import {CANVAS_FONT} from './const';
-import {snap} from './util';
+import {snap, lerp} from './util';
 import {degrees} from '../core/math';
 
 const OUTER_RING_WIDTH = 10;
@@ -46,8 +46,14 @@ export class HeadingIndicator extends polymer.Base {
 
     const position = this.db.positions[this.shipId];
     if (position) {
-      this.drawTick(this.radius, position.yaw, 8, color.AQUA);
+      let yaw = position.yaw;
+      let prev = this.db.prevPositions[this.shipId];
+      if (prev) {
+        yaw = lerp(yaw, prev.yaw, alpha);
+      }
+      this.drawTick(this.radius, yaw, 8, color.AQUA);
     }
+
     const motion = this.db.motion[this.shipId];
     if (motion) {
       this.drawTick(
