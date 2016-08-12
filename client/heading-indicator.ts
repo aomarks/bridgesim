@@ -33,10 +33,7 @@ export class HeadingIndicator extends polymer.Base {
     this.listen(window, 'resize', 'resize');
   }
 
-  detached() {
-    // TODO Add unlisten to poylmer-ts.d.ts.
-    this['unlisten'](window, 'resize', 'resize');
-  }
+  detached() { this.unlisten(window, 'resize', 'resize'); }
 
   public draw(alpha: number): void {
     const ctx = this.ctx;

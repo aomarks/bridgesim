@@ -18,10 +18,7 @@ export class Chat extends polymer.Base {
     this.listen(window, 'keydown', 'open');
   }
 
-  detached(): void {
-    // TODO PolymerTS typings is missing unlisten()
-    (this as any).unlisten(window, 'keydown', 'open');
-  }
+  detached(): void { this.unlisten(window, 'keydown', 'open'); }
 
   private send(): void {
     if (!this.text.trim()) {
