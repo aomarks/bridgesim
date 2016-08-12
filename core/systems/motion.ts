@@ -1,6 +1,6 @@
 import {Db} from '../entity/db';
 import {maxCoord} from '../galaxy';
-import {clamp, radians} from '../math';
+import {clamp, radians, hypot} from '../math';
 
 // Energy consumed by maximum thrust in one tick.
 const THRUST_ENERGY = .1;
@@ -68,7 +68,7 @@ export class Motion {
 
     const odometer = this.db.odometers[id];
     if (odometer != null) {
-      odometer.meters += Math.abs(mot.velocityX) + Math.abs(mot.velocityY);
+      odometer.meters += hypot(mot.velocityX, mot.velocityY);
     }
   }
 }
