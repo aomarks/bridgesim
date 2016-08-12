@@ -1,12 +1,11 @@
 import {Connection} from '../net/connection';
 import * as Net from '../net/message';
+// Scenarios
+import {scenarios} from '../scenarios/scenarios';
 
 // Entities
 import {Db} from './entity/db';
-import {SpawnAstroidBelt} from './entity/debris';
 import {SpawnShip} from './entity/ship';
-import {SpawnStation} from './entity/station';
-import {randCoord} from './galaxy';
 // Systems
 import {Ai} from './systems/ai';
 import {Collision} from './systems/collision';
@@ -75,16 +74,9 @@ export class Host {
 
   public start() {
     console.log('host: starting');
-    const rand = () => randCoord(this.settings.galaxySize);
-    this.spawnShip('Mean', rand(), rand(), true);
-    this.spawnShip('Neutral', rand(), rand(), true);
-    this.spawnShip('Friendly', rand(), rand(), true);
-    for (let i = 0; i < 2; i++) {
-      SpawnStation(this.db, null, rand(), rand());
-    }
-    for (let i = 0; i < 5; i++) {
-      SpawnAstroidBelt(this.db, rand(), rand(), rand(), rand());
-    }
+    const scenario = scenarios[0];
+    console.log('host: loading scenario', scenario.name);
+    scenario.start(this.db, this.settings);
     this.tick();
   }
 

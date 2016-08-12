@@ -242,8 +242,19 @@ export class Map extends polymer.Base {
       // Draw shield.
       this.drawShield(id, alpha);
 
+      // Assign a color based on AI friendliness.
+      let shipColor = color.YELLOW;
+      const ai = this.db.ais[id];
+      if (ai) {
+        if (ai.friendliness > (1 / 3)) {
+          shipColor = color.GREEN;
+        } else if (ai.friendliness < (-1 / 3)) {
+          shipColor = color.RED;
+        }
+      }
+
       this.ctx.beginPath();
-      this.drawBlip(coords.x, coords.y, '#FF0000');
+      this.drawBlip(coords.x, coords.y, shipColor);
       const name = this.db.names[id].name;
       this.drawText(coords.x + 10, coords.y + 5, name);
       const health = this.db.healths[id];

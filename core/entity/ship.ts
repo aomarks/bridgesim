@@ -1,7 +1,8 @@
 import {Db} from './db';
 
 export function SpawnShip(
-    db: Db, name: string, x: number, y: number, ai: boolean): string {
+    db: Db, name: string, x: number, y: number, ai: boolean,
+    friendliness: number = 0): string {
   const id = db.spawn();
   db.newShip(id);
   if (!name) {
@@ -30,7 +31,8 @@ export function SpawnShip(
   res.energy = 1000;
   res.missile = 2;
   if (ai) {
-    db.newAi(id);
+    const ai = db.newAi(id);
+    ai.friendliness = friendliness;
   }
   console.log('entity.ship: spawned ship', id, name);
   return id;
