@@ -1,7 +1,18 @@
 import {Db} from './db';
 
+// Energy consumed by one laser.
+const LASER_ENERGY = 10;
+
 export function SpawnLaser(
     db: Db, origin: string, x: number, y: number, yaw: number) {
+  const res = db.resources[origin];
+  if (res) {
+    if (res.energy < LASER_ENERGY) {
+      return;
+    }
+    res.energy -= LASER_ENERGY;
+  }
+
   const id = db.spawn();
   db.newLaser(id);
   const pos = db.newPosition(id);
@@ -16,7 +27,6 @@ export function SpawnLaser(
   col.width = 10;
   col.damage = 1;
   col.ignore = origin;
-  db.resources[origin].energy -= 10;
   // console.log('entity.laser: spawned laser', id);
   return id;
 }

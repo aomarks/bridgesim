@@ -2,6 +2,9 @@ import {Db} from '../entity/db';
 import {maxCoord} from '../galaxy';
 import {clamp, radians} from '../math';
 
+// Energy consumed by maximum thrust in one tick.
+const THRUST_ENERGY = .1;
+
 // Updates the velocity and position of entities in motion.
 export class Motion {
   maxCoord: number;
@@ -20,20 +23,35 @@ export class Motion {
 
   tickOne(id: string): void {
     const mot = this.db.motion[id];
+    const pos = this.db.positions[id];
+    const pow = this.db.power[id];
+    const res = this.db.resources[id];
+
     if (!mot) {
       console.error('motion: entity has no motion', id);
       return;
     }
-
-    const pos = this.db.positions[id];
     if (!pos) {
       console.error('motion: entity has no position', id);
       return;
     }
 
+    let thrust = mot.thrust;
+    if (pow) {
+      thrust *= pow.engine;
+    }
+    if (res) {
+      const burn = Math.abs(thrust) * THRUST_ENERGY;
+      if (res.energy < burn) {
+        thrust = 0;
+      } else {
+        res.energy -= burn;
+      }
+    }
+
     const rads = radians(pos.yaw - 90);
-    const accelX = mot.thrust * Math.cos(rads);
-    const accelY = mot.thrust * Math.sin(rads);
+    const accelX = thrust * Math.cos(rads);
+    const accelY = thrust * Math.sin(rads);
     mot.velocityX += accelX;
     mot.velocityY -= accelY;
     pos.x += mot.velocityX;

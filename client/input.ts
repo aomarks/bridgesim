@@ -37,11 +37,11 @@ class Input extends polymer.Base {
       [keyCode('A')]: {binding: () => this.commands.turn = -1, repeat: true},
       [keyCode('D')]: {binding: () => this.commands.turn = 1, repeat: true},
       [keyCode('K')]: {
-        binding: () => this.commands.power[this.curSubsystem] = 5,
+        binding: () => this.commands.power[this.curSubsystem] = .02,
         repeat: true,
       },
       [keyCode('J')]: {
-        binding: () => this.commands.power[this.curSubsystem] = -5,
+        binding: () => this.commands.power[this.curSubsystem] = -.02,
         repeat: true,
       },
       [keyCode('H')]: {binding: () => this.prevSubsystem()},

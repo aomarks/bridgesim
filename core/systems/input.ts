@@ -4,6 +4,7 @@ import {SpawnLaser} from '../entity/laser';
 import {SpawnMissile} from '../entity/missile';
 import {clamp} from '../math';
 
+const MAX_TURN_SPEED = 5;  // Degrees per tick.
 
 // Applies player input.
 export class Input {
@@ -28,7 +29,7 @@ export class Input {
     for (let sys in input.power) {
       const delta = input.power[sys];
       if (delta) {
-        power[sys] = clamp(power[sys] + delta, 0, 100);
+        power[sys] = clamp(power[sys] + delta, 0, 1);
       }
     }
 
@@ -37,7 +38,8 @@ export class Input {
     }
 
     if (pos != null) {
-      const delta = (power.maneuvering / 20) * input.turn;
+      // TODO Move to motion system. Should systems process their own input?
+      const delta = MAX_TURN_SPEED * input.turn * power.maneuvering;
       if (prevPos) {
         prevPos.yaw = pos.yaw;
         prevPos.roll = pos.roll;

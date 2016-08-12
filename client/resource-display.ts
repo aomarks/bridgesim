@@ -40,7 +40,7 @@ export class ResourceDisplay extends polymer.Base {
     for (const name of Resources.prototype.props) {
       resources.push({
         name: name,
-        count: this.db.resources[this.shipId][name] || 0,
+        count: Math.round(this.db.resources[this.shipId][name] || 0),
       });
     }
     this.resources = resources;

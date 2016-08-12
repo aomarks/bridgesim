@@ -70,8 +70,8 @@ export class Position extends Component {
 }
 
 export class Power extends Component {
-  @Component.prop engine: number = 0;
-  @Component.prop maneuvering: number = 0;
+  @Component.prop engine: number = 0;       // [0,1]
+  @Component.prop maneuvering: number = 0;  // [0,1]
 }
 
 export class Resources extends Component {

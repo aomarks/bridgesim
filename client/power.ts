@@ -43,7 +43,8 @@ export class Power extends polymer.Base {
     for (const i in this.subsystems || []) {
       const sys = this.subsystems[i];
       this.set(
-          ['subsystems', i, 'level'], powerChange.base[shipId][sys.name] || 0);
+          ['subsystems', i, 'level'],
+          Math.round(100 * powerChange.base[shipId][sys.name] || 0));
     }
   }
 

@@ -25,8 +25,8 @@ export function SpawnShip(
   hel.hp = 100;
   hel.shields = true;
   const power = db.newPower(id);
-  power.engine = 100;
-  power.maneuvering = 100;
+  power.engine = 1;
+  power.maneuvering = 1;
   const res = db.newResources(id);
   res.energy = 1000;
   res.missile = 2;
