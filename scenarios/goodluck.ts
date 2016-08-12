@@ -5,7 +5,7 @@ import {randCoord} from '../core/galaxy';
 import {Settings} from '../core/host';
 
 export default class GoodLuckScenario {
-  public name: string = 'Good Luck';
+  public name: string = 'Good Luck!';
   public description: string = 'An unbeatable scenario.';
 
   public start(db: Db, settings: Settings) {

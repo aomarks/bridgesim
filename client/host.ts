@@ -4,6 +4,8 @@
 import {Host} from '../core/host';
 import {Loopback} from '../net/loopback';
 import {WebRTCConnection, decodeRSD, encodeRSD} from '../net/webrtc';
+import {Scenario} from '../scenarios/scenarios';
+
 import {RTC_CONFIG} from './webrtc-config';
 
 @component('bridgesim-host')
@@ -11,13 +13,14 @@ class HostWrapper extends polymer.Base {
   @property({type: String}) serverName: string;
   @property({type: Boolean}) serverHidden: boolean;
   @property({type: String}) serverToken: string;
+  @property({type: Object}) scenario: Scenario;
 
   private host: Host;
 
   attached(): void {
     console.log('host-wrapper: attached');
     this.host = new Host();
-    this.host.start();
+    this.host.start(this.scenario);
 
     const loopback = new Loopback();
     loopback.open();
