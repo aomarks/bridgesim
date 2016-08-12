@@ -4,10 +4,12 @@
     "module": "commonjs",
     "experimentalDecorators": true,
     "noImplicitReturns": true,
-    "pretty": true
+    "pretty": true,
+    "sourceMap": true
   },
   "exclude": [
     "bower_components",
+    "node_modules",
     "typings"
   ]
 }

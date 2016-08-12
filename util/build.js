@@ -1,19 +1,22 @@
 // configuration options
 var target = 'index.html';
-var buildDir = './build/';
-var buildJS = 'build.js';
+var buildDir = './dist/';
+var buildJS = 'out.js';
 var buildHTML = 'index.html';
 
 var exec = require('child_process').exec;
 var fs = require('fs');
 
 var SVGO = require('svgo');
-var PATH = require('path');
+var path = require('path');
 var FS = require('fs');
 var UglifyJS = require('uglify-js');
 var crisper = require('crisper');
 var minify = require('html-minifier').minify;
 var vulcanize = require('vulcanize');
+var concat = require('source-map-concat');
+var resolveSourceMapSync = require('source-map-resolve').resolveSourceMapSync;
+var createDummySourceMap = require('source-map-dummy');
 
 if (!fs.existsSync(buildDir)) {
   fs.mkdirSync(buildDir);
@@ -21,14 +24,18 @@ if (!fs.existsSync(buildDir)) {
 
 console.log('Compiling TypeScript...');
 
-exec('tsc', function(error, stdout, stderr) {
-  console.log(stdout);
-  if (error) {
-    console.log('error running tsc', error, stdout, stderr);
-    return;
-  }
-  runVulcanize();
-});
+exec(
+    'bash -c "browserify $(find client/ -name \'*.ts\' ! -name \'*_test.ts\' | tr -s \'\n\' \' \') -p tsify -p \[minifyify --map ' +
+        buildJS + '.map --output ' + buildJS + '.map\] --outfile ' + buildJS +
+        ' --verbose --debug"',
+    function(error, stdout, stderr) {
+      console.log(stdout);
+      if (error) {
+        console.log('error running tsc', error, stdout, stderr);
+        return;
+      }
+      runVulcanize();
+    });
 
 console.log('Copying images and textures...');
 function puts(error, stdout, stderr) {
@@ -50,13 +57,14 @@ exec('cp -r images ' + buildDir, function(err, stdout, stderr) {
   optimizeFolder(buildDir + 'images', {}, null);
 });
 exec('cp -r textures ' + buildDir, puts);
+exec('cp favicon.png ' + buildDir, puts);
 
 function runVulcanize() {
   console.log('Vulcanizing...');
 
   var vulcan = new vulcanize({
     abspath: '.',
-    excludes: [],
+    excludes: ['out.js'],
     stripExcludes: [],
     inlineScripts: true,
     inlineCss: true,
@@ -79,24 +87,54 @@ function runCrisper(html) {
   var out = crisper({
     source: html,
     jsFileName: buildJS,
-    scriptInHead: true,       // default true
-    onlySplit: false,         // default false
+    scriptInHead: false,      // default true
+    onlySplit: true,          // default false
     alwaysWriteScript: false  // default false
   });
   runMinify(out.html, out.js);
 }
 
 function runMinify(html, js) {
-  console.log('Minifying...');
   var minHtml = runHtmlMinify(html);
-  var jsResults = runJSMinify(js);
-  var minJS = jsResults.code;
-  var minJSMap = jsResults.map;
-
   var err = fs.writeFileSync(buildDir + buildHTML, minHtml);
   if (err) {
     console.log(err);
   }
+
+  var jsResults = runJSMinify(js, null);
+
+  // Handle sourcemaps.
+  var jsFiles = [buildJS];
+
+  jsFiles = jsFiles.map(function(file) {
+    file = {source: file, code: fs.readFileSync(file).toString()};
+    file.previousMap =
+        resolveSourceMapSync(file.code, file.source, fs.readFileSync);
+    return file;
+  })
+  jsFiles.unshift({
+    source: 'deps.js',
+    code: jsResults.code,
+    previousMap: jsResults,
+  });
+  jsFiles.forEach(function(file) {
+    if (file.previousMap) {
+      file.map = file.previousMap.map;
+      file.sourcesRelativeTo = file.previousMap.sourcesRelativeTo;
+    } else {
+      file.map =
+          createDummySourceMap(file.code, {source: file.source, type: 'js'});
+    }
+  });
+  var concatenated =
+      concat(jsFiles, {delimiter: '\n', mapPath: buildJS + '.map'});
+  var result =
+      concatenated.toStringWithSourceMap({file: path.basename(buildJS)});
+
+  var minJS = result.code;
+  var minJSMap = result.map.toString();
+
+
   var err = fs.writeFileSync(buildDir + buildJS, minJS);
   if (err) {
     console.log(err);
@@ -122,20 +160,21 @@ function runHtmlMinify(html) {
   return results;
 }
 
-function runJSMinify(js) {
+function runJSMinify(js, jsMap) {
+  // return {code: js, map: jsMap};
   console.log('Minifying JS...');
   var results = UglifyJS.minify(js, {
     fromString: true,
     warnings: true,
     mangle: true,
     compress: true,
+    inSourceMap: JSON.parse(jsMap),
     outSourceMap: buildJS + '.map'
   });
   var compressed = (1 - results.code.length / js.length) * 100;
   console.log(' :: compressed ' + compressed.toFixed(1) + '%');
   return results;
 }
-
 
 // SVGO optimization
 var regSVGFile = /\.svg$/;
@@ -146,7 +185,7 @@ function optimizeFolder(dir, config, output) {
   }
 
   // absoluted folder path
-  var path = PATH.resolve(dir);
+  var rpath = path.resolve(dir);
 
   function printTimeInfo(time) { console.log('Done in ' + time + ' ms!'); }
 
@@ -156,12 +195,12 @@ function optimizeFolder(dir, config, output) {
     console.log(
         (Math.round((inBytes / 1024) * 1000) / 1000) + ' KiB' +
         (profitPercents < 0 ? ' + ' : ' - ') +
-        String(Math.abs((Math.round(profitPercents * 10) / 10)) + '%').green +
+        Math.abs((Math.round(profitPercents * 10) / 10)) + '%' +
         ' = ' + (Math.round((outBytes / 1024) * 1000) / 1000) + ' KiB\n');
   }
 
   // list folder content
-  FS.readdir(path, function(err, files) {
+  FS.readdir(rpath, function(err, files) {
 
     if (err) {
       console.error(err);
@@ -177,8 +216,8 @@ function optimizeFolder(dir, config, output) {
 
     function optimizeFile(file) {
       // absoluted file path
-      var filepath = PATH.resolve(path, file);
-      var outfilepath = output ? PATH.resolve(output, file) : filepath;
+      var filepath = path.resolve(rpath, file);
+      var outfilepath = output ? path.resolve(output, file) : filepath;
 
       // check if file name matches *.svg
       if (regSVGFile.test(filepath)) {
