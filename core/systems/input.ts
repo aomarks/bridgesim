@@ -9,7 +9,7 @@ import {WeaponType} from '../weapon';
 
 const MAX_TURN_SPEED = 5;  // Degrees per tick.
 
-const MAX_POWER = 1.5;
+const MAX_POWER_PER_SYSTEM = 0.75;
 
 // Applies player input.
 export class Input {
@@ -32,6 +32,7 @@ export class Input {
     const health = this.db.healths[id];
 
     if (power != null) {
+      const MAX_POWER = Object.keys(Components.Power.prototype.props).length * MAX_POWER_PER_SYSTEM;
       let spare = MAX_POWER;
       for (let sys of Components.Power.prototype.props) {
         spare -= power[sys];

@@ -13,6 +13,7 @@ import {Input} from './systems/input';
 import {Laser} from './systems/laser';
 import {Missile} from './systems/missile';
 import {Motion} from './systems/motion';
+import {Shields} from './systems/shields';
 import {Station} from './systems/station';
 
 export interface Settings {
@@ -29,6 +30,8 @@ export interface Settings {
   commandBufferSize: number;
 }
 
+export interface System { tick(); }
+
 export class Host {
   private settings: Settings = {
     commandBufferSize: 100,
@@ -40,15 +43,17 @@ export class Host {
   private db: Db = new Db();
 
   // Systems
-  private ai: Ai = new Ai(this.db, this.settings.galaxySize);
-  private collision: Collision =
-      new Collision(this.db, this.settings.galaxySize);
-  private death: Death = new Death(this.db);
-  private input: Input = new Input(this.db);
-  private laser: Laser = new Laser(this.db);
-  private missile: Missile = new Missile(this.db);
-  private motion: Motion = new Motion(this.db, this.settings.galaxySize);
-  private station: Station = new Station(this.db);
+  private systems: System[] = [
+    new Ai(this.db, this.settings.galaxySize),
+    new Collision(this.db, this.settings.galaxySize),
+    new Death(this.db),
+    new Input(this.db),
+    new Laser(this.db),
+    new Missile(this.db),
+    new Motion(this.db, this.settings.galaxySize),
+    new Shields(this.db),
+    new Station(this.db),
+  ];
 
   private conns: {[id: string]: Connection} = {};
   private timeoutId: number = null;
@@ -125,14 +130,9 @@ export class Host {
         }
       }
 
-      this.ai.tick();
-      this.collision.tick();
-      this.death.tick();
-      this.input.tick();
-      this.laser.tick();
-      this.missile.tick();
-      this.motion.tick();
-      this.station.tick();
+      for (let system of this.systems) {
+        system.tick();
+      }
 
       this.tickLag -= this.settings.tickInterval;
       this.snapshotStale = true;

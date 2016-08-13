@@ -54,6 +54,7 @@ export function SpawnShip(
   const power = db.newPower(id);
   power.engine = 0.75;
   power.maneuvering = 0.75;
+  power.shields = 0.75;
   const res = db.newResources(id);
   res.energy = 1000;
   res.missile = 2;
