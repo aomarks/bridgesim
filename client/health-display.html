@@ -1,0 +1,29 @@
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+
+<dom-module id="health-display">
+  <template>
+    <style>
+      paper-progress.shields {
+        --paper-progress-active-color: var(--paper-light-blue-500);
+      }
+    </style>
+
+    <h3>Ship Status</h3>
+      <table>
+        <tr>
+          <td>Hull</td>
+          <td>
+            <paper-progress value="[[health.hp]]" max="[[health.hpMax]]" class="hull"></paper-progress>
+          </td>
+        </tr>
+        <tr>
+          <td>Shields</td>
+          <td>
+            <paper-progress value="[[health.shields]]"
+              max="[[health.shieldsMax]]" class="shields"
+              disabled="[[!health.shieldsUp]]"></paper-progress>
+          </td>
+        </tr>
+      </table>
+  </template>
+</dom-module>

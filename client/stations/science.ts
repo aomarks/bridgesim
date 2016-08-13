@@ -9,8 +9,6 @@ interface Target {
   name: string;
   distance: string;
   heading: string;
-  hp: number;
-  shields: boolean;
 }
 
 @component('science-station')
@@ -33,8 +31,6 @@ class Science extends polymer.Base {
       name: this.db.names[selectedId].name,
       distance: this.dist(selectedId, this.shipId),
       heading: this.heading(selectedId, this.shipId),
-      hp: this.hp(selectedId),
-      shields: this.shields(selectedId),
     };
   }
 
@@ -57,24 +53,6 @@ class Science extends polymer.Base {
     }
     this.set('selected.distance', this.dist(this.selectedId, this.shipId));
     this.set('selected.heading', this.heading(this.selectedId, this.shipId));
-  }
-
-  @observe('db.healths.*')
-  observeHealths(change: any) {
-    if (!this.shipId || !this.selected) {
-      return;
-    }
-    if (change.path.indexOf('db.healths.' + this.selected.id + '.') !== 0) {
-      return;
-    }
-    this.set('selected.hp', this.hp(this.selected.id));
-    this.set('selected.shields', this.shields(this.selected.id));
-  }
-
-  public hp(id: string): number { return this.db.healths[id].hp || 0; }
-
-  public shields(id: string): boolean {
-    return this.db.healths[id].shields || false;
   }
 
   @observe('selected')

@@ -487,7 +487,7 @@ export class Map extends polymer.Base {
     const health = this.db.healths[id];
     const collidable = this.db.collidables[id];
     const pos = this.lerpScreenPos(id);
-    if (!health || !collidable || !pos || !health.shields) {
+    if (!health || !collidable || !pos || !health.shieldsUp || health.shields <= 0) {
       return;
     }
     const radius =

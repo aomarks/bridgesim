@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../power.html">
 <link rel="import" href="../resource-display.html">
+<link rel="import" href="../health-display.html">
 
 <dom-module id="engineering-station">
   <template>
@@ -16,6 +17,10 @@
       ship-id="[[shipId]]"
       cur-subsystem="[[curSubsystem]]">
     </bridgesim-power>
+    <health-display
+      db="[[db]]"
+      ship-id="[[shipId]]">
+    </health-display>
     <resource-display
       db="[[db]]"
       ship-id="[[shipId]]">

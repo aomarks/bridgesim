@@ -90,7 +90,7 @@ export class Input {
     }
 
     if (health && input.toggleShield) {
-      health.shields = !health.shields;
+      health.shieldsUp = !health.shieldsUp;
     }
   }
 }
