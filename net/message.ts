@@ -1,5 +1,6 @@
 import {Update} from '../core/comdb';
 import * as Components from '../core/components';
+import {FireWeapon} from '../core/weapon';
 
 export interface Message {
   hello?: Hello;
@@ -46,9 +47,8 @@ export interface Commands {
   turn?: number;
   thrust?: number;
   power?: Components.Power;
-  fireLaser?: number;
-  fireMissile?: boolean;
   toggleShield?: boolean;
+  fireWeapons?: FireWeapon[];
 }
 
 export interface CreateShip {}

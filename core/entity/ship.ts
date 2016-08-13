@@ -1,3 +1,5 @@
+import {WeaponType} from '../weapon';
+
 import {Db} from './db';
 
 export function SpawnShip(
@@ -24,6 +26,28 @@ export function SpawnShip(
   const hel = db.newHealth(id);
   hel.hp = 100;
   hel.shields = true;
+  hel.weapons = [
+    {
+      type: WeaponType.Laser,
+      range: 5000,
+      direction: Math.PI,
+      angle: 7 * Math.PI / 4,
+      damage: 1,
+    },
+    {
+      type: WeaponType.Laser,
+      range: 10000,
+      direction: 0,
+      angle: Math.PI / 4,
+      damage: 2,
+    },
+    {
+      type: WeaponType.Missile,
+      range: 15000,
+      direction: 0,
+      angle: Math.PI * 2,
+    },
+  ];
   const power = db.newPower(id);
   power.engine = 0.75;
   power.maneuvering = 0.75;

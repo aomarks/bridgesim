@@ -1,9 +1,10 @@
 import {Db} from './db';
 
 export function SpawnMissile(
-    db: Db, origin: string, x: number, y: number, yaw: number) {
+    db: Db, origin: string, x: number, y: number, yaw: number, range: number) {
   const id = db.spawn();
-  db.newMissile(id);
+  const missile = db.newMissile(id);
+  missile.range = range;
   const pos = db.newPosition(id);
   pos.x = x;
   pos.y = y;

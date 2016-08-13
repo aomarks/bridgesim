@@ -1,3 +1,4 @@
+import {WeaponType} from '../weapon';
 import {Db} from './db';
 
 export function SpawnStation(
@@ -23,6 +24,15 @@ export function SpawnStation(
   const hel = db.newHealth(id);
   hel.hp = 1000;
   hel.shields = true;
+  hel.weapons = [
+    {
+      type: WeaponType.Laser,
+      range: 5000,
+      direction: 0,
+      angle: Math.PI * 2,
+      damage: 1,
+    },
+  ];
   console.log('entity.station: spawned station', id, name);
   return id;
 }
