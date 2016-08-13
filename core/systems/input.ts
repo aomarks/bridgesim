@@ -9,7 +9,7 @@ import {WeaponType} from '../weapon';
 
 const MAX_TURN_SPEED = 5;  // Degrees per tick.
 
-const MAX_POWER = 1.5;
+const MAX_POWER_PER_SYSTEM = 0.75;
 
 // Applies player input.
 export class Input {
@@ -31,25 +31,28 @@ export class Input {
     const power = this.db.power[id];
     const health = this.db.healths[id];
 
-    let spare = MAX_POWER;
-    for (let sys of Components.Power.prototype.props) {
-      spare -= power[sys];
-    }
+    if (power != null) {
+      const MAX_POWER = Object.keys(Components.Power.prototype.props).length * MAX_POWER_PER_SYSTEM;
+      let spare = MAX_POWER;
+      for (let sys of Components.Power.prototype.props) {
+        spare -= power[sys];
+      }
 
-    for (let sys in input.power) {
-      let delta = input.power[sys];
-      const cur = power[sys];
-      if (delta > spare) {
-        delta = spare;
+      for (let sys in input.power) {
+        let delta = input.power[sys];
+        const cur = power[sys];
+        if (delta > spare) {
+          delta = spare;
+        }
+        if (cur + delta > 1) {
+          delta = 1 - cur;
+        }
+        if (cur + delta < 0) {
+          delta = -cur;
+        }
+        power[sys] += delta;
+        spare -= delta;
       }
-      if (cur + delta > 1) {
-        delta = 1 - cur;
-      }
-      if (cur + delta < 0) {
-        delta = -cur;
-      }
-      power[sys] += delta;
-      spare -= delta;
     }
 
     if (motion != null) {
@@ -90,7 +93,7 @@ export class Input {
     }
 
     if (health && input.toggleShield) {
-      health.shields = !health.shields;
+      health.shieldsUp = !health.shieldsUp;
     }
   }
 }

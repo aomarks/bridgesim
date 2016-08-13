@@ -51,10 +51,10 @@ export class Collision {
           const healthA = this.db.healths[a];
           const healthB = this.db.healths[b];
           if (healthA) {
-            healthA.hp -= bCol.damage;
+            healthA.damage(bCol.damage);
           }
           if (healthB) {
-            healthB.hp -= aCol.damage;
+            healthB.damage(aCol.damage);
           }
         }
       }

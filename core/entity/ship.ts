@@ -25,7 +25,10 @@ export function SpawnShip(
   col.damage = 10;
   const hel = db.newHealth(id);
   hel.hp = 100;
-  hel.shields = true;
+  hel.hpMax = 100;
+  hel.shieldsUp = true;
+  hel.shields = 100;
+  hel.shieldsMax = 100;
   hel.weapons = [
     {
       type: WeaponType.Laser,
@@ -51,6 +54,7 @@ export function SpawnShip(
   const power = db.newPower(id);
   power.engine = 0.75;
   power.maneuvering = 0.75;
+  power.shields = 0.75;
   const res = db.newResources(id);
   res.energy = 1000;
   res.missile = 2;

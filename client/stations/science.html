@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../animate-selector.html">
 <link rel="import" href="../resource-display.html">
+<link rel="import" href="../health-display.html">
 
 <dom-module id="science-station">
   <template>
@@ -44,9 +45,8 @@
           </template>
           <template is="dom-if" if="[[scanResults]]">
             <h2>Scan Results</h2>
-            <p>HP: <span>[[selected.hp]]</span></p>
-            <p>Shields: <span>[[selected.shields]]</span></p>
             <p>[[scanResults]]</p>
+            <health-display db="[[db]]" ship-id="[[selectedId]]"></health-display>
             <resource-display db="[[db]]" ship-id="[[selectedId]]"></resource-display>
           </template>
         </template>

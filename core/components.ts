@@ -43,21 +43,34 @@ export enum DebrisType {
 
 export class Health extends Component {
   @Component.prop hp: number = 0;
-  @Component.prop shields: boolean = false;
+  @Component.prop hpMax: number = 0;
+
+  @Component.prop shieldsUp: boolean = false;
+  @Component.prop shields: number = 0;
+  @Component.prop shieldsMax: number = 0;
+
   @Component.prop weapons: Weapon[] = [];
+
+  public damage(damage: number) {
+    if (this.shieldsUp) {
+      this.shields -= damage;
+      if (this.shields < 0) {
+        this.hp += this.shields;
+        this.shields = 0;
+      }
+    } else {
+      this.hp -= damage;
+    }
+  }
 }
 
 export class Name extends Component { @Component.prop name: string = ''; }
 
 export class Odometer extends Component { @Component.prop meters: number = 0; }
 
-export class Laser extends Component {
-  range: number;
-}
+export class Laser extends Component { range: number; }
 
-export class Missile extends Component {
-  range: number;
-}
+export class Missile extends Component { range: number; }
 
 export class Player extends Component {
   @Component.prop name: string = '';
@@ -75,9 +88,12 @@ export class Position extends Component {
   @Component.prop roll: number = 0;
 }
 
+// Power properties represents the different systems on a ship or space station.
+// These are modifiers for different systems and will always be [0, 1].
 export class Power extends Component {
-  @Component.prop engine: number = 0;       // [0,1]
-  @Component.prop maneuvering: number = 0;  // [0,1]
+  @Component.prop engine: number = 0;
+  @Component.prop maneuvering: number = 0;
+  @Component.prop shields: number = 0;
 }
 
 export class Resources extends Component {

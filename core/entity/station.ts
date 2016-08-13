@@ -23,7 +23,10 @@ export function SpawnStation(
   col.damage = 10;
   const hel = db.newHealth(id);
   hel.hp = 1000;
-  hel.shields = true;
+  hel.hpMax = 1000;
+  hel.shieldsUp = true;
+  hel.shields = 1000;
+  hel.shieldsMax = 1000;
   hel.weapons = [
     {
       type: WeaponType.Laser,
