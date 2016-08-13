@@ -1,4 +1,4 @@
-import {PriorityQueue, Set} from 'typescript-collections';
+import {PriorityQueue} from 'typescript-collections';
 
 import {Point} from './components';
 import {Db} from './entity/db';
@@ -48,6 +48,8 @@ export class Pathfinder {
 
   public find(from: Point, to: Point, ignore: string = '', previous: Point[] = [
   ]): Point[] {
+    from = this.copyPoint(from);
+    to = this.copyPoint(to);
     const cachedPath = this.validate(from, to, previous, ignore);
     if (cachedPath) {
       return cachedPath;
@@ -103,33 +105,34 @@ export class Pathfinder {
     const endID = this.nodeID(end);
 
     const cameFrom: {[key: string]: string} = {};
-    const closedSet = new Set<string>();
-    const openSet = new Set<string>();
+    const closedSet = {};
+    const openSet = {};
 
     const gScore: {[key: string]: number} = {};
     gScore[startID] = 0;
     const fScore: {[key: string]: number} = {};
     fScore[startID] = this.heuristic(start, end, ignore);
 
-    const openQueue = new PriorityQueue<Point>((a: Point, b: Point) => {
-      return fScore[this.nodeID(b)] - fScore[this.nodeID(a)];
-    });
-    openQueue.enqueue(start);
+    const openQueueNodes: {[key: string]: Point} = {};
+    const openQueue = new PriorityQueue<string>(
+        (a: string, b: string) => { return fScore[b] - fScore[a]; });
+    openQueueNodes[startID] = start;
+    openQueue.enqueue(startID);
 
     while (!openQueue.isEmpty()) {
-      const current = openQueue.dequeue();
-      const currentID = this.nodeID(current);
+      const currentID = openQueue.dequeue();
+      const current = openQueueNodes[currentID];
       if (currentID === endID) {
-        const path = this.reconstructPath(cameFrom, currentID);
-        path[0] = this.copyPoint(startP);
-        path[path.length - 1] = this.copyPoint(endP);
+        const path = this.reconstructPath(cameFrom, currentID, openQueueNodes);
+        path[0] = startP;
+        path[path.length - 1] = endP;
         return path;
       }
-      openSet.remove(currentID);
-      closedSet.add(currentID);
+      delete openSet[currentID];
+      closedSet[currentID] = true;
       for (let neighbor of this.neighbors(current)) {
         const neighborID = this.nodeID(neighbor);
-        if (closedSet.contains(neighborID)) {
+        if (closedSet[neighborID]) {
           continue;  // Ignore the neighbor which is already
         }
 
@@ -141,17 +144,17 @@ export class Pathfinder {
         const tentative_gScore = gScore[currentID] + heuristic;
         // Discover a new node
         // This is not a better path.
-        if (openSet.contains(neighborID) &&
-            tentative_gScore >= gScore[neighborID]) {
+        if (openSet[neighborID] && tentative_gScore >= gScore[neighborID]) {
           continue;
         }
         cameFrom[neighborID] = currentID;
         gScore[neighborID] = tentative_gScore;
         fScore[neighborID] =
             gScore[neighborID] + this.heuristic(neighbor, end, ignore);
-        if (!openSet.contains(neighborID)) {
-          openSet.add(neighborID);
-          openQueue.enqueue(neighbor);
+        if (!openSet[neighborID]) {
+          openSet[neighborID] = true;
+          openQueueNodes[neighborID] = neighbor;
+          openQueue.enqueue(neighborID);
         }
       }
     }
@@ -161,11 +164,12 @@ export class Pathfinder {
 
   private copyPoint(point: Point) { return {x: point.x, y: point.y}; }
 
-  private reconstructPath(cameFrom: {[key: string]: string}, currentID: string):
-      Point[] {
+  private reconstructPath(
+      cameFrom: {[key: string]: string}, currentID: string,
+      nodes: {[key: string]: Point}): Point[] {
     const path: Point[] = [];
     while (currentID) {
-      const {x, y} = JSON.parse(currentID);
+      const {x, y} = nodes[currentID];
       path.push({x: x + this.precision / 2, y: y + this.precision / 2});
       currentID = cameFrom[currentID];
     }
@@ -197,7 +201,10 @@ export class Pathfinder {
     }
   }
 
-  private nodeID(p: Point): string { return JSON.stringify(this.node(p)); }
+  private nodeID(p: Point): string {
+    const {x, y} = this.node(p);
+    return x + ',' + y;
+  }
 
   private heuristic(from: Point, to: Point, ignore: string): number {
     const padding = 0.5 * this.precision;
