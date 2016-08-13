@@ -11,7 +11,8 @@ export class Laser {
       if (traveled > 0) {
         this.db.motion[id].thrust = 0;
       }
-      if (traveled > RANGE) {
+      const laser = this.db.lasers[id];
+      if (traveled > laser.range) {
         this.db.remove(id);
       }
     }

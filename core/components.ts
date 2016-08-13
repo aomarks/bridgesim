@@ -1,6 +1,7 @@
 import {Station as CrewStation} from '../net/message';
 import {Commands} from '../net/message';
 import {Component} from './comdb';
+import {Weapon} from './weapon';
 
 // Point represents a single x, y position.
 export interface Point {
@@ -43,15 +44,20 @@ export enum DebrisType {
 export class Health extends Component {
   @Component.prop hp: number = 0;
   @Component.prop shields: boolean = false;
+  @Component.prop weapons: Weapon[] = [];
 }
-
-export class Laser extends Component {}
 
 export class Name extends Component { @Component.prop name: string = ''; }
 
 export class Odometer extends Component { @Component.prop meters: number = 0; }
 
-export class Missile extends Component {}
+export class Laser extends Component {
+  range: number;
+}
+
+export class Missile extends Component {
+  range: number;
+}
 
 export class Player extends Component {
   @Component.prop name: string = '';

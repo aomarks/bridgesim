@@ -247,9 +247,9 @@ class Game extends polymer.Base {
     this.conn.send({createShip: {}}, true);
   }
 
-  @listen('fire-laser')
-  fireLaser(ev: any) {
-    this.$.input.commands.fireLaser = ev.detail.heading;
+  @listen('fire-weapon')
+  fireWeapon(ev: any) {
+    this.$.input.commands.fireWeapons.push(ev.detail);
   }
 
   @listen('start-left-turn')

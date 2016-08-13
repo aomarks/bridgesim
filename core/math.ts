@@ -8,6 +8,16 @@ export function degrees(radians: number): number {
   return (radians * 180) / Math.PI;
 }
 
+export function normalizeDegrees(degrees: number): number {
+  while(degrees < 0) {
+    degrees += 360;
+  }
+  while(degrees > 360) {
+    degrees -= 360;
+  }
+  return degrees;
+}
+
 export function randInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }

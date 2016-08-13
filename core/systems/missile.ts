@@ -1,7 +1,5 @@
 import {Db} from '../entity/db';
 
-const RANGE = 30000;
-
 export class Missile {
   constructor(private db: Db) {}
 
@@ -11,7 +9,8 @@ export class Missile {
       if (traveled > 3000) {
         this.db.motion[id].thrust = 0;
       }
-      if (this.db.odometers[id].meters > RANGE) {
+      const missile = this.db.missiles[id];
+      if (this.db.odometers[id].meters > missile.range) {
         this.db.remove(id);
       }
     }

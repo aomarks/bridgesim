@@ -3,12 +3,14 @@
 
 import {Db} from '../../core/entity/db';
 import {heading} from '../../core/math';
+import {Weapon, FireWeapon} from '../../core/weapon';
 import {MapTap} from '../map';
 
 @component('weapons-station')
 class Weapons extends polymer.Base {
   @property({type: Object}) db: Db;
   @property({type: String}) shipId: string;
+  @property({type: Object}) weapon: Weapon;
 
   draw(localAlpha: number, remoteAlpha: number) {
     this.$.map.draw(localAlpha, remoteAlpha);
@@ -23,9 +25,12 @@ class Weapons extends polymer.Base {
     if (!pos) {
       return;
     }
-    this.fire('fire-laser', {
+    const fireWeapon: FireWeapon = {
       heading: heading(ev.detail, this.db.positions[this.shipId]),
-    });
+      target: ev.detail,
+      weapon: this.weapon,
+    };
+    this.fire('fire-weapon', fireWeapon);
   }
 }
 

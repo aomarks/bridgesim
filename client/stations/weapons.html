@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../map.html">
+<link rel="import" href="../weapon-selector.html">
 
 <dom-module id="weapons-station">
   <template>
@@ -18,6 +19,12 @@
         left: 0;
         z-index: 0;
       }
+
+      weapon-selector {
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
     </style>
 
     <bridgesim-map id="map"
@@ -31,5 +38,10 @@
       show-pathfinding="[[showPathfinding]]">
     </bridgesim-map>
 
+    <weapon-selector
+      db="[[db]]"
+      ship-id="[[shipId]]"
+      selected="{{weapon}}">
+    </weapon-selector>
   </template>
 </dom-module>

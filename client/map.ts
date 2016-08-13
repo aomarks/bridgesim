@@ -3,9 +3,10 @@
 import {Point, PositionInterface} from '../core/components';
 import {Db} from '../core/entity/db';
 import {SECTOR_METERS, maxCoord} from '../core/galaxy';
-import {hypot, radians} from '../core/math';
+import {headingToRadians, hypot, radians} from '../core/math';
 import {Pathfinder} from '../core/pathfinding';
 import {Quadtree} from '../core/quadtree';
+import {WeaponType} from '../core/weapon';
 
 import * as color from './colors';
 import {CANVAS_FONT, HP} from './const';
@@ -16,6 +17,11 @@ export interface MapTap { detail: Point; }
 const BLIP_PX = 2;
 const MIN_METERS_PER_PX = 10;   // How far in we can zoom.
 const MAX_METERS_PER_PX = 200;  // How far out we can zoom.
+
+const WEAPON_COLORS = {
+  [WeaponType.Laser]: color.RED,
+  [WeaponType.Missile]: color.AQUA,
+};
 
 @component('bridgesim-map')
 export class Map extends polymer.Base {
@@ -42,6 +48,8 @@ export class Map extends polymer.Base {
   private left: number;
   private top: number;
   private quadtree: Quadtree<string>;
+  private localAlpha: number;
+  private remoteAlpha: number;
 
   ready(): void {
     this.can = this.$.canvas;
@@ -95,7 +103,10 @@ export class Map extends polymer.Base {
     };
   }
 
-  lerpScreenPos(id: string, alpha: number): PositionInterface {
+  lerpScreenPos(id: string, alpha: number = null): PositionInterface {
+    if (alpha === null) {
+      alpha = id === this.shipId ? this.localAlpha : this.remoteAlpha;
+    }
     const pos = this.db.positions[id];
     if (pos == null) {
       return null;
@@ -114,6 +125,8 @@ export class Map extends polymer.Base {
       this.resize();  // gross
     }
     this.ctx.clearRect(0, 0, this.w, this.h);
+    this.localAlpha = localAlpha;
+    this.remoteAlpha = remoteAlpha;
 
     // Transform zoom range [0,1] to meter/px range.
     this.metersPerPx = (-this.zoom * (MAX_METERS_PER_PX - MIN_METERS_PER_PX)) +
@@ -132,14 +145,15 @@ export class Map extends polymer.Base {
     }
 
     this.drawGrid();
-    this.drawDebris(remoteAlpha);
-    this.drawStations(remoteAlpha);
-    this.drawRemoteShips(remoteAlpha);
-    this.drawLasers(remoteAlpha);
-    this.drawMissiles(remoteAlpha);
-    this.drawLocalShip(localAlpha);
+    this.drawDebris();
+    this.drawWeaponRanges();
+    this.drawStations();
+    this.drawRemoteShips();
+    this.drawLasers();
+    this.drawMissiles();
+    this.drawLocalShip();
     if (this.showBoundingBoxes) {
-      this.drawBoundingBoxes(localAlpha, remoteAlpha);
+      this.drawBoundingBoxes();
     }
     if (this.showQuadtree) {
       this.drawQuadtree();
@@ -148,7 +162,7 @@ export class Map extends polymer.Base {
       this.drawPathfinding();
     }
     if (this.showMotion) {
-      this.drawMotion(remoteAlpha);
+      this.drawMotion();
     }
   }
 
@@ -185,12 +199,12 @@ export class Map extends polymer.Base {
     ctx.stroke();
   }
 
-  private drawDebris(alpha: number): void {
+  private drawDebris(): void {
     const ctx = this.ctx;
     ctx.strokeStyle = '#964B00';
     ctx.beginPath();
     for (let id in this.db.debris) {
-      const coords = this.lerpScreenPos(id, alpha);
+      const coords = this.lerpScreenPos(id);
       if (coords == null) {
         continue;
       }
@@ -209,15 +223,47 @@ export class Map extends polymer.Base {
     ctx.stroke();
   }
 
-  private drawStations(alpha: number): void {
+  private drawWeaponRanges(): void {
+    const ctx = this.ctx;
+    ctx.lineWidth = 1;
+    for (let id in this.db.healths) {
+      const health = this.db.healths[id];
+      if (health.weapons.length == 0) {
+        continue;
+      }
+      const coords = this.lerpScreenPos(id);
+      if (coords == null) {
+        continue;
+      }
+      for (let weapon of health.weapons) {
+        ctx.beginPath();
+        ctx.strokeStyle = WEAPON_COLORS[weapon.type];
+        const radius = weapon.range / this.metersPerPx;
+        const rad = -headingToRadians(coords.yaw) + weapon.direction;
+        if (weapon.angle >= Math.PI * 2 || weapon.angle <= 0) {
+          ctx.moveTo(coords.x + radius, coords.y);
+          ctx.arc(coords.x, coords.y, radius, 0, 2 * Math.PI);
+        } else {
+          const start = rad - weapon.angle / 2;
+          const end = rad + weapon.angle / 2;
+          ctx.moveTo(coords.x, coords.y);
+          ctx.arc(coords.x, coords.y, radius, start, end);
+          ctx.lineTo(coords.x, coords.y);
+        }
+        ctx.stroke();
+      }
+    }
+  }
+
+  private drawStations(): void {
     for (let id in this.db.stations) {
-      const coords = this.lerpScreenPos(id, alpha);
+      const coords = this.lerpScreenPos(id);
       if (coords == null) {
         continue;
       }
 
       // Draw shield.
-      this.drawShield(id, alpha);
+      this.drawShield(id);
 
       this.drawImage(coords.x, coords.y, this.stationImage, 0, 1 / 2);
       const name = this.db.names[id].name;
@@ -229,18 +275,18 @@ export class Map extends polymer.Base {
     }
   }
 
-  private drawRemoteShips(alpha: number): void {
+  private drawRemoteShips(): void {
     for (let id in this.db.ships) {
       if (id === this.shipId) {
         continue;
       }
-      const coords = this.lerpScreenPos(id, alpha);
+      const coords = this.lerpScreenPos(id);
       if (coords == null) {
         return;
       }
 
       // Draw shield.
-      this.drawShield(id, alpha);
+      this.drawShield(id);
 
       // Assign a color based on AI friendliness.
       let shipColor = color.YELLOW;
@@ -264,11 +310,11 @@ export class Map extends polymer.Base {
     }
   }
 
-  private drawLasers(alpha: number): void {
+  private drawLasers(): void {
     const ctx = this.ctx;
     ctx.beginPath();
     for (let id in this.db.lasers) {
-      const pos = this.lerpScreenPos(id, alpha);
+      const pos = this.lerpScreenPos(id);
       if (pos == null) {
         continue;
       }
@@ -276,16 +322,16 @@ export class Map extends polymer.Base {
       ctx.moveTo(pos.x, pos.y);
       ctx.lineTo(pos.x + Math.cos(rads) * 20, pos.y + Math.sin(rads) * 20);
     }
-    ctx.strokeStyle = '#F00';
+    ctx.strokeStyle = WEAPON_COLORS[WeaponType.Laser];
     ctx.lineWidth = 2;
     ctx.stroke();
   }
 
-  private drawMissiles(alpha: number): void {
+  private drawMissiles(): void {
     const ctx = this.ctx;
     ctx.beginPath();
     for (let id in this.db.missiles) {
-      const pos = this.lerpScreenPos(id, alpha);
+      const pos = this.lerpScreenPos(id);
       if (pos == null) {
         continue;
       }
@@ -293,35 +339,34 @@ export class Map extends polymer.Base {
       ctx.moveTo(pos.x, pos.y);
       ctx.lineTo(pos.x + Math.cos(rads) * 5, pos.y + Math.sin(rads) * 5);
     }
-    ctx.strokeStyle = color.AQUA;
+    ctx.strokeStyle = WEAPON_COLORS[WeaponType.Missile];
     ctx.lineWidth = 2;
     ctx.stroke();
   }
 
-  private drawLocalShip(alpha: number): void {
+  private drawLocalShip(): void {
     if (this.shipId == null) {
       return;
     }
-    const pos = this.lerpScreenPos(this.shipId, alpha);
+    const pos = this.lerpScreenPos(this.shipId);
     if (pos == null) {
       return;
     }
 
     // Draw shield.
-    this.drawShield(this.shipId, alpha);
+    this.drawShield(this.shipId);
 
     // Draw ship icon.
     this.drawImage(pos.x, pos.y, this.shipImage, pos.yaw, .5);
   }
 
-  private drawBoundingBoxes(localAlpha: number, remoteAlpha: number): void {
+  private drawBoundingBoxes(): void {
     const ctx = this.ctx;
     ctx.beginPath();
     ctx.strokeStyle = color.YELLOW;
     ctx.lineWidth = 1;
     for (let id in this.db.collidables) {
-      const pos =
-          this.lerpScreenPos(id, id === this.shipId ? localAlpha : remoteAlpha);
+      const pos = this.lerpScreenPos(id);
       if (pos == null) {
         continue;
       }
@@ -389,13 +434,13 @@ export class Map extends polymer.Base {
     ctx.stroke();
   }
 
-  private drawMotion(alpha: number) {
+  private drawMotion() {
     const ctx = this.ctx;
     ctx.strokeStyle = color.YELLOW;
     ctx.lineWidth = 1;
     for (let id in this.db.motion) {
       const mot = this.db.motion[id];
-      const pos = this.lerpScreenPos(id, alpha);
+      const pos = this.lerpScreenPos(id);
       if (!pos || !mot) {
         continue;
       }
@@ -438,10 +483,10 @@ export class Map extends polymer.Base {
     ctx.restore();
   }
 
-  private drawShield(id: string, alpha: number): void {
+  private drawShield(id: string): void {
     const health = this.db.healths[id];
     const collidable = this.db.collidables[id];
-    const pos = this.lerpScreenPos(id, alpha);
+    const pos = this.lerpScreenPos(id);
     if (!health || !collidable || !pos || !health.shields) {
       return;
     }
