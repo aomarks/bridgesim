@@ -1,11 +1,11 @@
 ///<reference path='../bower_components/polymer-ts/polymer-ts.d.ts' />
 
 import {Db} from '../core/entity/db';
+import {degrees} from '../core/math';
 
 import * as color from './colors';
 import {CANVAS_FONT} from './const';
-import {snap, lerp} from './util';
-import {degrees} from '../core/math';
+import {lerp, snap} from './util';
 
 const OUTER_RING_WIDTH = 10;
 
@@ -36,6 +36,8 @@ export class HeadingIndicator extends polymer.Base {
   detached() { this.unlisten(window, 'resize', 'resize'); }
 
   public draw(alpha: number): void {
+    this.maybeResize();
+
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.w, this.h);
 
@@ -59,6 +61,12 @@ export class HeadingIndicator extends polymer.Base {
       this.drawTick(
           this.radius, degrees(Math.atan2(motion.velocityX, motion.velocityY)),
           8, '#FFF');
+    }
+  }
+
+  private maybeResize() {
+    if (this.w === 0 || this.h === 0) {
+      this.resize();
     }
   }
 
