@@ -2,6 +2,14 @@ import {Db} from './db';
 
 export function SpawnMissile(
     db: Db, origin: string, x: number, y: number, yaw: number, range: number) {
+  const res = db.resources[origin];
+  if (res) {
+    if (res.missile <= 0) {
+      return;
+    }
+    res.missile--;
+  }
+
   const id = db.spawn();
   const missile = db.newMissile(id);
   missile.range = range;

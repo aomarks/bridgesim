@@ -43,9 +43,10 @@ export class Host {
   private db: Db = new Db();
 
   // Systems
+  private collision = new Collision(this.db, this.settings.galaxySize);
   private systems: System[] = [
-    new Ai(this.db, this.settings.galaxySize),
-    new Collision(this.db, this.settings.galaxySize),
+    this.collision,
+    new Ai(this.db, this.settings.galaxySize, this.collision),
     new Death(this.db),
     new Input(this.db),
     new Laser(this.db),

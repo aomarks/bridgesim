@@ -4,7 +4,8 @@ import {maxCoord} from '../galaxy';
 import {Quadtree} from '../quadtree';
 
 export class Collision {
-  private quadtree: Quadtree<string>;
+  public quadtree: Quadtree<string>;
+
   constructor(private db: Db, galaxySize: number) {
     const max = maxCoord(galaxySize);
     this.quadtree = new Quadtree<string>(-max, -max, max, max);

@@ -5,7 +5,7 @@ const LASER_ENERGY = 10;
 
 export function SpawnLaser(
     db: Db, origin: string, x: number, y: number, yaw: number, range: number,
-    damage: number) {
+    damage: number): string {
   const res = db.resources[origin];
   if (res) {
     if (res.energy < LASER_ENERGY) {

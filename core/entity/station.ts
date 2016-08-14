@@ -36,6 +36,8 @@ export function SpawnStation(
       damage: 1,
     },
   ];
+  const ai = db.newAi(id);
+  ai.friendliness = 1;
   console.log('entity.station: spawned station', id, name);
   return id;
 }

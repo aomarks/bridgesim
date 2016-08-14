@@ -1,10 +1,7 @@
-import * as Components from '../components';
 import * as Net from '../../net/message';
+import * as Components from '../components';
 import {Db} from '../entity/db';
-import {SpawnLaser} from '../entity/laser';
-import {SpawnMissile} from '../entity/missile';
-import {clamp, degrees, normalizeDegrees} from '../math';
-import {WeaponType} from '../weapon';
+import {fireWeapon} from '../weapon';
 
 
 const MAX_TURN_SPEED = 5;  // Degrees per tick.
@@ -32,7 +29,8 @@ export class Input {
     const health = this.db.healths[id];
 
     if (power != null) {
-      const MAX_POWER = Object.keys(Components.Power.prototype.props).length * MAX_POWER_PER_SYSTEM;
+      const MAX_POWER = Object.keys(Components.Power.prototype.props).length *
+          MAX_POWER_PER_SYSTEM;
       let spare = MAX_POWER;
       for (let sys of Components.Power.prototype.props) {
         spare -= power[sys];
@@ -71,24 +69,9 @@ export class Input {
     }
 
     if (spawn && pos) {
-      for (let weapon of input.fireWeapons) {
-        const heading = weapon.heading;
-        const {angle, range, type, damage, direction} = weapon.weapon;
-        const angleDeg = degrees(angle) / 2;
-        const diff = Math.abs((pos.yaw + degrees(direction) - heading + 180 + 360) % 360 - 180);
-        if (diff > angleDeg) {
-          return;
-        }
-
-        if (type === WeaponType.Laser) {
-          SpawnLaser(this.db, id, pos.x, pos.y, heading, range, damage);
-        }
-
-        const resources = this.db.resources[id];
-        if (type == WeaponType.Missile && resources.missile > 0) {
-          SpawnMissile(this.db, id, pos.x, pos.y, heading, range);
-          resources.missile--;
-        }
+      for (let e of input.fireWeapons) {
+        const heading = e.heading;
+        fireWeapon(this.db, id, e.weapon, heading);
       }
     }
 
