@@ -19,7 +19,7 @@ npm run watch
 
 ### Run
 ```sh
-http-server
+http-server -c-1
 google-chrome http://localhost:8080/
 ```
 Use WASD to pilot.
