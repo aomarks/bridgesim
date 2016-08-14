@@ -1,14 +1,10 @@
 <link rel="import" href="deps.html">
+<link rel="import" href="bridgesim-card.html">
 
 <dom-module id="weapon-selector">
   <template>
     <style>
       :host {
-        margin: 10px;
-        padding: 5px;
-        background-color: rgba(0, 0, 0, .5);
-        border: 2px solid rgba(255, 255, 255, .2);
-        border-radius: 10px;
       }
       div {
         padding: 0.5em;
@@ -20,10 +16,12 @@
       }
     </style>
 
-    <template is="dom-repeat" items="[[weapons(shipId, db.healths)]]">
-      <div on-tap="select" selected$="[[isSelected(item, selected)]]">
-        [[weaponName(item.type)]] ([[item.range]]m)
-      </div>
-    </template>
+    <bridgesim-card medium>
+      <template is="dom-repeat" items="[[weapons(shipId, db.healths)]]">
+        <div on-tap="select" selected$="[[isSelected(item, selected)]]">
+          [[weaponName(item.type)]] ([[item.range]]m)
+        </div>
+      </template>
+    </bridgesim-card>
   </template>
 </dom-module>

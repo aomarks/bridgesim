@@ -1,8 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
-<link rel="import" href="../map.html">
+<link rel="import" href="../bridgesim-card.html">
 <link rel="import" href="../heading-indicator.html">
+<link rel="import" href="../map.html">
 
 <dom-module id="helm-station">
   <template>
@@ -34,15 +35,11 @@
       #zoom {
         position: absolute;
         width: 200px;
-        top: 10px;
-        right: 10px;
+        top: 0;
+        right: 0;
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        padding: 0 5px 0 10px;
-        background-color: rgba(0, 0, 0, .7);
-        border: 2px solid rgba(255, 255, 255, .2);
-        border-radius: 10px;
         z-index: 3;
       }
 
@@ -62,13 +59,13 @@
       }
     </style>
 
-    <div id="zoom">
+    <bridgesim-card id="zoom" small>
       <span>Zoom</span>
       <paper-slider
         value="{{zoom}}" immediate-value="{{zoom}}"
         min="0" max="1" step=".01">
       </paper-slider>
-    </div>
+    </bridgesim-card>
 
     <div id="leftTurner"
          on-down="startLeftTurn"
