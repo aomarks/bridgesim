@@ -179,6 +179,7 @@ export class Map extends polymer.Base {
     if (this.showWeaponRanges) {
       this.drawWeaponRanges();
     }
+    this.drawShields();
     this.drawStations();
     this.drawRemoteShips();
     this.drawLasers();
@@ -297,9 +298,6 @@ export class Map extends polymer.Base {
         continue;
       }
 
-      // Draw shield.
-      this.drawShield(id);
-
       this.drawImage(coords.x, coords.y, this.stationImage, 0, 1 / 2);
       const name = this.db.names[id].name;
       this.drawText(coords.x + 10, coords.y + 5, name);
@@ -319,9 +317,6 @@ export class Map extends polymer.Base {
       if (coords == null) {
         return;
       }
-
-      // Draw shield.
-      this.drawShield(id);
 
       // Assign a color based on AI friendliness.
       let shipColor = color.YELLOW;
@@ -387,9 +382,6 @@ export class Map extends polymer.Base {
     if (pos == null) {
       return;
     }
-
-    // Draw shield.
-    this.drawShield(this.shipId);
 
     // Draw ship icon.
     this.drawImage(pos.x, pos.y, this.shipImage, pos.yaw, .5);
@@ -541,21 +533,32 @@ export class Map extends polymer.Base {
     ctx.restore();
   }
 
-  private drawShield(id: string): void {
-    const health = this.db.healths[id];
-    const collidable = this.db.collidables[id];
-    const pos = this.lerpScreenPos(id);
-    if (!health || !collidable || !pos || !health.shieldsUp ||
-        health.shields <= 0) {
-      return;
+  private drawShields(): void {
+    for (let id in this.db.healths) {
+      const health = this.db.healths[id];
+      const collidable = this.db.collidables[id];
+      const pos = this.lerpScreenPos(id);
+
+      if (!collidable || !pos || !health.shieldsUp || health.shields <= 0) {
+        continue;
+      }
+
+      const shieldPercent = health.shields / health.shieldsMax;
+      if (shieldPercent < 0.2) {
+        this.ctx.strokeStyle = color.RED;
+      } else if (shieldPercent < 0.5) {
+        this.ctx.strokeStyle = color.YELLOW;
+      } else {
+        this.ctx.strokeStyle = color.BLUE;
+      }
+
+      this.ctx.lineWidth = 2;
+      this.ctx.beginPath();
+      const radius =
+          hypot(collidable.length / 2, collidable.width / 2) / this.metersPerPx;
+      this.ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI);
+      this.ctx.stroke();
     }
-    const radius =
-        hypot(collidable.length / 2, collidable.width / 2) / this.metersPerPx;
-    this.ctx.strokeStyle = color.BLUE;
-    this.ctx.lineWidth = 2;
-    this.ctx.beginPath();
-    this.ctx.arc(pos.x, pos.y, radius, 0, 2 * Math.PI);
-    this.ctx.stroke();
   }
 }
 Map.register();
