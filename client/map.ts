@@ -12,7 +12,12 @@ import * as color from './colors';
 import {CANVAS_FONT, HP} from './const';
 import {lerp, snap} from './util';
 
-export interface MapTap { detail: Point; }
+export interface MapTap { detail: Points; }
+
+export interface Points {
+  world: Point;
+  screen: Point;
+}
 
 const BLIP_PX = 2;
 const MIN_METERS_PER_PX = 10;   // How far in we can zoom.
@@ -28,8 +33,13 @@ export class Map extends polymer.Base {
   @property({type: Object}) db: Db;
   @property({type: String}) shipId: string;
   @property({type: String}) follow: string;
+  @property({type: String}) highlight: string;
   @property({type: Number, value: 2}) size: number;
   @property({type: Number, value: 0}) zoom: number;
+  @property({type: Boolean, value: false}) showWeaponRanges: boolean;
+  @property({type: Boolean, value: false}) dragPan: boolean;
+
+  // Debugging options.
   @property({type: Boolean, value: false}) showBoundingBoxes: boolean;
   @property({type: Boolean, value: false}) showQuadtree: boolean;
   @property({type: Boolean, value: false}) showPathfinding: boolean;
@@ -43,7 +53,9 @@ export class Map extends polymer.Base {
   private h: number;  // canvas height
   private centerCC: Point = {x: 0, y: 0};
   private followGC: Point = {x: 0, y: 0};
+  private panStartGC: Point = {x: 0, y: 0};
   private drawn: boolean = false;
+  private frame: number = 0;
   private metersPerPx: number;
   private left: number;
   private top: number;
@@ -80,9 +92,27 @@ export class Map extends polymer.Base {
 
   @listen('tap')
   handleTap(e: any) {
-    this.fire(
-        'map-tap',
-        this.screenToWorld(e.detail.x - this.left, e.detail.y - this.top));
+    const screen = {x: e.detail.x - this.left, y: e.detail.y - this.top};
+    this.fire('map-tap', {
+      screen: screen,
+      world: this.screenToWorld(screen.x, screen.y),
+    });
+  }
+
+  @listen('track')
+  mapTrack(e: any) {
+    if (!this.dragPan) {
+      return;
+    }
+    if (e.detail.state === 'start') {
+      this.panStartGC.x = this.followGC.x;
+      this.panStartGC.y = this.followGC.y;
+      e.target.style.cursor = 'move';
+    } else if (e.detail.state === 'end') {
+      e.target.style.cursor = 'auto';
+    }
+    this.followGC.x = this.panStartGC.x - (e.detail.dx * this.metersPerPx);
+    this.followGC.y = this.panStartGC.y + (e.detail.dy * this.metersPerPx);
   }
 
   worldToScreen(x: number, y: number): Point {
@@ -132,26 +162,29 @@ export class Map extends polymer.Base {
     this.metersPerPx = (-this.zoom * (MAX_METERS_PER_PX - MIN_METERS_PER_PX)) +
         MAX_METERS_PER_PX;
 
-    const pos = this.db.positions[this.follow];
-    if (this.follow == null || !pos) {
-      this.followGC.x = this.followGC.y = 0;
-    } else {
-      let prev = this.db.prevPositions[this.follow];
-      if (prev == null) {
-        prev = pos;
+    if (this.follow) {
+      const pos = this.db.positions[this.follow];
+      if (pos) {
+        let prev = this.db.prevPositions[this.follow];
+        if (prev == null) {
+          prev = pos;
+        }
+        this.followGC.x = lerp(pos.x, prev.x, localAlpha);
+        this.followGC.y = lerp(pos.y, prev.y, localAlpha);
       }
-      this.followGC.x = lerp(pos.x, prev.x, localAlpha);
-      this.followGC.y = lerp(pos.y, prev.y, localAlpha);
     }
 
     this.drawGrid();
     this.drawDebris();
-    this.drawWeaponRanges();
+    if (this.showWeaponRanges) {
+      this.drawWeaponRanges();
+    }
     this.drawStations();
     this.drawRemoteShips();
     this.drawLasers();
     this.drawMissiles();
     this.drawLocalShip();
+    this.drawHighlight();
     if (this.showBoundingBoxes) {
       this.drawBoundingBoxes();
     }
@@ -164,6 +197,8 @@ export class Map extends polymer.Base {
     if (this.showMotion) {
       this.drawMotion();
     }
+
+    this.frame++;
   }
 
   private drawGrid(): void {
@@ -182,7 +217,7 @@ export class Map extends polymer.Base {
     const gridRight = Math.min(this.w, galaxyPx + topLeft.x);
     let x = 0;
     let y = 0;
-    ctx.strokeStyle = color.GREEN;
+    ctx.strokeStyle = 'rgba(26, 224, 113, 0.5)';
     ctx.beginPath();
     for (let i = 0; i <= this.size; i++) {
       x = i * sectorPx + topLeft.x;
@@ -360,6 +395,29 @@ export class Map extends polymer.Base {
     this.drawImage(pos.x, pos.y, this.shipImage, pos.yaw, .5);
   }
 
+  private drawHighlight(): void {
+    if (this.highlight == null) {
+      return;
+    }
+    const pos = this.lerpScreenPos(this.highlight);
+    const col = this.db.collidables[this.highlight];
+    if (!pos || !col) {
+      return;
+    }
+
+    const radius = (Math.max(col.width, col.length) / this.metersPerPx) + 5;
+    const duration = 1 * 60;  // 1 second @ 60 FPS
+    const progress = (this.frame % duration) / duration;
+    const startAngle = 2 * Math.PI * progress;
+
+    const ctx = this.ctx;
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+    ctx.lineWidth = 2;
+    ctx.arc(pos.x, pos.y, radius, startAngle, startAngle + Math.PI);
+    ctx.stroke();
+  }
+
   private drawBoundingBoxes(): void {
     const ctx = this.ctx;
     ctx.beginPath();
@@ -487,7 +545,8 @@ export class Map extends polymer.Base {
     const health = this.db.healths[id];
     const collidable = this.db.collidables[id];
     const pos = this.lerpScreenPos(id);
-    if (!health || !collidable || !pos || !health.shieldsUp || health.shields <= 0) {
+    if (!health || !collidable || !pos || !health.shieldsUp ||
+        health.shields <= 0) {
       return;
     }
     const radius =

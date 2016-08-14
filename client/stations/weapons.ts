@@ -26,8 +26,8 @@ class Weapons extends polymer.Base {
       return;
     }
     const fireWeapon: FireWeapon = {
-      heading: heading(ev.detail, this.db.positions[this.shipId]),
-      target: ev.detail,
+      heading: heading(ev.detail.world, this.db.positions[this.shipId]),
+      target: ev.detail.world,
       weapon: this.weapon,
     };
     this.fire('fire-weapon', fireWeapon);

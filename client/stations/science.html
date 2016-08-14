@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../map.html">
 <link rel="import" href="../animate-selector.html">
 <link rel="import" href="../resource-display.html">
 <link rel="import" href="../health-display.html">
@@ -9,48 +10,102 @@
   <template>
     <style>
       :host {
-        display: block;
+        display: flex;
+        height: 100%;
         position: relative;
+        z-index: 0;
       }
-      paper-drawer-panel {
-        position: static;
+
+      [hidden] {
+        display: none !important;
       }
-      div[drawer], div[main] {
-        padding: 10px;
+
+      bridgesim-map {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1;
       }
-      div[drawer] {
-        background-color: transparent;
+
+      #info {
+        position: absolute;
+        width: 300px;
+        top: 10px;
+        left: 10px;
+        padding: 15px;
+        background-color: rgba(0, 0, 0, .7);
+        border: 2px solid rgba(255, 255, 255, .2);
+        border-radius: 10px;
+        z-index: 3;
       }
-      paper-menu {
-        color: white;
-        background-color: #212121;
+
+      #zoom {
+        position: absolute;
+        width: 200px;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 5px 0 10px;
+        background-color: rgba(0, 0, 0, .7);
+        border: 2px solid rgba(255, 255, 255, .2);
+        border-radius: 10px;
+        z-index: 3;
+      }
+
+      #vesselName {
+        margin-top: 0;
+      }
+
+      #scanButton {
+        background-color: #0b2e61;
+        min-width: 100px;
       }
     </style>
 
-    <paper-drawer-panel>
-      <div drawer>
-        <h3>Long Range Sensors</h3>
-        <animate-selector db="[[db]]" selected-id="{{selectedId}}"></animate-selector>
-      </div>
-      <div main>
-        <template is="dom-if" if="[[selected]]">
-          <h1>[[selected.name]]</h1>
-          <p>
-          Distance: <span>[[selected.distance]]</span>,
-          Heading: <span>[[selected.heading]]</span>
-          </p>
-          <paper-button disabled="[[scanning]]" on-tap="scan">Scan</paper-button>
-          <template is="dom-if" if="[[scanning]]">
-            Scanning... Please wait
-          </template>
-          <template is="dom-if" if="[[scanResults]]">
-            <h2>Scan Results</h2>
-            <p>[[scanResults]]</p>
-            <health-display db="[[db]]" ship-id="[[selectedId]]"></health-display>
-            <resource-display db="[[db]]" ship-id="[[selectedId]]"></resource-display>
-          </template>
+    <template is="dom-if" if="[[selected]]">
+      <div id="info">
+        <h1 id="vesselName">[[selected.name]]</h1>
+        <p>Distance: <span>[[selected.distance]]</span></p>
+        <p>Heading: <span>[[selected.heading]]</span></p>
+
+        <paper-button id="scanButton" disabled$="[[scanning]]" on-tap="scan">
+          <span hidden$="[[scanning]]">Scan</span>
+          <span hidden$="[[!scanning]]">Scanning</span>
+        </paper-button>
+
+        <template is="dom-if" if="[[scanResults]]">
+          <h2>Scan Results</h2>
+          <p>[[scanResults]]</p>
+          <health-display db="[[db]]" ship-id="[[selectedId]]"></health-display>
+          <resource-display db="[[db]]" ship-id="[[selectedId]]"></resource-display>
         </template>
       </div>
-    </paper-drawer-panel>
+    </template>
+
+    <bridgesim-map id="map"
+      db="[[db]]"
+      size="[[size]]"
+      ship-id="[[shipId]]"
+      highlight="[[selectedId]]"
+      zoom="[[zoom]]"
+      drag-pan
+      show-bounding-boxes="[[showBoundingBoxes]]"
+      show-quadtree="[[showQuadtree]]"
+      show-pathfinding="[[showPathfinding]]"
+      show-motion="[[showMotion]]">
+    </bridgesim-map>
+
+    <div id="zoom">
+      <span>Zoom</span>
+      <paper-slider
+        value="{{zoom}}" immediate-value="{{zoom}}"
+        min="0" max="1" step=".01">
+      </paper-slider>
+    </div>
+
   </template>
 </dom-module>
