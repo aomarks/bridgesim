@@ -1,54 +1,23 @@
 <link rel="import" href="deps.html">
+<link rel="import" href="./power-bar.html">
 
 <dom-module id="bridgesim-power">
   <template>
     <style>
       :host {
-        --bar-width: 40px;
-      }
-      #container {
-        border: 1px solid white;
+        --bar-width: 50px;
         padding: 5px;
-      }
-      .subsystem {
-        border: 1px solid black;
-        display: inline-block;
-        height: 200px;
-        text-transform: uppercase;
-        width: var(--bar-width);
-        position: relative;
-      }
-      .subsystem label {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        -moz-transform: translateX(-50%) translateY(-50%) rotate(-90deg);
-        -webkit-transform: translateX(-50%) translateY(-50%) rotate(-90deg);
-        transform:  translateX(-50%) translateY(-50%) rotate(-90deg);
-      }
-
-      .subsystem .bar {
-        background-color: blue;
-        bottom: 0;
-        height: 100%;
-        position: absolute;
-        width: var(--bar-width);
-        transition: height 0.1s;
-      }
-      .subsystem[active] {
-        border-color: red;
+        display: flex;
+        justify-content: space-around;
       }
     </style>
 
-    <h3>Power Levels</h3>
-    <div id="container">
-      <template is="dom-repeat" items="[[subsystems]]">
-        <div class="subsystem" active$="[[item.active]]">
-          <div class="bar" style$="[[height(item.level)]]"></div>
-          <label>[[item.name]]</label>
-        </div>
-      </template>
-    </div>
-    <sub>Use H, J, K and L to adjust power levels.</sub>
+    <template is="dom-repeat" items="[[subsystems]]">
+      <bridgesim-power-bar
+        name="[[item.name]]"
+        level="[[item.level]]"
+        active="[[item.active]]">
+      </bridgesim-power-bar>
+    </template>
   </template>
 </dom-module>

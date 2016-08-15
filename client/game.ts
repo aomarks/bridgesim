@@ -50,7 +50,6 @@ class Game extends polymer.Base {
   @property({type: Boolean, value: true}) serverHidden: boolean;
   @property({type: String}) playerId: string;
   @property({type: String}) shipId: string;
-  @property({type: String, value: 'engine'}) curSubsystem: string;
 
   private client: Client;
   private conn: Connection;
@@ -265,6 +264,11 @@ class Game extends polymer.Base {
   @listen('stop-turn')
   stopTurn() {
     this.$.input.stopTurn();
+  }
+
+  @listen('power')
+  power(ev: any) {
+    this.$.input.commands.power[ev.detail.name] = ev.detail.level;
   }
 
   notifyChanges(update: Update): void {

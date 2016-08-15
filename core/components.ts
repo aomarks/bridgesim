@@ -94,6 +94,10 @@ export class Power extends Component {
   @Component.prop engine: number = 0;
   @Component.prop maneuvering: number = 0;
   @Component.prop shields: number = 0;
+  @Component.prop laser: number = 0;
+  @Component.prop missile: number = 0;
+  @Component.prop sensor: number = 0;
+  @Component.prop ftl: number = 0;
 }
 
 export class Resources extends Component {

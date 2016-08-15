@@ -37,8 +37,8 @@ export class Input {
       }
 
       for (let sys in input.power) {
-        let delta = input.power[sys];
         const cur = power[sys];
+        let delta = input.power[sys] - cur;
         if (delta > spare) {
           delta = spare;
         }

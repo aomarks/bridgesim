@@ -15,7 +15,6 @@ function keyCode(ch: string): number {
 class Input extends polymer.Base {
   @property({type: Object}) db: Db;
   @property({type: String}) shipId: string;
-  @property({type: String, notify: true}) curSubsystem: string;
 
   private keys: {
     [key: number]: {
@@ -36,16 +35,6 @@ class Input extends polymer.Base {
       [keyCode('S')]: {binding: () => this.commands.thrust = -1, repeat: true},
       [keyCode('A')]: {binding: () => this.commands.turn = -1, repeat: true},
       [keyCode('D')]: {binding: () => this.commands.turn = 1, repeat: true},
-      [keyCode('K')]: {
-        binding: () => this.commands.power[this.curSubsystem] = .02,
-        repeat: true,
-      },
-      [keyCode('J')]: {
-        binding: () => this.commands.power[this.curSubsystem] = -.02,
-        repeat: true,
-      },
-      [keyCode('H')]: {binding: () => this.prevSubsystem()},
-      [keyCode('L')]: {binding: () => this.nextSubsystem()},
       [keyCode('Z')]: {binding: () => this.commands.toggleShield = true},
     };
   }
@@ -128,17 +117,5 @@ class Input extends polymer.Base {
       this.keys[code].down = false;
     }
   }
-
-  private nextSubsystem(advance: number = 1): void {
-    const power = this.db.power[this.shipId];
-    if (!power) {
-      return;
-    }
-    const names = Power.prototype.props;
-    let newIdx = (names.indexOf(this.curSubsystem) + advance + names.length) %
-        names.length;
-    this.curSubsystem = names[newIdx];
-  }
-  private prevSubsystem(): void { this.nextSubsystem(-1); }
 }
 Input.register();

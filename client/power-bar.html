@@ -1,0 +1,91 @@
+<link rel="import" href="deps.html">
+
+<dom-module id="bridgesim-power-bar">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      #container[active] {
+        border-color: red;
+      }
+
+      #bar {
+        display: inline-block;
+        height: 250px;
+        text-transform: uppercase;
+        width: var(--bar-width);
+        position: relative;
+        background-color: #333333;
+      }
+
+      #bar label {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        -moz-transform: translateX(-50%) rotate(-90deg) translateX(50%);
+        -webkit-transform: translateX(-50%) rotate(-90deg) translateX(50%);
+        transform: translateX(-50%) rotate(-90deg) translateX(50%);
+      }
+
+      #bar #level {
+        background-color: #0871b9;
+        bottom: 0;
+        height: 100%;
+        position: absolute;
+        width: var(--bar-width);
+        transition: height 0.1s;
+        pointer-events: none;
+      }
+
+      #heat, #idle {
+        width: var(--bar-width);
+        height: 30px;
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #333;
+      }
+
+      #readout {
+        height: 30px;
+        margin-top: 10px;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #idle[active] {
+        background-color: #de910a;
+      }
+
+      #heat[active] {
+        animation-duration: 1s;
+        animation-name: strobe;
+        animation-iteration-count: infinite;
+      }
+
+      @keyframes strobe {
+        0% {
+          background-color: red;
+          box-shadow: 0 0 5px 3px red;
+        }
+      }
+    </style>
+
+    <div id="container" active$="[[active]]">
+      <div id="bar" active$="[[active]]"
+           on-track="trackBar" on-down="downBar">
+        <div id="level" style$="[[height(level)]]"></div>
+        <label>[[name]]</label>
+      </div>
+
+      <div id="readout">[[percent(level)]]%</div>
+      <div id="heat" active$="[[overheat(level)]]">HEAT</div>
+      <div id="idle" active$="[[idle(level)]]">IDLE</div>
+    </div>
+  </template>
+</dom-module>
