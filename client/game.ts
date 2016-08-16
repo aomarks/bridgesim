@@ -19,8 +19,9 @@ class Game extends polymer.Base {
   @property({type: Boolean, value: false}) connecting: boolean;
   @property({type: Boolean, value: false}) connected: boolean;
   @property({type: Boolean, value: false}) gameOver: boolean;
-  @property({type: String, value: ''}) token: string;
+  @property({type: String, value: null}) token: string;
   @property({type: String, value: 'welcome'}) view: string;
+  @property({type: String, value: 'helm'}) defaultStation: string;
   @property({type: Object, value: ()=> { return {}; }}) views: any;
   @property({type: Number, value: 1}) size: number;
 
@@ -58,7 +59,6 @@ class Game extends polymer.Base {
   private prevTs: number = 0;
   private urlQuery: string;
   private animationRequestId: number;
-  private defaultStation: string = 'helm';
 
   ready(): void { console.log('game: ready'); }
 
@@ -104,27 +104,29 @@ class Game extends polymer.Base {
       this.connecting = true;
 
     } else {
+      this.view = 'join';
       this.token = hash;
-      this.connecting = true;
+      this.$.joiner.join();
     }
   }
 
   @observe('urlParams')
   urlParamsChanged(params: any) {
-    console.log('urlParamsChanged', params);
     if (params.station) {
       this.defaultStation = params.station;
+    }
+    if (params.view) {
+      this.view = params.view;
     }
     if (params.nolerp != null) {
       this.set('settings.interpolate', false);
     }
+    if (params.nometrics != null) {
+      this.set('settings.showMetrics', false);
+    }
   }
 
-  @property({computed: 'computeShowWelcome(connecting, connected)'})
-  showWelcome: boolean;
-  computeShowWelcome(connecting: boolean, connected: boolean): boolean {
-    return !connecting && !connected;
-  }
+  showWelcome() { this.view = 'welcome'; }
 
   @property({computed: 'computeShowJoin(connecting, connected)'})
   showJoin: boolean;
@@ -236,6 +238,7 @@ class Game extends polymer.Base {
       this.connected = true;
       this.connecting = false;
       this.view = this.defaultStation;
+      console.log(this.view, this.defaultStation);
 
     } else if (msg.receiveChat) {
       this.$.chat.receiveMsg(msg.receiveChat);

@@ -16,19 +16,17 @@
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 
-<link rel="import" href="../bower_components/webrtc-lobby-elements/webrtc-lobby-elements.html">
-
 <link rel="import" href="./chat.html">
 <link rel="import" href="./debug-metrics.html">
 <link rel="import" href="./deps.html">
 <link rel="import" href="./host.html">
 <link rel="import" href="./input.html">
 <link rel="import" href="./lobby.html">
-<link rel="import" href="./peer-copypaste.html">
 <link rel="import" href="./peer-localstorage.html">
 <link rel="import" href="./settings-menu.html">
 <link rel="import" href="./scenario-selector.html">
 <link rel="import" href="./welcome.html">
+<link rel="import" href="./join.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -71,7 +69,7 @@
         --paper-dialog: {
           @apply(--bridgesim-font);
         }
-        --paper-input-container: {
+        --paper-input-container-input: {
           @apply(--bridgesim-font);
         }
         --paper-input-container-label: {
@@ -225,15 +223,15 @@
            id="views"
            class="flex"
            selected="[[view]]"
+           selected-attribute="active"
            attr-for-selected="name">
 
-          <bridgesim-welcome name="welcome"
-                             fullscreen hidden$="[[!showWelcome]]"
+          <bridgesim-welcome name="welcome" fullscreen
                              on-join="joinGame" on-host="hostGame">
           </bridgesim-welcome>
 
-          <bridgesim-join name="join"
-                          fullscreen hidden$="[[!showJoin]]">
+          <bridgesim-join id="joiner" name="join" fullscreen
+                          token="{{token}}" on-cancel="showWelcome">
           </bridgesim-join>
 
           <helm-station name="helm"
@@ -283,9 +281,6 @@
         </iron-pages>
       </div>
     </paper-drawer-panel>
-
-    <bridgesim-peer-copypaste id="peerCopypaste">
-    </bridgesim-peer-copypaste>
 
     <bridgesim-input id="input"
       db="{{db}}"

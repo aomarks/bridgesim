@@ -1,0 +1,82 @@
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="../bower_components/webrtc-lobby-elements/webrtc-lobby-elements.html">
+
+<dom-module id="bridgesim-join">
+  <template>
+    <style include="iron-flex"></style>
+
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        @apply(--layout-center-center);
+        margin-top: -30px;
+
+        --paper-input-container-input: {
+          @apply(--bridgesim-font);
+          color: #ffeb3b;
+          font-size: 40px;
+        }
+
+        --paper-input-container-invalid-color: red;
+
+        --paper-button-disabled: {
+          background: none;
+        }
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      #tokenInput {
+        width: 220px;
+        margin: -20px 0 30px 0;
+      }
+
+      paper-spinner-lite {
+        width: 50px;
+        height: 50px;
+      }
+    </style>
+
+    <div hidden$="[[connecting]]"
+         class="layout vertical center">
+      <p>Enter host token:</p>
+
+      <paper-input id="tokenInput"
+                   value="{{token}}"
+                   spellcheck="false"
+                   auto-validate required
+                   invalid="{{invalid}}"
+                   minlength="10" maxlength="10"
+                   error-message="[[error]]">
+      </paper-input>
+
+      <div class="layout horizontal">
+        <paper-button on-tap="join">
+          JOIN
+        </paper-button>
+
+        <paper-button on-tap="cancel" disabled$="[[connecting]]">
+          CANCEL
+        </paper-button>
+      </div>
+    </div>
+
+    <div hidden$="[[!connecting]]"
+         class="layout vertical center">
+      <paper-spinner-lite active$="[[connecting]]"></paper-spinner-lite>
+      <p>connecting</p>
+    </div>
+
+    <webrtc-lobby-list id="lobbyList"
+                       url="wss://fn.lc/lobby"
+                       service="bridgesim">
+    </webrtc-lobby-list>
+
+  </template>
+</dom-module>
