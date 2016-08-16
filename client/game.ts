@@ -14,13 +14,14 @@ import {Settings} from './settings';
 @component('bridgesim-game')
 class Game extends polymer.Base {
   @property({type: Boolean, value: false}) hosting: boolean;
+  @property({type: Boolean, value: false}) joining: boolean;
   @property({type: Boolean, value: false}) scanLocal: boolean;
   @property({type: Boolean, value: false}) connecting: boolean;
   @property({type: Boolean, value: false}) connected: boolean;
   @property({type: Boolean, value: false}) gameOver: boolean;
   @property({type: String, value: ''}) token: string;
-  @property({type: String, value: 'helm'}) station: string;
-  @property({type: Object, value: ()=> { return {}; }}) stations: any;
+  @property({type: String, value: 'welcome'}) view: string;
+  @property({type: Object, value: ()=> { return {}; }}) views: any;
   @property({type: Number, value: 1}) size: number;
 
   @property({
@@ -57,6 +58,7 @@ class Game extends polymer.Base {
   private prevTs: number = 0;
   private urlQuery: string;
   private animationRequestId: number;
+  private defaultStation: string = 'helm';
 
   ready(): void { console.log('game: ready'); }
 
@@ -83,6 +85,7 @@ class Game extends polymer.Base {
     this.shipId = null;
     this.connected = false;
     this.hosting = false;
+    this.joining = false;
     this.prevTs = 0;
   }
 
@@ -90,7 +93,7 @@ class Game extends polymer.Base {
   urlHashChanged(hash: string) {
     if (!hash || hash === 'null') {
       // TODO Why is hash sometimes the string "null"?
-      return;
+      return
     }
 
     if (hash === 'host') {
@@ -110,7 +113,7 @@ class Game extends polymer.Base {
   urlParamsChanged(params: any) {
     console.log('urlParamsChanged', params);
     if (params.station) {
-      this.station = params.station;
+      this.defaultStation = params.station;
     }
     if (params.nolerp != null) {
       this.set('settings.interpolate', false);
@@ -122,6 +125,10 @@ class Game extends polymer.Base {
   computeShowWelcome(connecting: boolean, connected: boolean): boolean {
     return !connecting && !connected;
   }
+
+  @property({computed: 'computeShowJoin(connecting, connected)'})
+  showJoin: boolean;
+  computeShowJoin(): boolean { return true; }
 
   @property({computed: 'computeShowStations(connected, gameOver)'})
   showStations: boolean;
@@ -150,9 +157,9 @@ class Game extends polymer.Base {
     }
   }
 
-  @observe('station')
-  stationChanged(station: string) {
-    this.stations = {[station]: true};
+  @observe('view')
+  viewChanged(view: string) {
+    this.views = {[view]: true};
   }
 
   openSettingsDialog(): void { this.$.settingsDialog.open(); }
@@ -200,7 +207,7 @@ class Game extends polymer.Base {
 
   hostGame(): void { this.hosting = true; }
 
-  joinGame(): void { this.$.peerCopypaste.openClientDialog(); }
+  joinGame(): void { this.view = 'join'; }
 
   invitePlayer(): void { this.$.peerCopypaste.openHostDialog(); }
 
@@ -228,6 +235,7 @@ class Game extends polymer.Base {
       this.frame(0);
       this.connected = true;
       this.connecting = false;
+      this.view = this.defaultStation;
 
     } else if (msg.receiveChat) {
       this.$.chat.receiveMsg(msg.receiveChat);
@@ -312,11 +320,9 @@ class Game extends polymer.Base {
     }
 
     this.shipId = this.db.players[this.playerId].shipId;
-    const station = this.$.stations.selectedItem;
-    if (station && this.shipId != null) {
-      if (station.draw) {
-        station.draw(alpha, alpha);
-      }
+    const view = this.$.views.selectedItem;
+    if (view && view.draw && this.shipId != null) {
+      view.draw(alpha, alpha);
     }
 
     // Check for ship destruction.

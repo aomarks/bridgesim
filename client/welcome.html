@@ -1,0 +1,36 @@
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<dom-module id="bridgesim-welcome">
+  <template>
+    <style include="iron-flex"></style>
+
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        @apply(--layout-center-center);
+      }
+
+      [title] {
+        font-size: 32px;
+        font-weight: normal;
+        margin: -20px 0 15px 0;
+      }
+
+      #join {
+        color: #2196f3;
+      }
+
+      #host {
+        color: #ffa700;
+      }
+    </style>
+
+    <h2 title>BRIDGESIM</h2>
+    <div class="layout horizontal">
+      <paper-button id="join" on-tap="fireJoin">JOIN</paper-button>
+      <paper-button id="host" on-tap="fireHost">HOST</paper-button>
+    </div>
+  </template>
+</dom-module>

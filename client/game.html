@@ -28,6 +28,7 @@
 <link rel="import" href="./peer-localstorage.html">
 <link rel="import" href="./settings-menu.html">
 <link rel="import" href="./scenario-selector.html">
+<link rel="import" href="./welcome.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -82,6 +83,10 @@
         --paper-item: {
           @apply(--bridgesim-font);
         }
+      }
+
+      [fullscreen] {
+        height: 100%;
       }
 
       paper-tab {
@@ -183,7 +188,7 @@
           </paper-icon-button>
 
           <paper-tabs no-bar hidden$="[[!showStations]]"
-                      selected="{{station}}"
+                      selected="{{view}}"
                       attr-for-selected="name"
                       class="flex-1">
             <paper-tab name="helm">HLM</paper-tab>
@@ -195,16 +200,8 @@
           </paper-tabs>
         </div>
 
-        <div hidden$="[[!showWelcome]]"
-             class="flex-1 layout vertical center-center flex-1">
-          <h1>BRIDGESIM</h1>
-          <p>Welcome! What would you like to do?</p>
-          <div class="layout horizontal">
-            <paper-button on-tap="joinGame">Join</paper-button>
-            <paper-button on-tap="hostGame">Host</paper-button>
-          </div>
-          <scenario-selector scenario="{{scenario}}"></scenario-selector>
-        </div>
+        <scenario-selector scenario="{{scenario}}" hidden>
+        </scenario-selector>
 
         <div hidden$="[[!connecting]]"
              class="flex-1 layout vertical center-center flex-1">
@@ -225,11 +222,19 @@
         </bridgesim-chat>
 
         <iron-pages
-           id="stations"
+           id="views"
            class="flex"
-           hidden="[[!showStations]]"
-           selected="[[station]]"
+           selected="[[view]]"
            attr-for-selected="name">
+
+          <bridgesim-welcome name="welcome"
+                             fullscreen hidden$="[[!showWelcome]]"
+                             on-join="joinGame" on-host="hostGame">
+          </bridgesim-welcome>
+
+          <bridgesim-join name="join"
+                          fullscreen hidden$="[[!showJoin]]">
+          </bridgesim-join>
 
           <helm-station name="helm"
             db="[[db]]"
