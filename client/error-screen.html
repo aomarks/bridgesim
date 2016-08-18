@@ -1,0 +1,25 @@
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="bridgesim-error-screen">
+  <template>
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        @apply(--layout-center-center);
+        padding: 0 20px;
+      }
+
+      iron-icon {
+        width: 100px;
+        height: 100px;
+        color: #FFEB3B;
+      }
+    </style>
+
+    <iron-icon icon="error"></iron-icon>
+
+    <content></content>
+
+  </template>
+</dom-module>

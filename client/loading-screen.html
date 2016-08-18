@@ -1,0 +1,25 @@
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
+
+<dom-module id="bridgesim-loading-screen">
+  <template>
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        @apply(--layout-center-center);
+        padding: 0 20px;
+      }
+
+      paper-spinner-lite {
+        width: 50px;
+        height: 50px;
+      }
+    </style>
+
+    <paper-spinner-lite active$="[[active]]">
+    </paper-spinner-lite>
+
+    <content></content>
+
+  </template>
+</dom-module>

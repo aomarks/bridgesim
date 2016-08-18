@@ -11,7 +11,6 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
@@ -25,8 +24,10 @@
 <link rel="import" href="./peer-localstorage.html">
 <link rel="import" href="./settings-menu.html">
 <link rel="import" href="./scenario-selector.html">
-<link rel="import" href="./welcome.html">
-<link rel="import" href="./join.html">
+<link rel="import" href="./welcome-screen.html">
+<link rel="import" href="./error-screen.html">
+<link rel="import" href="./loading-screen.html">
+<link rel="import" href="./join-screen.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -135,11 +136,6 @@
       [hidden] {
         display: none !important;
       }
-
-      paper-spinner-lite {
-        width: 50px;
-        height: 50px;
-      }
     </style>
 
     <paper-drawer-panel force-narrow>
@@ -201,12 +197,6 @@
         <scenario-selector scenario="{{scenario}}" hidden>
         </scenario-selector>
 
-        <div hidden$="[[!connecting]]"
-             class="flex-1 layout vertical center-center flex-1">
-          <paper-spinner-lite active$="[[connecting]]"></paper-spinner-lite>
-          <p>connecting</p>
-        </div>
-
         <div hidden$="[[!gameOver]]"
              class="flex-1 layout vertical center-center flex-1">
           <h1>Game Over</h1>
@@ -226,13 +216,22 @@
            selected-attribute="active"
            attr-for-selected="name">
 
-          <bridgesim-welcome name="welcome" fullscreen
-                             on-join="joinGame" on-host="hostGame">
-          </bridgesim-welcome>
+          <bridgesim-error-screen name="error" fullscreen>
+            <p>[[errorMsg]]</p>
+          </bridgesim-error-screen>
 
-          <bridgesim-join id="joiner" name="join" fullscreen
-                          token="{{token}}" on-cancel="showWelcome">
-          </bridgesim-join>
+          <bridgesim-loading-screen name="loading" fullscreen>
+            <p>[[loadingMsg]]</p>
+          </bridgesim-loading-screen>
+
+          <bridgesim-welcome-screen name="welcome" fullscreen
+            on-join="joinGame" on-host="hostGame">
+          </bridgesim-welcome-screen>
+
+          <bridgesim-join-screen id="joinScreen" name="join" fullscreen
+                                 token="{{token}}"
+                                 on-cancel="showWelcome">
+          </bridgesim-join-screen>
 
           <helm-station name="helm"
             db="[[db]]"

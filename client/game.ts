@@ -16,10 +16,11 @@ class Game extends polymer.Base {
   @property({type: Boolean, value: false}) hosting: boolean;
   @property({type: Boolean, value: false}) joining: boolean;
   @property({type: Boolean, value: false}) scanLocal: boolean;
-  @property({type: Boolean, value: false}) connecting: boolean;
   @property({type: Boolean, value: false}) connected: boolean;
   @property({type: Boolean, value: false}) gameOver: boolean;
   @property({type: String, value: null}) token: string;
+  @property({type: String, value: null}) errorMsg: string;
+  @property({type: String, value: null}) loadingMsg: string;
   @property({type: String, value: 'welcome'}) view: string;
   @property({type: String, value: 'helm'}) defaultStation: string;
   @property({type: Object, value: ()=> { return {}; }}) views: any;
@@ -93,7 +94,7 @@ class Game extends polymer.Base {
   urlHashChanged(hash: string) {
     if (!hash || hash === 'null') {
       // TODO Why is hash sometimes the string "null"?
-      return
+      return;
     }
 
     if (hash === 'host') {
@@ -101,12 +102,13 @@ class Game extends polymer.Base {
 
     } else if (hash === 'local') {
       this.scanLocal = true;
-      this.connecting = true;
+      this.view = 'loading';
+      this.loadingMsg = 'searching for local game';
 
     } else {
       this.view = 'join';
       this.token = hash;
-      this.$.joiner.join();
+      this.$.joinScreen.join();
     }
   }
 
@@ -144,7 +146,8 @@ class Game extends polymer.Base {
       this.urlHash = 'host';
 
       // We should expect an incoming local connection.
-      this.connecting = true;
+      this.view = 'loading';
+      this.loadingMsg = 'starting host';
 
       // The local storage system needs to know where to send offers. Set this
       // up async because the elements won't have been stamped out yet.
@@ -187,6 +190,18 @@ class Game extends polymer.Base {
     if (this.conn) {
       this.conn.send({updatePlayer: {name: name}}, true);
     }
+  }
+
+  @listen('loading')
+  onLoading(ev: {detail: string}) {
+    this.loadingMsg = ev.detail || 'loading';
+    this.view = 'loading';
+  }
+
+  @listen('error')
+  onError(ev: {detail: string}) {
+    this.errorMsg = ev.detail || 'error';
+    this.view = 'error';
   }
 
   @listen('connection')
@@ -236,7 +251,6 @@ class Game extends polymer.Base {
       // Start the rendering loop.
       this.frame(0);
       this.connected = true;
-      this.connecting = false;
       this.view = this.defaultStation;
       console.log(this.view, this.defaultStation);
 
