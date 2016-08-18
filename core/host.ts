@@ -71,6 +71,7 @@ export class Host {
     conn.onMessage = msg => { this.onMessage(connId, msg); };
     conn.onClose = () => {
       console.log('host: connection closed', connId);
+      conn.onMessage = null;
       this.db.remove(connId);
       delete this.conns[connId];
       this.announce('player ' + connId + ' disconnected');

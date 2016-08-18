@@ -11,6 +11,10 @@ import * as Net from '../net/message';
 import {ChatEvent} from './chat';
 import {Settings} from './settings';
 
+// Milliseconds to wait after we last heard from the host before we assume it's
+// gone forever.
+const HOST_TIMEOUT = 10 * 1000;
+
 @component('bridgesim-game')
 class Game extends polymer.Base {
   @property({type: Boolean, value: false}) hosting: boolean;
@@ -67,6 +71,7 @@ class Game extends polymer.Base {
 
   disconnect() {
     console.log('game: disconnect');
+    this.cancelDebouncer('host-timeout');
     cancelAnimationFrame(this.animationRequestId);
 
     if (this.client) {
@@ -216,7 +221,11 @@ class Game extends polymer.Base {
     this.client =
         new Client(this.conn, this.$.input.process.bind(this.$.input));
 
-    this.conn.onClose = this.disconnect.bind(this);
+    this.conn.onClose = () => {
+      this.view = 'error';
+      this.errorMsg = 'host disconnected';
+      this.disconnect();
+    };
 
     console.log('game: sending hello');
     this.conn.send({hello: {name: this.settings.name}}, true);
@@ -238,6 +247,13 @@ class Game extends polymer.Base {
     if (this.settings.showMetrics) {
       this.$$('#metrics').recv(bytes);
     }
+
+    this.debounce('host-timeout', () => {
+      console.log('game: host timed out after', HOST_TIMEOUT / 1000, 'seconds');
+      this.view = 'error';
+      this.errorMsg = 'host timed out';
+      this.disconnect();
+    }, HOST_TIMEOUT);
 
     if (msg.welcome) {
       console.log('game: got welcome', msg.welcome.playerId);
