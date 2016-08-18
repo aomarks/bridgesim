@@ -104,7 +104,14 @@ export class Client {
     // Don't apply incremental updates until next tick. We don't want to update
     // the database e.g. while in the middle of rendering a frame.
     this.updates.push(update);
-    this.lastUpdateTime = now();
+    // Although the host has told us its expected update interval, it might
+    // sometimes drop, e.g. if it's starved because it's in a background tab.
+    // Use the most recent actual update interval instead. This way our
+    // interpolation alpha will adapt, and motion will appear more smooth.
+    // TODO Consider a rolling average.
+    const n = now();
+    this.updateInterval = n - this.lastUpdateTime;
+    this.lastUpdateTime = n;
   }
 
   private sendCommands() {
