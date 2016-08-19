@@ -41,7 +41,7 @@ class JoinScreen extends polymer.Base {
           return con.takeAnswer(decodeRSD(resp.Answer));
         })
         .catch(error => {
-          this.fire('error', error);
+          this.fire('error-screen', error);
           con.onOpen = null;
         });
   }

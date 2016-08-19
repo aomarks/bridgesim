@@ -203,9 +203,9 @@ class Game extends polymer.Base {
     this.view = 'loading';
   }
 
-  @listen('error')
+  @listen('error-screen')
   onError(ev: {detail: string}) {
-    this.errorMsg = ev.detail || 'error';
+    this.errorMsg = ev.detail || 'unknown error';
     this.view = 'error';
   }
 
