@@ -37,11 +37,12 @@ URL query parameters set debugging options:
 ```
 ?station=weapons # Default to the given station.
 ?autostart       # If hosting, start the game immediately.
+?metrics         # Show FPS, data usage, etc.
 ```
 
 Example:
 ```
-http://localhost:8080/?station=weapons&autostart#host
+http://localhost:8080/?station=weapons&metrics&autostart#host
 ```
 
 ### Test

@@ -141,8 +141,8 @@ class Game extends polymer.Base {
     if (params.nolerp != null) {
       this.set('settings.interpolate', false);
     }
-    if (params.nometrics != null) {
-      this.set('settings.showMetrics', false);
+    if (params.metrics != null) {
+      this.set('settings.showMetrics', true);
     }
   }
 
