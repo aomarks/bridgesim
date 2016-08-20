@@ -195,7 +195,6 @@
 
         <bridgesim-chat id="chat"
                         hidden="true"
-                        on-send-chat="sendChat"
                         class="flex-none">
         </bridgesim-chat>
 
@@ -227,9 +226,7 @@
                                   db="[[db]]"
                                   hosting="[[hosting]]"
                                   token="[[token]]"
-                                  scenario="{{scenario}}"
-                                  on-create-ship="createShip"
-                                  on-join-crew="joinCrew">
+                                  scenario="{{scenario}}">
           </bridgesim-lobby-screen>
 
           <helm-station name="helm"

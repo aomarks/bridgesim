@@ -1,6 +1,6 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 
-import {ReceiveChat} from '../net/message';
+import * as Net from '../net/message';
 
 export interface ChatEvent { text: string }
 
@@ -11,7 +11,7 @@ export class Chat extends polymer.Base {
   @property({type: Boolean, value: false}) noInput;
 
   private text: string = '';
-  private log: ReceiveChat[];
+  private log: Net.ReceiveChat[];
 
   ready(): void {
     this.log = [];
@@ -24,11 +24,15 @@ export class Chat extends polymer.Base {
     if (!this.text.trim()) {
       return;
     }
-    this.fire('send-chat', <ChatEvent>{text: this.text});
+    this.fire('net-send', <Net.Message>{
+      sendChat: {
+        text: this.text,
+      },
+    });
     this.text = '';
   }
 
-  receiveMsg(chat: ReceiveChat): void { this.unshift('log', chat); }
+  receiveMsg(chat: Net.ReceiveChat): void { this.unshift('log', chat); }
 
   private open(ev: KeyboardEvent): void {
     if (this.noInput) {

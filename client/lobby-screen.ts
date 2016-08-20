@@ -36,8 +36,10 @@ class LobbyScreen extends polymer.Base {
   @property({type: String, value: null}) newShipName: string;
 
   private createShip() {
-    this.fire('create-ship', <Net.CreateShip>{
-      name: this.newShipName,
+    this.fire('net-send', <Net.Message>{
+      createShip: {
+        name: this.newShipName,
+      },
     });
     this.newShipName = null;
   }
@@ -45,9 +47,11 @@ class LobbyScreen extends polymer.Base {
   private claimStation(e: any) {
     const ship: Ship = this.$.ships.modelForElement(e.target).ship;
     const station: Station = e.model.station;
-    this.fire('join-crew', <Net.JoinCrew>{
-      shipId: ship.id,
-      station: station.id,
+    this.fire('net-send', <Net.Message>{
+      joinCrew: {
+        shipId: ship.id,
+        station: station.id,
+      },
     });
   }
 

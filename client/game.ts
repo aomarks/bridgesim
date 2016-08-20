@@ -313,18 +313,6 @@ class Game extends polymer.Base {
     }[this.db.players[this.playerId].station || Net.Station.Helm];
   }
 
-  sendChat(event: {detail: ChatEvent}): void {
-    this.conn.send({sendChat: {text: event.detail.text}}, true);
-  }
-
-  joinCrew(event: {detail: Net.JoinCrew}): void {
-    this.conn.send({joinCrew: event.detail}, true);
-  }
-
-  createShip(event: {detail: Net.CreateShip}): void {
-    this.conn.send({createShip: event.detail}, true);
-  }
-
   @listen('net-send')
   onNetSend(event: {detail: Net.Message}) {
     this.conn.send(event.detail, true);
