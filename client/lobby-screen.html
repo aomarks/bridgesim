@@ -1,0 +1,161 @@
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="scenario-selector.html">
+<link rel="import" href="deps.html">
+
+<dom-module id="bridgesim-lobby-screen">
+  <template>
+    <style include="iron-flex iron-flex-factors iron-flex-alignment"></style>
+
+    <style>
+      :host {
+        @apply(--layout-vertical);
+        padding-top: 24px;
+        overflow-x: auto;
+        overflow-y: auto;
+        --primary-background-color: black;
+        --primary-text-color: white;
+      }
+
+      paper-button[disabled] {
+        color: #a8a8a8 !important;
+        background: none;
+      }
+
+      section {
+        border: 1px solid #63A1DE;
+        padding: 12px;
+        margin: 0 24px 24px 24px;
+        min-width: 300px;
+        max-width: 650px;
+      }
+
+      h3, h4 {
+        margin: 0;
+        font-weight: normal;
+      }
+
+      .heading {
+        min-width: 100px;
+      }
+
+      #token {
+        color: #FF5722;
+      }
+
+      .ship {
+        margin: 0 24px 24px 0;
+      }
+
+      .shipName {
+        font-size: 18px;
+        color: #A1CEFB;
+      }
+
+      .crewTable {
+        margin-top: 10px;
+      }
+
+      .stationPlayer {
+        padding-left: 24px;
+        text-align: center;
+        height: 24px;
+      }
+
+      .claimButton {
+        color: #FF5722;
+        height: 16px;
+      }
+
+      #createShip {
+        margin: 24px 0 24px 0;
+      }
+
+      #createShip paper-button {
+        color: #FF5722;
+      }
+
+      #startButton {
+        background-color: #DE5C13;
+        width: 150px;
+        height: 40px;
+      }
+    </style>
+
+    <section class="flex-none layout horizontal center">
+      <h3 class="heading">TOKEN</h3>
+      <div id="token">[[token]]<div>
+    </section>
+
+    <section class="flex-none layout horizontal center">
+      <h3 class="heading">SCENARIO</h3>
+
+      <scenario-selector scenario="{{scenario}}"
+                         disabled="[[!hosting]]">
+      </scenario-selector>
+    </section>
+
+    <section class="flex-1">
+      <h3>CREWS</h3>
+
+      <div id="createShip" class="layout horizontal">
+        <paper-input placeholder="Ship Name"
+                     value="{{newShipName}}"
+                     no-label-float>
+        </paper-input>
+        <paper-button disabled="[[!newShipName]]"
+                      on-tap="createShip">
+          <iron-icon icon="add"></iron-icon> NEW SHIP
+        </paper-button>
+      </div>
+
+      <div class="layout horizontal wrap justified">
+        <template is="dom-repeat" id="ships"
+                  items="[[ships]]" as="ship">
+          <div class="ship">
+            <h4 class="shipName">[[ship.name]]</h4>
+
+            <table class="crewTable">
+              <template is="dom-repeat"
+                        items="[[ship.stations]]" as="station">
+                <tr>
+                  <td class="stationName">[[station.name]]</td>
+                  <td class="stationPlayer">
+                    <paper-button class="claimButton"
+                                  hidden="[[station.playerName]]"
+                                  on-tap="claimStation">
+                      CLAIM
+                    </paper-button>
+
+                    <span class="playerName"
+                          hidden="[[!station.playerName]]">
+                      [[station.playerName]]
+                    </span>
+                  </td>
+                </div>
+              </template>
+            </table>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <section class="flex-none layout horizontal around-justified center">
+      <paper-button id="startButton"
+                    hidden$="[[!hosting]]"
+                    on-tap="start">
+        START
+      </paper-button>
+
+      <p hidden$="[[hosting]]">
+        Waiting for host to start.
+      </p>
+    </section>
+
+  </template>
+</dom-module>

@@ -20,7 +20,6 @@
 <link rel="import" href="./deps.html">
 <link rel="import" href="./host.html">
 <link rel="import" href="./input.html">
-<link rel="import" href="./lobby.html">
 <link rel="import" href="./peer-localstorage.html">
 <link rel="import" href="./settings-menu.html">
 <link rel="import" href="./scenario-selector.html">
@@ -28,6 +27,7 @@
 <link rel="import" href="./error-screen.html">
 <link rel="import" href="./loading-screen.html">
 <link rel="import" href="./join-screen.html">
+<link rel="import" href="./lobby-screen.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -82,10 +82,9 @@
         --paper-item: {
           @apply(--bridgesim-font);
         }
-      }
-
-      [fullscreen] {
-        height: 100%;
+        --paper-dropdown-menu-input: {
+          @apply(--bridgesim-font);
+        }
       }
 
       paper-tab {
@@ -111,6 +110,10 @@
         height: 50px;
       }
 
+      iron-pages > * {
+        @apply(--layout-flex);
+      }
+
       paper-toggle-button {
         cursor: pointer;
       }
@@ -127,12 +130,6 @@
         height: 98px;
       }
 
-      iron-pages {
-        height: 100%;
-        min-width: 400px;
-        min-height: 400px;
-      }
-
       [hidden] {
         display: none !important;
       }
@@ -144,10 +141,6 @@
         <h1>BRIDGESIM</h1>
 
         <paper-button on-tap="openSettingsDialog">Settings</paper-button>
-
-        <paper-button on-tap="openLobbyDialog" disabled="[[!connected]]">
-          Crews
-        </paper-button>
 
         <paper-button disabled$="[[hosting]]" on-tap="joinGame">
           Join Game
@@ -181,7 +174,7 @@
           <paper-icon-button icon="menu" paper-drawer-toggle>
           </paper-icon-button>
 
-          <paper-tabs no-bar hidden$="[[!showStations]]"
+          <paper-tabs no-bar hidden$="[[!started]]"
                       selected="{{view}}"
                       attr-for-selected="name"
                       class="flex-1">
@@ -193,9 +186,6 @@
             <paper-tab name="viewscreen">EXT</paper-tab>
           </paper-tabs>
         </div>
-
-        <scenario-selector scenario="{{scenario}}" hidden>
-        </scenario-selector>
 
         <div hidden$="[[!gameOver]]"
              class="flex-1 layout vertical center-center flex-1">
@@ -211,27 +201,36 @@
 
         <iron-pages
            id="views"
-           class="flex"
+           class="flex-1 layout vertical"
            selected="[[view]]"
            selected-attribute="active"
            attr-for-selected="name">
 
-          <bridgesim-error-screen name="error" fullscreen>
+          <bridgesim-error-screen name="error">
             <p>[[errorMsg]]</p>
           </bridgesim-error-screen>
 
-          <bridgesim-loading-screen name="loading" fullscreen>
+          <bridgesim-loading-screen name="loading">
             <p>[[loadingMsg]]</p>
           </bridgesim-loading-screen>
 
-          <bridgesim-welcome-screen name="welcome" fullscreen
+          <bridgesim-welcome-screen name="welcome"
             on-join="joinGame" on-host="hostGame">
           </bridgesim-welcome-screen>
 
-          <bridgesim-join-screen id="joinScreen" name="join" fullscreen
+          <bridgesim-join-screen id="joinScreen" name="join"
                                  token="{{token}}"
                                  on-cancel="showWelcome">
           </bridgesim-join-screen>
+
+          <bridgesim-lobby-screen id="lobbyScreen" name="lobby"
+                                  db="[[db]]"
+                                  hosting="[[hosting]]"
+                                  token="[[token]]"
+                                  scenario="{{scenario}}"
+                                  on-create-ship="createShip"
+                                  on-join-crew="joinCrew">
+          </bridgesim-lobby-screen>
 
           <helm-station name="helm"
             db="[[db]]"
@@ -290,7 +289,8 @@
       <bridgesim-host id="host"
         server-name="[[serverName]]"
         server-hidden="[[serverHidden]]"
-        scenario="[[scenario]]">
+        scenario="[[scenario]]"
+        server-token="{{token}}">
       </bridgesim-host>
 
       <bridgesim-peer-localstorage id="peerLocalstorage" hosting>
@@ -309,15 +309,6 @@
     <paper-dialog id="settingsDialog">
       <bridgesim-settings-menu settings="{{settings}}">
       </bridgesim-settings-menu>
-    </paper-dialog>
-
-    <paper-dialog id="lobbyDialog">
-      <paper-dialog-scrollable>
-        <bridgesim-lobby db="[[db]]"
-                         on-join-crew="joinCrew"
-                         on-create-ship="createShip">
-        </bridgesim-lobby>
-      </paper-dialog-scrollable>
     </paper-dialog>
 
   </template>

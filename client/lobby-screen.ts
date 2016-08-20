@@ -1,9 +1,10 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
+///<reference path="../typings/index.d.ts" />
 
-import {Player} from '../core/components';
-import {Name} from '../core/components';
-import {Db} from '../core/entity/db';
 import * as Net from '../net/message';
+import {Db} from '../core/entity/db';
+import {Name, Player} from '../core/components';
+import {Scenario} from '../scenarios/scenarios';
 
 interface Ship {
   id: string;
@@ -25,14 +26,23 @@ const STATION_IDS = [
   Net.Station.Engineering,
 ];
 
-@component('bridgesim-lobby')
-class Lobby extends polymer.Base {
+@component('bridgesim-lobby-screen')
+class LobbyScreen extends polymer.Base {
   @property({type: Object}) db: Db;
+  @property({type: Boolean, value: false}) hosting: boolean;
+  @property({type: String}) token: string;
+  @property({type: Object, notify: true}) scenario: Scenario;
   @property({type: Array}) ships: Ship[];
+  @property({type: String, value: null}) newShipName: string;
 
-  private createShip(): void { this.fire('create-ship', <Net.CreateShip>{}); }
+  private createShip() {
+    this.fire('create-ship', <Net.CreateShip>{
+      name: this.newShipName,
+    });
+    this.newShipName = null;
+  }
 
-  private joinCrew(e: any) {
+  private claimStation(e: any) {
     const ship: Ship = this.$.ships.modelForElement(e.target).ship;
     const station: Station = e.model.station;
     this.fire('join-crew', <Net.JoinCrew>{
@@ -40,6 +50,8 @@ class Lobby extends polymer.Base {
       station: station.id,
     });
   }
+
+  private start() { this.fire('net-send', <Net.Message>{startGame: {}}); }
 
   @observe('db.ships.*, db.players.*, db.ais.*, db.names.*')
   private recompute() {
@@ -82,4 +94,4 @@ class Lobby extends polymer.Base {
     this.ships = ships;
   }
 }
-Lobby.register();
+LobbyScreen.register();

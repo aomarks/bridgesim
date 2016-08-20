@@ -1,29 +1,21 @@
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="deps.html">
 
 <dom-module id="scenario-selector">
   <template>
-    <style>
-      :host {
-        display: block;
-        @apply(--layout-vertical);
-      }
-      .scenario {
-        padding: 0 1em;
-        border: 1px solid transparent;
-        cursor: pointer;
-      }
-      [selected] {
-        border-color: white;
-      }
-    </style>
-
-    <h2>Scenarios</h2>
-
-    <template is="dom-repeat" items="[[scenarios]]">
-      <div class="scenario" on-tap="select" selected$="[[selected(item, scenario)]]">
-        <h3>[[item.name]]</h3>
-        <p>[[item.description]]</p>
-      </div>
-    </template>
+    <paper-dropdown-menu-light no-label-float
+                               no-animations
+                               horizontal-align="left"
+                               disabled="[[disabled]]">
+      <paper-listbox class="dropdown-content"
+                     selected="{{scenario}}"
+                     attr-for-selected="value">
+        <template is="dom-repeat" items="[[scenarios]]">
+          <paper-item value="[[item]]">[[item.name]]</paper-item>
+        </template>
+      </paper-listbox>
+    </paper-dropdown-menu-light>
   </template>
 </dom-module>

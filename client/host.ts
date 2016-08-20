@@ -12,7 +12,7 @@ import {RTC_CONFIG} from './webrtc-config';
 class HostWrapper extends polymer.Base {
   @property({type: String}) serverName: string;
   @property({type: Boolean}) serverHidden: boolean;
-  @property({type: String}) serverToken: string;
+  @property({type: String, notify: true}) serverToken: string;
   @property({type: Object}) scenario: Scenario;
 
   private host: Host;
@@ -20,7 +20,8 @@ class HostWrapper extends polymer.Base {
   attached(): void {
     console.log('host-wrapper: attached');
     this.host = new Host();
-    this.host.start(this.scenario);
+    this.host.scenario = this.scenario;
+    this.host.start();
 
     const loopback = new Loopback();
     loopback.open();
@@ -32,17 +33,19 @@ class HostWrapper extends polymer.Base {
         resolve({Answer: answer});
       });
     };
+  }
 
-    this.$.toast.open();
+  @observe('scenario')
+  scenarioChanged(scenario: Scenario) {
+    if (this.host) {
+      this.host.scenario = scenario;
+    }
   }
 
   detached(): void {
     console.log('host-wrapper: detached');
-    this.closeToast();
     this.host.stop();
   }
-
-  closeToast(): void { this.$.toast.close(); }
 
   onOffer(offer: string): Promise<string> {
     console.log('host-wrapper: got offer');

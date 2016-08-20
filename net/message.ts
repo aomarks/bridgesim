@@ -12,6 +12,7 @@ export interface Message {
   joinCrew?: JoinCrew;
   updatePlayer?: UpdatePlayer;
   update?: Update;
+  startGame?: StartGame;
 }
 
 export enum Station {
@@ -22,7 +23,10 @@ export enum Station {
   Engineering,
 }
 
-export interface Hello { name: string; }
+export interface Hello {
+  name: string;
+  forceStation?: Station;
+}
 
 export interface Welcome {
   playerId?: string;
@@ -30,6 +34,7 @@ export interface Welcome {
   updateInterval?: number;
   tickInterval?: number;
   galaxySize?: number;
+  started?: boolean;
 }
 
 export interface SendChat { text: string; }
@@ -51,7 +56,7 @@ export interface Commands {
   fireWeapons?: FireWeapon[];
 }
 
-export interface CreateShip {}
+export interface CreateShip { name: string; }
 
 export interface JoinCrew {
   shipId: string;
@@ -62,3 +67,5 @@ export interface UpdatePlayer {
   playerId?: string;
   name?: string;
 }
+
+export interface StartGame {}

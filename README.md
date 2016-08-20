@@ -36,11 +36,12 @@ URL hash determines the game to connect to:
 URL query parameters set debugging options:
 ```
 ?station=weapons # Default to the given station.
+?autostart       # If hosting, start the game immediately.
 ```
 
 Example:
 ```
-http://localhost:8080/?station=weapons&metrics#host
+http://localhost:8080/?station=weapons&autostart#host
 ```
 
 ### Test

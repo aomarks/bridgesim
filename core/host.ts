@@ -63,9 +63,13 @@ export class Host {
   private snapshotLag: number = 0;
   private snapshotStale: boolean = false;
   private seq: number = 0;
+  private started: boolean = false;
+
+  // TODO A better interface for setting scenario.
+  public scenario: Scenario;
 
   public addConnection(conn: Connection) {
-    const connId = this.db.spawn();  // TODO
+    const connId = this.db.spawn();
     this.conns[connId] = conn;
     console.log('host: connection added', connId);
     conn.onMessage = msg => { this.onMessage(connId, msg); };
@@ -78,10 +82,9 @@ export class Host {
     };
   }
 
-  public start(scenario: Scenario) {
+  public start() {
     console.log('host: starting');
-    console.log('host: loading scenario', scenario.name);
-    scenario.start(this.db, this.settings);
+    this.spawnShip('USS Default', 0, 0, false);
     this.tick();
   }
 
@@ -184,12 +187,18 @@ export class Host {
       this.onJoinCrew(connId, msg.joinCrew);
     } else if (msg.updatePlayer) {
       this.onUpdatePlayer(connId, msg.updatePlayer);
+    } else if (msg.startGame) {
+      this.onStartGame(connId, msg.startGame);
     }
   }
 
   private onHello(connId: string, hello: Net.Hello) {
+    const {shipId, station} = this.findFreeCrewSlot(hello.forceStation);
     const player = this.db.newPlayer(connId);
     player.name = hello.name;
+    player.shipId = shipId;
+    player.station = station;
+    console.log('new player', connId, shipId, station);
     const snapshot = this.db.full();
     snapshot.hostSeq = this.seq;
     const welcome: Net.Welcome = {
@@ -198,15 +207,52 @@ export class Host {
       updateInterval: this.settings.updateInterval,
       tickInterval: this.settings.tickInterval,
       galaxySize: this.settings.galaxySize,
+      started: this.started,
     };
     console.log('host: sending welcome', connId);
     this.conns[connId].send({welcome: welcome}, true);
     this.announce('player ' + player.name + ' (' + connId + ') joined');
+  }
 
-    // TODO Don't create a ship for every player once client supports not
-    // being assigned.
-    const shipId = this.spawnShip(null, 0, 0, false);
-    this.onJoinCrew(connId, {shipId: shipId, station: Net.Station.Helm});
+  private findFreeCrewSlot(forceStation: Net.Station):
+      {shipId: string, station: Net.Station} {
+    // TODO Move station list somewhere more global.
+    const stations = [
+      Net.Station.Helm,
+      Net.Station.Engineering,
+      Net.Station.Weapons,
+      Net.Station.Science,
+      Net.Station.Comms,
+    ];
+
+    for (const station of forceStation ? [forceStation] : stations) {
+      for (const shipId in this.db.ships) {
+        if (this.db.ais[shipId]) {
+          continue;
+        }
+        let free = true;
+        for (const playerId in this.db.players) {
+          const player = this.db.players[playerId];
+          if (player.shipId === shipId && player.station === station) {
+            free = false;
+            break;
+          }
+        }
+        if (free) {
+          return {
+            shipId: shipId,
+            station: station,
+          };
+        }
+      }
+    }
+
+    // There are no free ships. Make a new one.
+    // TODO Something better?
+    return {
+      shipId: this.spawnShip(null, 0, 0, false),
+      station: forceStation != null ? forceStation : Net.Station.Helm,
+    };
   }
 
   private onUpdatePlayer(connId: string, updatePlayer: Net.UpdatePlayer) {
@@ -219,10 +265,11 @@ export class Host {
   }
 
   private onCreateShip(playerId: string, createShip: Net.CreateShip) {
-    this.spawnShip(null, 0, 0, false);
+    this.spawnShip(createShip.name, 0, 0, false);
   }
 
   private onJoinCrew(playerId: string, joinCrew: Net.JoinCrew) {
+    console.log('joinCrew', playerId, JSON.stringify(joinCrew));
     const shipId = joinCrew.shipId;
     if (!this.db.ships[shipId]) {
       return;
@@ -257,5 +304,16 @@ export class Host {
     }
     player.inputs.push(commands);
     player.latestSeq = commands.seq;
+  }
+
+  private onStartGame(playerId: string, startGame: Net.StartGame) {
+    // TODO This class should know which player has permission to do things
+    // like start the game.
+    if (this.scenario) {
+      console.log('host: loading scenario', this.scenario.name);
+      this.scenario.start(this.db, this.settings);
+    }
+    this.broadcast({startGame: {}}, true);
+    this.started = true;
   }
 }

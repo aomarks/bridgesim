@@ -21,12 +21,14 @@ class Game extends polymer.Base {
   @property({type: Boolean, value: false}) joining: boolean;
   @property({type: Boolean, value: false}) scanLocal: boolean;
   @property({type: Boolean, value: false}) connected: boolean;
+  @property({type: Boolean, value: false}) started: boolean;
   @property({type: Boolean, value: false}) gameOver: boolean;
   @property({type: String, value: null}) token: string;
   @property({type: String, value: null}) errorMsg: string;
   @property({type: String, value: null}) loadingMsg: string;
   @property({type: String, value: 'welcome'}) view: string;
-  @property({type: String, value: 'helm'}) defaultStation: string;
+  @property({type: String, value: null}) forceStation: Net.Station;
+  @property({type: Boolean, value: false}) autoStart: boolean;
   @property({type: Object, value: ()=> { return {}; }}) views: any;
   @property({type: Number, value: 1}) size: number;
 
@@ -42,7 +44,7 @@ class Game extends polymer.Base {
         showBoundingBoxes: false,
         showQuadtree: false,
         showPathfinding: false,
-        showMetrics: true,
+        showMetrics: false,
         showMotion: false,
       };
     },
@@ -90,6 +92,7 @@ class Game extends polymer.Base {
     this.playerId = null;
     this.shipId = null;
     this.connected = false;
+    this.started = false;
     this.hosting = false;
     this.joining = false;
     this.prevTs = 0;
@@ -120,7 +123,17 @@ class Game extends polymer.Base {
   @observe('urlParams')
   urlParamsChanged(params: any) {
     if (params.station) {
-      this.defaultStation = params.station;
+      // TODO Move station map somewhere more global.
+      this.forceStation = {
+        helm: Net.Station.Helm,
+        comms: Net.Station.Comms,
+        science: Net.Station.Science,
+        weapons: Net.Station.Weapons,
+        engineering: Net.Station.Engineering,
+      }[params.station];
+    }
+    if (params.autostart != null) {
+      this.autoStart = true;
     }
     if (params.view) {
       this.view = params.view;
@@ -174,8 +187,6 @@ class Game extends polymer.Base {
 
   openSettingsDialog(): void { this.$.settingsDialog.open(); }
 
-  openLobbyDialog(): void { this.$.lobbyDialog.open(); }
-
   @observe('settings.fakeLatency')
   fakeLatencyChanged(val: number) {
     if (this.conditioner) {
@@ -228,7 +239,14 @@ class Game extends polymer.Base {
     };
 
     console.log('game: sending hello');
-    this.conn.send({hello: {name: this.settings.name}}, true);
+    this.conn.send(
+        {
+          hello: {
+            name: this.settings.name,
+            forceStation: this.forceStation,
+          }
+        },
+        true);
   }
 
   hostGame(): void { this.hosting = true; }
@@ -260,19 +278,39 @@ class Game extends polymer.Base {
       this.size = msg.welcome.galaxySize;
       this.playerId = msg.welcome.playerId;
       this.db = this.client.db;
-      // Throw away initial changes so that we don't do a big unneccessary
-      // notify on the first frame. The db object itself has just been set, so
-      // every deep listener will already have been notified.
-      this.db.changes();
+      this.connected = true;
       // Start the rendering loop.
       this.frame(0);
-      this.connected = true;
-      this.view = this.defaultStation;
-      console.log(this.view, this.defaultStation);
+
+      if (msg.welcome.started) {
+        console.log('game: host has already started');
+        this.start();
+      } else if (this.hosting && this.autoStart) {
+        console.log('game: auto starting');
+        this.conn.send({startGame: {}}, true);
+      } else {
+        this.view = 'lobby';
+      }
 
     } else if (msg.receiveChat) {
       this.$.chat.receiveMsg(msg.receiveChat);
+
+    } else if (msg.startGame) {
+      console.log('game: host is starting game');
+      this.start();
     }
+  }
+
+  start() {
+    this.started = true;
+    // TODO Move station map somewhere more global.
+    this.view = {
+      [Net.Station.Helm]: 'helm',
+      [Net.Station.Comms]: 'comms',
+      [Net.Station.Science]: 'science',
+      [Net.Station.Weapons]: 'weapons',
+      [Net.Station.Engineering]: 'engineering',
+    }[this.db.players[this.playerId].station || Net.Station.Helm];
   }
 
   sendChat(event: {detail: ChatEvent}): void {
@@ -284,7 +322,12 @@ class Game extends polymer.Base {
   }
 
   createShip(event: {detail: Net.CreateShip}): void {
-    this.conn.send({createShip: {}}, true);
+    this.conn.send({createShip: event.detail}, true);
+  }
+
+  @listen('net-send')
+  onNetSend(event: {detail: Net.Message}) {
+    this.conn.send(event.detail, true);
   }
 
   @listen('fire-weapon')
@@ -312,17 +355,39 @@ class Game extends polymer.Base {
     this.$.input.commands.power[ev.detail.name] = ev.detail.level;
   }
 
+  // Notify Polymer of changes in components for which elements may be
+  // observing.
   notifyChanges(update: Update): void {
-    // Notify Polymer of changes in components for which elements may be
-    // observing.
-    if (update.components) {
-      for (const com in update.components) {
-        for (const id in update.components[com]) {
-          this.notifyPath('db.' + com + '.' + id, this.db[com][id]);
-          for (const prop in update.components[com][id]) {
-            this.notifyPath(
-                'db.' + com + '.' + id + '.' + prop, this.db[com][id][prop]);
-          }
+    if (!update.components) {
+      return;
+    }
+
+    let size = 0;
+    for (const com in update.components) {
+      for (const id in update.components[com]) {
+        size++;
+        for (const prop in update.components[com][id]) {
+          size++;
+        }
+      }
+    }
+
+    if (size > 500) {
+      // It will be slow to send this many notifications. Just nudge the whole
+      // db binding so that everyone listening gets one notification.
+      console.log('game: big update', size);
+      const db = this.db;
+      this.db = null;
+      this.db = db;
+      return;
+    }
+
+    for (const com in update.components) {
+      for (const id in update.components[com]) {
+        this.notifyPath('db.' + com + '.' + id, this.db[com][id]);
+        for (const prop in update.components[com][id]) {
+          this.notifyPath(
+              'db.' + com + '.' + id + '.' + prop, this.db[com][id][prop]);
         }
       }
     }

@@ -7,11 +7,6 @@ export class ScenarioSelector extends polymer.Base {
   @property({type: Object, notify: true, value: ()=> scenarios[0]})
   scenario: Scenario;
   @property({type: Array}) scenarios: Scenario[]=scenarios;
-
-  ready(): void {}
-
-  select(e: {model: {item: Scenario}}): void { this.scenario = e.model.item; }
-
-  selected(scenario: Scenario): boolean { return scenario === this.scenario; }
+  @property({type: Boolean, value: false}) disabled;
 }
 ScenarioSelector.register();
