@@ -30,7 +30,7 @@ class Weapons extends polymer.Base {
       target: ev.detail.world,
       weapon: this.weapon,
     };
-    this.fire('fire-weapon', fireWeapon);
+    this.fire('input', {fireWeapons: [fireWeapon]});
   }
 }
 
