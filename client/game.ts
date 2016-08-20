@@ -311,29 +311,14 @@ class Game extends polymer.Base {
     this.conn.send(event.detail, true);
   }
 
-  @listen('fire-weapon')
-  fireWeapon(ev: any) {
-    this.$.input.commands.fireWeapons.push(ev.detail);
+  @listen('input')
+  applyInput(ev: any) {
+    this.$.input.applyInput(ev.detail, false);
   }
 
-  @listen('start-left-turn')
-  startLeftTurn() {
-    this.$.input.startLeftTurn();
-  }
-
-  @listen('start-right-turn')
-  startRightTurn() {
-    this.$.input.startRightTurn();
-  }
-
-  @listen('stop-turn')
-  stopTurn() {
-    this.$.input.stopTurn();
-  }
-
-  @listen('power')
-  power(ev: any) {
-    this.$.input.commands.power[ev.detail.name] = ev.detail.level;
+  @listen('input-persistent')
+  applyInputPersistent(ev: any) {
+    this.$.input.applyInput(ev.detail, true);
   }
 
   // Notify Polymer of changes in components for which elements may be
