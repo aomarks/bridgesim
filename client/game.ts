@@ -178,8 +178,6 @@ class Game extends polymer.Base {
     this.views = {[view]: true};
   }
 
-  openSettingsDialog(): void { this.$.settingsDialog.open(); }
-
   @observe('settings.fakeLatency')
   fakeLatencyChanged(val: number) {
     if (this.conditioner) {
@@ -199,6 +197,12 @@ class Game extends polymer.Base {
     if (this.conn) {
       this.conn.send({updatePlayer: {name: name}}, true);
     }
+  }
+
+  @listen('disconnect')
+  onDisconnect() {
+    this.disconnect();
+    this.view = 'welcome';
   }
 
   @listen('loading')

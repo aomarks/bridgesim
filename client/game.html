@@ -1,33 +1,26 @@
 <link rel="import" href="../bower_components/app-route/app-location.html">
-
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
-
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
-<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <link rel="import" href="./chat.html">
 <link rel="import" href="./debug-metrics.html">
 <link rel="import" href="./deps.html">
+<link rel="import" href="./error-screen.html">
 <link rel="import" href="./host.html">
 <link rel="import" href="./input.html">
-<link rel="import" href="./peer-localstorage.html">
-<link rel="import" href="./settings-menu.html">
-<link rel="import" href="./scenario-selector.html">
-<link rel="import" href="./welcome-screen.html">
-<link rel="import" href="./error-screen.html">
-<link rel="import" href="./loading-screen.html">
 <link rel="import" href="./join-screen.html">
+<link rel="import" href="./loading-screen.html">
 <link rel="import" href="./lobby-screen.html">
+<link rel="import" href="./peer-localstorage.html">
+<link rel="import" href="./scenario-selector.html">
+<link rel="import" href="./side-panel.html">
+<link rel="import" href="./welcome-screen.html">
 
 <link rel="import" href="./stations/comms.html">
 <link rel="import" href="./stations/engineering.html">
@@ -108,10 +101,6 @@
         @apply(--layout-flex);
       }
 
-      paper-toggle-button {
-        cursor: pointer;
-      }
-
       debug-metrics {
         position: absolute;
         bottom: 0;
@@ -130,37 +119,10 @@
     </style>
 
     <paper-drawer-panel force-narrow>
-
       <div drawer class="layout vertical center">
-        <h1>BRIDGESIM</h1>
-
-        <paper-button on-tap="openSettingsDialog">Settings</paper-button>
-
-        <paper-button disabled$="[[hosting]]" on-tap="joinGame">
-          Join Game
-        </paper-button>
-
-        <paper-button disabled$="[[!hosting]]" on-tap="invitePlayer">
-          Invite Player
-        </paper-button>
-
-        <paper-toggle-button checked="{{hosting}}">
-          HOST
-        </paper-toggle-button>
-
-        <template is="dom-if" if="[[hosting]]">
-          ID: <span>[[serverToken]]</span>
-
-          <paper-toggle-button checked="{{serverHidden}}">
-            Hidden
-          </paper-toggle-button>
-
-          <paper-input
-            hidden$="[[serverHidden]]"
-            label="Server Name"
-            value="{{serverName}}">
-          </paper-input>
-        </template>
+        <bridgesim-side-panel connected="[[connected]]"
+                              settings="{{settings}}">
+        </bridgesim-side-panel>
       </div>
 
       <div main class="layout vertical">
@@ -302,11 +264,6 @@
     <template is="dom-if" if="[[settings.showMetrics]]" restamp>
       <debug-metrics id="metrics"></debug-metrics>
     </template>
-
-    <paper-dialog id="settingsDialog">
-      <bridgesim-settings-menu settings="{{settings}}">
-      </bridgesim-settings-menu>
-    </paper-dialog>
 
   </template>
 </dom-module>
