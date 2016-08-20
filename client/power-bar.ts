@@ -12,7 +12,7 @@ export class PowerBar extends polymer.Base {
     const rect = e.target.getBoundingClientRect();
     const level = 1 - ((e.detail.y - rect.top) / rect.height);
     this.trackStartLevel = level;
-    this.fire('power', {name: this.name, level: level});
+    this.fire('input', {power: {[this.name]: level}});
     e.preventDefault();
   }
 
@@ -24,7 +24,7 @@ export class PowerBar extends polymer.Base {
     }
     const rect = e.target.getBoundingClientRect();
     const level = this.trackStartLevel - (e.detail.dy / rect.height);
-    this.fire('power', {name: this.name, level: level});
+    this.fire('input', {power: {[this.name]: level}});
     e.preventDefault();
   }
 
