@@ -22,7 +22,6 @@ class Game extends polymer.Base {
   @property({type: Boolean, value: false}) scanLocal: boolean;
   @property({type: Boolean, value: false}) connected: boolean;
   @property({type: Boolean, value: false}) started: boolean;
-  @property({type: Boolean, value: false}) gameOver: boolean;
   @property({type: String, value: null}) token: string;
   @property({type: String, value: null}) errorMsg: string;
   @property({type: String, value: null}) loadingMsg: string;
@@ -151,12 +150,6 @@ class Game extends polymer.Base {
   @property({computed: 'computeShowJoin(connecting, connected)'})
   showJoin: boolean;
   computeShowJoin(): boolean { return true; }
-
-  @property({computed: 'computeShowStations(connected, gameOver)'})
-  showStations: boolean;
-  computeShowStations(connected: boolean, gameOver: boolean): boolean {
-    return connected && !gameOver;
-  }
 
   @observe('hosting')
   hostingChanged(hosting: boolean) {
@@ -413,7 +406,7 @@ class Game extends polymer.Base {
 
     // Check for ship destruction.
     if (this.shipId && !this.db.ships[this.shipId]) {
-      this.gameOver = true;
+      this.view = 'gameOver';
     }
 
     this.prevTs = ts;

@@ -38,12 +38,6 @@
 
 <dom-module id="bridgesim-game">
   <template>
-    <app-location
-      use-hash-as-path
-      path="{{urlHash}}"
-      query-params="{{urlParams}}">
-    </app-location>
-
     <style include="iron-flex iron-flex-alignment iron-flex-factors">
     </style>
 
@@ -187,12 +181,6 @@
           </paper-tabs>
         </div>
 
-        <div hidden$="[[!gameOver]]"
-             class="flex-1 layout vertical center-center flex-1">
-          <h1>Game Over</h1>
-          <p>Your ship has been destroyed.</p>
-        </div>
-
         <bridgesim-chat id="chat"
                         hidden="true"
                         class="flex-none">
@@ -228,6 +216,12 @@
                                   token="[[token]]"
                                   scenario="{{scenario}}">
           </bridgesim-lobby-screen>
+
+          <div name="gameOver"
+               class="layout vertical center-center">
+            <h1>Game Over</h1>
+            <p>Your ship has been destroyed.</p>
+          </div>
 
           <helm-station name="helm"
             db="[[db]]"
@@ -276,6 +270,12 @@
         </iron-pages>
       </div>
     </paper-drawer-panel>
+
+    <app-location
+      use-hash-as-path
+      path="{{urlHash}}"
+      query-params="{{urlParams}}">
+    </app-location>
 
     <bridgesim-input id="input"
       db="{{db}}"
