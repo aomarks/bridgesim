@@ -39,6 +39,9 @@ export class Quadtree<T> {
 
   public insert(
       child: T, left: number, top: number, right: number, bottom: number) {
+    if (right < left || top > bottom) {
+      throw "invariant violated!";
+    }
     // Over split size, split.
     if (this.subtrees.length === 0 && (this.children.length + 1) > this.max) {
       this.split();
@@ -66,6 +69,9 @@ export class Quadtree<T> {
   public retrieve(
       left: number, top: number, right: number, bottom: number,
       exact: boolean = false): T[] {
+    if (right < left || top > bottom) {
+      throw "invariant violated!";
+    }
     const retPos = this.retrievePos(left, top, right, bottom, exact);
     if (exact) {
       return retPos.children.filter((child: T, i: number): boolean => {
