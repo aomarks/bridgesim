@@ -472,7 +472,7 @@ export class Map extends polymer.Base {
         return;
       }
       const end = this.db.ais[id].targetPos;
-      const path = finder.find(start, end, this.shipId);
+      const path = finder.find(start, end, [this.shipId]);
       const coords = this.worldToScreen(start.x, start.y);
       ctx.moveTo(coords.x, coords.y);
       for (let p of path) {

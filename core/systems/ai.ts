@@ -8,6 +8,9 @@ import {WeaponType, fireWeapon} from '../weapon';
 
 import {Collision} from './collision';
 
+// closeDistance is the distance ships try to get to their target.
+const closeDistance = 5000;
+
 export class Ai {
   private previousPaths: {[id: string]: Point[]} = {};
   private newPaths: {[id: string]: Point[]} = {};
@@ -94,21 +97,36 @@ export class Ai {
   private tickMotionOne(id: string, finder: Pathfinder): void {
     const thisPos = this.db.positions[id];
     const ai = this.db.ais[id];
-    let targetPos = ai.targetPos;
-    if (!targetPos || dist(thisPos, targetPos) < 1200) {
-      const newTarget = randPoint(this.galaxySize);
+    let {targetPos, targetID} = ai;
+    if (!targetPos || dist(thisPos, targetPos) < closeDistance) {
+      // Try to attack the nearest enemy, or just aimlessly wander.
+      const newTargetID = this.nearestEnemy(id);
+      let newTarget: Point = this.db.positions[newTargetID];
+      if (newTargetID === id) {
+        newTarget = randPoint(this.galaxySize);
+      }
+
+      // If the new target is also too close just sit tight.
+      if (dist(thisPos, newTarget) < closeDistance) {
+        this.stopShip(id);
+        return;
+      }
+
       // Make sure there is a valid path.
-      if (finder.find(thisPos, newTarget, id).length > 0) {
+      const path = finder.find(thisPos, newTarget, [id, newTargetID]);
+      if (path.length > 0) {
+        ai.targetID = newTargetID;
         ai.targetPos = targetPos = newTarget;
+        this.previousPaths[id] = path;
       }
       return;
     }
-    const mot = this.db.motion[id];
-    const path = finder.find(thisPos, targetPos, id, this.previousPaths[id]);
+
+    const path =
+        finder.find(thisPos, targetPos, [id, targetID], this.previousPaths[id]);
     this.newPaths[id] = path;
     if (path.length == 0) {
-      mot.velocityX = 0;
-      mot.velocityY = 0;
+      this.stopShip(id);
       return;
     }
 
@@ -116,11 +134,38 @@ export class Ai {
     const localTarget = path[targetIdx];
     thisPos.yaw = heading(localTarget, thisPos);
 
-    // AIs don't know how to turn and thrust. They just directly set their
-    // velocity vector.
+    // TODO(d4l3k): AIs don't know how to turn and thrust. They just directly
+    // set their velocity vector.
     const rads = headingToRadians(thisPos.yaw);
     const velocity = 20;
+    const mot = this.db.motion[id];
     mot.velocityX = Math.cos(rads) * velocity;
     mot.velocityY = Math.sin(rads) * velocity;
+  }
+
+  private stopShip(id: string) {
+    const mot = this.db.motion[id];
+    mot.velocityX = 0;
+    mot.velocityY = 0;
+  }
+
+  private nearestEnemy(id: string): string {
+    const pos = this.db.positions[id];
+    const animateIDs =
+        Object.keys(this.db.ships).concat(Object.keys(this.db.stations));
+    let nearest = id;
+    let nearestDist = -1;
+    for (let aid of animateIDs) {
+      if (aid === id || this.hostility(id, aid) <= 1) {
+        continue;
+      }
+      const apos = this.db.positions[aid];
+      const adist = dist(apos, pos);
+      if (nearestDist < 0 || adist < nearestDist) {
+        nearest = aid;
+        nearestDist = adist;
+      }
+    }
+    return nearest;
   }
 }

@@ -8,6 +8,10 @@ import {Quadtree} from './quadtree';
 
 // Based off of https://en.wikipedia.org/wiki/A*_search_algorithm
 
+type IgnoreMap = {
+  [id: string]: boolean
+};
+
 export class Pathfinder {
   private quadtree: Quadtree<string>;
   private max: number;
@@ -46,8 +50,9 @@ export class Pathfinder {
     this.nodes = nodes;
   }
 
-  public find(from: Point, to: Point, ignore: string = '', previous: Point[] = [
-  ]): Point[] {
+  public find(
+      from: Point, to: Point, ignore: string[] = [],
+      previous: Point[] = []): Point[] {
     from = this.copyPoint(from);
     to = this.copyPoint(to);
     const cachedPath = this.validate(from, to, previous, ignore);
@@ -55,16 +60,18 @@ export class Pathfinder {
       return cachedPath;
     }
 
-    return this.findInternal(from, to, ignore);
+    return this.findInternal(from, to, this.ignoreMap(ignore));
   }
 
   // validate ensures that the provided path doesn't have any obstructions and
   // still satisfies the end point.
-  public validate(from: Point, to: Point, path: Point[], ignore: string = ''):
-      Point[] {
+  public validate(from: Point, to: Point, path: Point[], ignoreArr: string[] = [
+  ]): Point[] {
     if (!path || path.length == 0) {
       return null;
     }
+
+    const ignore = this.ignoreMap(ignoreArr);
 
     // Make sure endpoint hasn't moved.
     const end = path[path.length - 1];
@@ -98,7 +105,7 @@ export class Pathfinder {
     };
   }
 
-  private findInternal(startP: Point, endP: Point, ignore: string): Point[] {
+  private findInternal(startP: Point, endP: Point, ignore: IgnoreMap): Point[] {
     const start = this.node(startP);
     const end = this.node(endP);
     const startID = this.nodeID(start);
@@ -162,6 +169,15 @@ export class Pathfinder {
     return [];
   }
 
+  // ignoreMap creates a map from the provided ignore id array.
+  private ignoreMap(ignore: string[]): IgnoreMap {
+    const m: IgnoreMap = {};
+    for (let id of ignore) {
+      m[id] = true;
+    }
+    return m;
+  }
+
   private copyPoint(point: Point) { return {x: point.x, y: point.y}; }
 
   private reconstructPath(
@@ -206,7 +222,7 @@ export class Pathfinder {
     return x + ',' + y;
   }
 
-  private heuristic(from: Point, to: Point, ignore: string): number {
+  private heuristic(from: Point, to: Point, ignore: IgnoreMap): number {
     const padding = 0.5 * this.precision;
     let score = dist(from, to);
 
@@ -216,7 +232,7 @@ export class Pathfinder {
     if (objects) {
       let containsIgnore = false;
       for (let obj of objects) {
-        if (obj === ignore) {
+        if (ignore[obj]) {
           containsIgnore = true;
           break;
         }

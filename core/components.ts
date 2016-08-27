@@ -23,6 +23,7 @@ export interface Region extends Point {
 }
 
 export class Ai extends Component {
+  @Component.prop targetID: string;
   @Component.prop targetPos: Point;
   @Component.prop friendliness: number;
 }
