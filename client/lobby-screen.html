@@ -85,11 +85,27 @@
         width: 150px;
         height: 40px;
       }
+      #advanced {
+        margin-left: auto;
+      }
+      [hidden] {
+        display: none !important;
+      }
     </style>
 
     <section class="flex-none layout horizontal center">
       <h3 class="heading">TOKEN</h3>
-      <div id="token">[[token]]<div>
+      <a id="token" href="[[tokenURL(token)]]">[[token]]</a>
+      <paper-toggle-button id="advanced"
+        hidden$="[[!hosting]]"
+        checked="{{!serverHidden}}">
+        Public
+      </paper-toggle-button>
+    </section>
+
+    <section class="flex-none" hidden$="[[serverHidden]]">
+      <h3>LOBBY SETTINGS</h3>
+      <paper-input label="Server Name" value="{{serverName}}"></paper-input>
     </section>
 
     <section class="flex-none layout horizontal center">

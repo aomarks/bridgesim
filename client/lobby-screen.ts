@@ -31,6 +31,7 @@ class LobbyScreen extends polymer.Base {
   @property({type: Object}) db: Db;
   @property({type: Boolean, value: false}) hosting: boolean;
   @property({type: String}) token: string;
+  @property({type: String, notify: true}) serverName: string;
   @property({type: Object, notify: true}) scenario: Scenario;
   @property({type: Array}) ships: Ship[];
   @property({type: String, value: null}) newShipName: string;
@@ -96,6 +97,10 @@ class LobbyScreen extends polymer.Base {
     }
 
     this.ships = ships;
+  }
+
+  private tokenURL(token: string): string {
+    return window.location.origin + '/#' + token;
   }
 }
 LobbyScreen.register();
