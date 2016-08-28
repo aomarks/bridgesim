@@ -202,7 +202,7 @@ class Game extends polymer.Base {
   @listen('disconnect')
   onDisconnect() {
     this.disconnect();
-    this.view = 'welcome';
+    this.showWelcome();
   }
 
   @listen('loading')
