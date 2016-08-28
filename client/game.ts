@@ -203,6 +203,7 @@ class Game extends polymer.Base {
   onDisconnect() {
     this.disconnect();
     this.showWelcome();
+    document.location.hash = '';
   }
 
   @listen('loading')
