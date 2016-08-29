@@ -15,6 +15,7 @@ import {Missile} from './systems/missile';
 import {Motion} from './systems/motion';
 import {Shields} from './systems/shields';
 import {Station} from './systems/station';
+import {Ftl} from './systems/ftl';
 
 export interface Settings {
   // The play field will have this many sectors across and down.
@@ -51,6 +52,7 @@ export class Host {
     new Input(this.db),
     new Laser(this.db),
     new Missile(this.db),
+    new Ftl(this.db),
     new Motion(this.db, this.settings.galaxySize),
     new Shields(this.db),
     new Station(this.db),

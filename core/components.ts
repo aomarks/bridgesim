@@ -118,3 +118,15 @@ export class Motion extends Component {
   @Component.prop velocityX = 0;
   @Component.prop velocityY = 0;
 }
+
+export class Ftl extends Component {
+  // Jump coordinates.
+  @Component.prop x = null;
+  @Component.prop y = null;
+
+  // Progress towards a spooling FTL jump. Between 0 and 1 when spooling.
+  @Component.prop progress = null;
+
+  // Estimated seconds until FTL jump spooled.
+  @Component.prop eta = null;
+}

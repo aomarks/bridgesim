@@ -56,6 +56,9 @@ export class Db extends Database {
   @Database.table(C.Motion) motion: {[id: string]: C.Motion} = {};
   newMotion(id: string): C.Motion { return this['newMotion_'](id); }
 
+  @Database.table(C.Ftl) ftl: {[id: string]: C.Ftl} = {};
+  newFtl(id: string): C.Ftl { return this['newFtl_'](id); }
+
   // Not synchronized.
   inputs: {[id: string]: Commands[]} = {};
 }

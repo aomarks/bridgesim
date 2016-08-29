@@ -4,6 +4,7 @@
 <link rel="import" href="../bridgesim-card.html">
 <link rel="import" href="../heading-indicator.html">
 <link rel="import" href="../map.html">
+<link rel="import" href="../ftl.html">
 
 <dom-module id="helm-station">
   <template>
@@ -42,6 +43,13 @@
         z-index: 3;
       }
 
+      bridgesim-ftl {
+        position: absolute;
+        top: 50px;
+        right: 0;
+        z-index: 3;
+      }
+
       #leftTurner,
       #rightTurner {
         position: absolute;
@@ -65,6 +73,9 @@
         min="0" max="1" step=".01">
       </paper-slider>
     </bridgesim-card>
+
+    <bridgesim-ftl db="[[db]]" ship-id="[[shipId]]">
+    </bridgesim-ftl>
 
     <div id="leftTurner"
          on-down="startLeftTurn"

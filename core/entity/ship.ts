@@ -55,12 +55,16 @@ export function SpawnShip(
   power.engine = 0.75;
   power.maneuvering = 0.75;
   power.shields = 0.75;
+  power.ftl = 0.3;
   const res = db.newResources(id);
   res.energy = 1000;
   res.missile = 2;
   if (ai) {
     const ai = db.newAi(id);
     ai.friendliness = friendliness;
+  } else {
+    // AIs don't do FTL for now.
+    db.newFtl(id);
   }
   console.log('entity.ship: spawned ship', id, name);
   return id;

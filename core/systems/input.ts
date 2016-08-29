@@ -27,6 +27,23 @@ export class Input {
     const motion = this.db.motion[id];
     const power = this.db.power[id];
     const health = this.db.healths[id];
+    const ftl = this.db.ftl[id];
+
+    if (ftl) {
+      if (input.abortJump) {
+        ftl.x = null;
+        ftl.y = null;
+        ftl.progress = null;
+        ftl.eta = null;
+
+      } else if (
+          input.spoolJump && input.spoolJump.x != null &&
+          input.spoolJump.y != null) {
+        ftl.x = input.spoolJump.x;
+        ftl.y = input.spoolJump.y;
+        ftl.progress = 0;
+      }
+    }
 
     if (power != null) {
       const MAX_POWER = Object.keys(Components.Power.prototype.props).length *

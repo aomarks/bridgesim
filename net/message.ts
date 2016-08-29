@@ -54,6 +54,8 @@ export interface Commands {
   power?: Components.Power;
   toggleShield?: boolean;
   fireWeapons?: FireWeapon[];
+  spoolJump?: Components.Point;
+  abortJump?: boolean;
 }
 
 export interface CreateShip { name: string; }

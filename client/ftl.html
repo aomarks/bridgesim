@@ -1,0 +1,82 @@
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="bridgesim-card.html">
+<link rel="import" href="deps.html">
+
+<dom-module id="bridgesim-ftl">
+  <template>
+    <style include="iron-flex iron-flex-alignment"></style>
+
+    <style>
+      :host {
+        --paper-input-container-input: {
+          @apply(--bridgesim-font);
+          color: white;
+        }
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      paper-input {
+        width: 90px;
+      }
+
+      paper-button[disabled] {
+        background: none;
+      }
+
+      paper-input:first-of-type {
+        margin-right: 20px;
+      }
+
+      #countdown {
+        padding-top: 10px;
+      }
+
+      #eta {
+        color: red;
+        font-size: 30px;
+        margin-top: 10px;
+      }
+    </style>
+
+    <bridgesim-card small>
+      <div hidden$="[[!contracted]]">
+        <paper-button on-tap="toggle">FTL</paper-button>
+      </div>
+
+      <div hidden$="[[!expanded]]"
+           class="layout vertical center">
+        <div class="layout horizontal">
+          <paper-input label="x" value="{{x}}"
+                       allowed-pattern="[0-9\-]"
+                       prevent-invalid-input>
+          </paper-input>
+          <paper-input label="y" value="{{y}}"
+                       allowed-pattern="[0-9\-]"
+                       prevent-invalid-input>
+          </paper-input>
+        </div>
+        <div class="layout horizontal">
+          <paper-button on-tap="spool" disabled$="[[!canJump]]">
+            JUMP
+          </paper-button>
+          <paper-button on-tap="toggle">CANCEL</paper-button>
+        </div>
+      </div>
+
+      <div id="countdown"
+           class="layout vertical center"
+           hidden$="[[!countdown]]">
+        <div>FTL JUMP</div>
+        <div id="eta">[[eta]]</div>
+        <paper-button on-tap="abort">ABORT</paper-button>
+      </div>
+    </bridgesim-card>
+  </template>
+</dom-module>
