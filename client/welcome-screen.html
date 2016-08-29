@@ -22,21 +22,26 @@
 
       #background {
         position: absolute;
-        animation: 240s infinite rotate;
+        margin-top: 20px;
+        animation: 240s infinite linear spin;
       }
 
-      @keyframes rotate {
-        to { transform: rotate(360deg)};
+      @keyframes spin {
+        from {
+          transform: rotateX(60deg) rotateZ(0);
+        };
+        to {
+          transform: rotateX(60deg) rotateZ(360deg);
+        };
       }
 
       #title {
         position: absolute;
-        margin: auto;
         font-size: 70px;
         font-weight: normal;
         border-top: 4px solid white;
         border-bottom: 4px solid white;
-        margin-top: -50px;
+        margin-top: -120px;
       }
 
       #buttons {
@@ -49,6 +54,7 @@
       @media (min-width: 600px) {
         #title {
           font-size: 130px;
+          border-width: 6px;
         }
         #buttons {
           font-size: 50px;
