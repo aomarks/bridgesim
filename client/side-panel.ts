@@ -10,6 +10,6 @@ class SidePanel extends polymer.Base {
 
   openSettings() { this.$.settingsDialog.open(); }
 
-  disconnect() { this.fire('disconnect'); }
+  disconnect() { this.fire('show-welcome'); }
 }
 SidePanel.register();

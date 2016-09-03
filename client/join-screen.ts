@@ -20,7 +20,7 @@ class JoinScreen extends polymer.Base {
 
   cancel() {
     this.token = null;
-    this.fire('cancel');
+    this.fire('show-welcome');
   }
 
   join() {
@@ -29,7 +29,7 @@ class JoinScreen extends polymer.Base {
     const con = new WebRTCConnection(RTC_CONFIG);
 
     con.onOpen = () => {
-      document.location.hash = this.token;
+      this.fire('url-hash-inert', this.token);
       this.fire('connection', con);
     };
 

@@ -3,6 +3,6 @@
 
 @component('bridgesim-error-screen')
 class ErrorScreen extends polymer.Base {
-  home() { this.fire('disconnect'); }
+  home() { this.fire('show-welcome'); }
 }
 ErrorScreen.register();

@@ -25,7 +25,7 @@ class Game extends polymer.Base {
   @property({type: String, value: null}) token: string;
   @property({type: String, value: null}) errorMsg: string;
   @property({type: String, value: null}) loadingMsg: string;
-  @property({type: String, value: 'welcome'}) view: string;
+  @property({type: String, value: null}) view: string;
   @property({type: String, value: null}) forceStation: Net.Station;
   @property({type: Boolean, value: false}) autoStart: boolean;
   @property({type: Object, value: ()=> { return {}; }}) views: any;
@@ -97,28 +97,76 @@ class Game extends polymer.Base {
     this.prevTs = 0;
   }
 
+  /**
+   * Observe changes to the URL hash. We use the URL hash as the primary
+   * coordination point for top-level navigation. This makes history navigation
+   * work trivially and is good for avoiding weird cycles.
+   */
   @observe('urlHash')
   urlHashChanged(hash: string) {
-    if (!hash || hash === 'null') {
-      // TODO Why is hash sometimes the string "null"?
-      return;
-    }
+    // Debounce because it takes a few ticks for the initial hash value to
+    // settle, and so that we can make "inert" hash changes to avoid cycles.
+    this.debounce('url-hash', () => {
+      console.log('game: url hash:', hash);
 
-    if (hash === 'host') {
-      this.hosting = true;
+      // Any top-level navigation implies a disconnect.
+      if (this.connected) {
+        this.disconnect();
+      }
 
-    } else if (hash === 'local') {
-      this.scanLocal = true;
-      this.view = 'loading';
-      this.loadingMsg = 'searching for local game';
+      if (!hash) {
+        this.hosting = false;
+        this.scanLocal = false;
+        this.view = 'welcome';
 
-    } else {
-      this.view = 'join';
-      this.token = hash;
-      this.$.joinScreen.join();
-    }
+      } else if (hash === 'host') {
+        this.hosting = true;
+        this.scanLocal = false;
+        this.view = 'loading';
+        this.loadingMsg = 'starting host';
+        // The local storage system needs to know where to send offers. Set
+        // this up async because the elements won't have been stamped out yet.
+        // TODO Do this with data binding more cleanly.
+        this.async(() => {
+          const host = this.$$('#host');
+          this.$$('#peerLocalstorage').takeOffer = host.onOffer.bind(host);
+        });
+
+      } else if (hash === 'local') {
+        this.hosting = false;
+        this.scanLocal = true;
+        this.view = 'loading';
+        this.loadingMsg = 'searching for local game';
+
+      } else if (hash === 'join') {
+        this.hosting = false;
+        this.scanLocal = false;
+        this.view = 'join';
+
+      } else {
+        this.hosting = false;
+        this.scanLocal = false;
+        this.view = 'join';
+        this.token = hash;
+        this.$.joinScreen.join();
+      }
+    }, 1);
   }
 
+  /**
+   * Set the URL hash, but without any of the effects that a normal navigation
+   * would have. Useful for avoiding cycles when we're just updating the URL to
+   * reflect state that has already changed.
+   */
+  @listen('url-hash-inert')
+  onUrlHashInert(ev: {detail: string}) {
+    this.urlHash = ev.detail;
+    this.cancelDebouncer('url-hash');  // Disables urlHashChanged().
+  }
+
+  /**
+   * Observe changes to URL parameters. Used for debug settings.
+   */
   @observe('urlParams')
   urlParamsChanged(params: any) {
     if (params.station) {
@@ -145,33 +193,14 @@ class Game extends polymer.Base {
     }
   }
 
-  showWelcome() { this.view = 'welcome'; }
+  @listen('show-welcome')
+  onShowWelcome() {
+    this.urlHash = '';
+  }
 
   @property({computed: 'computeShowJoin(connecting, connected)'})
   showJoin: boolean;
   computeShowJoin(): boolean { return true; }
-
-  @observe('hosting')
-  hostingChanged(hosting: boolean) {
-    if (hosting) {
-      this.urlHash = 'host';
-
-      // We should expect an incoming local connection.
-      this.view = 'loading';
-      this.loadingMsg = 'starting host';
-
-      // The local storage system needs to know where to send offers. Set this
-      // up async because the elements won't have been stamped out yet.
-      // TODO Do this with data binding more cleanly.
-      this.async(() => {
-        const host = this.$$('#host');
-        this.$$('#peerLocalstorage').takeOffer = host.onOffer.bind(host);
-      });
-
-    } else {
-      this.urlHash = null;
-    }
-  }
 
   @observe('view')
   viewChanged(view: string) {
@@ -197,13 +226,6 @@ class Game extends polymer.Base {
     if (this.conn) {
       this.conn.send({updatePlayer: {name: name}}, true);
     }
-  }
-
-  @listen('disconnect')
-  onDisconnect() {
-    this.disconnect();
-    this.showWelcome();
-    document.location.hash = '';
   }
 
   @listen('loading')
@@ -247,9 +269,9 @@ class Game extends polymer.Base {
         true);
   }
 
-  hostGame(): void { this.hosting = true; }
+  hostGame(): void { this.urlHash = 'host'; }
 
-  joinGame(): void { this.view = 'join'; }
+  joinGame(): void { this.urlHash = 'join'; }
 
   invitePlayer(): void { this.$.peerCopypaste.openHostDialog(); }
 

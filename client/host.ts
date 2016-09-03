@@ -44,6 +44,7 @@ class HostWrapper extends polymer.Base {
 
   detached(): void {
     console.log('host-wrapper: detached');
+    this.serverToken = '';
     this.host.stop();
   }
 
