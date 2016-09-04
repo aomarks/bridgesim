@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu-light.html">
+<link rel="import" href="../bower_components/paper-item/paper-item-body.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="deps.html">
@@ -14,7 +15,13 @@
                      selected="{{selected}}"
                      attr-for-selected="value">
         <template is="dom-repeat" items="[[scenarios]]">
-          <paper-item value="[[item.name]]">[[item.name]]</paper-item>
+          <paper-item value="[[item.name]]"
+                      label="[[item.name]]">
+            <paper-item-body two-line>
+              <div>[[item.name]]</div>
+              <div secondary>[[item.description]]</div>
+            </paper-item-body>
+          </paper-item>
         </template>
       </paper-listbox>
     </paper-dropdown-menu-light>
