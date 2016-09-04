@@ -20,6 +20,9 @@
         overflow-y: auto;
         --primary-background-color: black;
         --primary-text-color: white;
+        --paper-toggle-button-unchecked-bar-color: white;
+        --paper-toggle-button-checked-button-color: #DE5C13;
+        --paper-toggle-button-checked-bar-color: #DE5C13;
       }
 
       paper-button[disabled] {
@@ -99,7 +102,7 @@
       <paper-toggle-button id="advanced"
         hidden$="[[!hosting]]"
         checked="{{!serverHidden}}">
-        Public
+        PUBLIC
       </paper-toggle-button>
     </section>
 
