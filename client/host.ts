@@ -4,7 +4,6 @@
 import {Host} from '../core/host';
 import {Loopback} from '../net/loopback';
 import {WebRTCConnection, decodeRSD, encodeRSD} from '../net/webrtc';
-import {Scenario} from '../scenarios/scenarios';
 
 import {RTC_CONFIG} from './webrtc-config';
 
@@ -13,14 +12,12 @@ class HostWrapper extends polymer.Base {
   @property({type: String}) serverName: string;
   @property({type: Boolean}) serverHidden: boolean;
   @property({type: String, notify: true}) serverToken: string;
-  @property({type: Object}) scenario: Scenario;
 
   private host: Host;
 
   attached(): void {
     console.log('host-wrapper: attached');
     this.host = new Host();
-    this.host.scenario = this.scenario;
     this.host.start();
 
     const loopback = new Loopback();
@@ -35,11 +32,9 @@ class HostWrapper extends polymer.Base {
     };
   }
 
-  @observe('scenario')
-  scenarioChanged(scenario: Scenario) {
-    if (this.host) {
-      this.host.scenario = scenario;
-    }
+  @observe('serverToken')
+  serverTokenChanged(token: string) {
+    this.host.settings.token = token;
   }
 
   detached(): void {

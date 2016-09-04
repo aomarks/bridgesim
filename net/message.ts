@@ -12,7 +12,7 @@ export interface Message {
   joinCrew?: JoinCrew;
   updatePlayer?: UpdatePlayer;
   update?: Update;
-  startGame?: StartGame;
+  updateSettings?: UpdateSettings;
 }
 
 export enum Station {
@@ -23,18 +23,20 @@ export enum Station {
   Engineering,
 }
 
+/**
+ * Hello is sent from client to host upon first connecting.
+ */
 export interface Hello {
   name: string;
   forceStation?: Station;
 }
 
+/**
+ * Welcome is sent from host to client in response to a Hello.
+ */
 export interface Welcome {
-  playerId?: string;
+  playerId: string;
   snapshot: Update;
-  updateInterval?: number;
-  tickInterval?: number;
-  galaxySize?: number;
-  started?: boolean;
 }
 
 export interface SendChat { text: string; }
@@ -70,4 +72,7 @@ export interface UpdatePlayer {
   name?: string;
 }
 
-export interface StartGame {}
+export interface UpdateSettings {
+  scenarioName?: string;
+  started?: boolean
+}

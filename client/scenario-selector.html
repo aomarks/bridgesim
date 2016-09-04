@@ -8,12 +8,13 @@
     <paper-dropdown-menu-light no-label-float
                                no-animations
                                horizontal-align="left"
-                               disabled="[[disabled]]">
+                               disabled="[[disabled]]"
+                               on-iron-select="select">
       <paper-listbox class="dropdown-content"
-                     selected="{{scenario}}"
+                     selected="{{selected}}"
                      attr-for-selected="value">
         <template is="dom-repeat" items="[[scenarios]]">
-          <paper-item value="[[item]]">[[item.name]]</paper-item>
+          <paper-item value="[[item.name]]">[[item.name]]</paper-item>
         </template>
       </paper-listbox>
     </paper-dropdown-menu-light>

@@ -1,12 +1,11 @@
 import {Db} from '../core/entity/db';
-import {Settings} from '../core/host';
 
 // Scenario is a playable mission.
 export interface Scenario {
   name: string;
   description: string;
 
-  start(db: Db, settings: Settings)
+  start(db: Db)
 }
 
 export const scenarios: Scenario[] = [];

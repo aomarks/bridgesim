@@ -32,7 +32,7 @@ class LobbyScreen extends polymer.Base {
   @property({type: Boolean, value: false}) hosting: boolean;
   @property({type: String}) token: string;
   @property({type: String, notify: true}) serverName: string;
-  @property({type: Object, notify: true}) scenario: Scenario;
+  @property({type: String}) scenarioName: string;
   @property({type: Array}) ships: Ship[];
   @property({type: String, value: null}) newShipName: string;
 
@@ -56,7 +56,11 @@ class LobbyScreen extends polymer.Base {
     });
   }
 
-  private start() { this.fire('net-send', <Net.Message>{startGame: {}}); }
+  private start() {
+    this.fire('net-send', <Net.Message>{
+      updateSettings: {started: true},
+    });
+  }
 
   @observe('db.ships.*, db.players.*, db.ais.*, db.names.*')
   private recompute() {

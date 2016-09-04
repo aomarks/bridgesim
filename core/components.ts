@@ -2,6 +2,7 @@ import {Station as CrewStation} from '../net/message';
 import {Commands} from '../net/message';
 import {Component} from './comdb';
 import {Weapon} from './weapon';
+import {scenarios} from '../scenarios/scenarios';
 
 // Point represents a single x, y position.
 export interface Point {
@@ -129,4 +130,24 @@ export class Ftl extends Component {
 
   // Estimated seconds until FTL jump spooled.
   @Component.prop eta = null;
+}
+
+export class Settings extends Component {
+  // Game lobby token.
+  @Component.prop token: string = '';
+
+  // If true we're in the game proper. Otherwise we're in the lobby.
+  @Component.prop started: boolean = false;
+
+  // Milliseconds between host update broadcasts.
+  @Component.prop updateInterval: number = 1000 / 30;
+
+  // Milliseconds between simulation ticks.
+  @Component.prop tickInterval: number = 1000 / 30;
+
+  // The play field will have this many sectors across and down.
+  @Component.prop galaxySize: number = 12;
+
+  // Name of the currently selected scenario.
+  @Component.prop scenarioName: string = scenarios[0].name;
 }

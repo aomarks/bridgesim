@@ -48,20 +48,23 @@ describe('client', () => {
   describe('after welcome', () => {
     let id: string;
     let pos: Com.Position;
+    let settings: Com.Settings;
 
     beforeEach(() => {
       id = db.spawn();
       pos = db.newPosition(id);
       db.newName(id).name = 'foo';
+      settings = db.newSettings(db.spawn());
+      settings.tickInterval = TICK;
+      settings.updateInterval = UPDATE;
 
       const snapshot = db.full();
       snapshot.hostSeq = 0;
       con.send(
           {
             welcome: {
+              playerId: 'foo',
               snapshot: snapshot,
-              tickInterval: TICK,
-              updateInterval: UPDATE,
             }
           },
           true);

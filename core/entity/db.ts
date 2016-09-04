@@ -59,6 +59,23 @@ export class Db extends Database {
   @Database.table(C.Ftl) ftl: {[id: string]: C.Ftl} = {};
   newFtl(id: string): C.Ftl { return this['newFtl_'](id); }
 
+  // By storing settings as any other game data, we get host/client
+  // synchronization for free.
+  //
+  // TODO It's weird that there would only be one settings object, with an
+  // arbitrary ID. Consider some alternatives.
+  @Database.table(C.Settings) settings: {[id: string]: C.Settings} = {};
+  newSettings(id: string): C.Settings { return this['newSettings_'](id); }
+
+  findSettings(): C.Settings {
+    const ids = Object.keys(this.settings);
+    if (ids.length > 0) {
+      return this.settings[ids[0]];
+    }
+    return null;
+  }
+
   // Not synchronized.
+  // TODO Store this on the host instead.
   inputs: {[id: string]: Commands[]} = {};
 }

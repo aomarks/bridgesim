@@ -295,42 +295,47 @@ class Game extends polymer.Base {
 
     if (msg.welcome) {
       console.log('game: got welcome', msg.welcome.playerId);
-      this.size = msg.welcome.galaxySize;
       this.playerId = msg.welcome.playerId;
       this.db = this.client.db;
       this.connected = true;
-      // Start the rendering loop.
       this.frame(0);
-
-      if (msg.welcome.started) {
-        console.log('game: host has already started');
-        this.start();
-      } else if (this.hosting && this.autoStart) {
-        console.log('game: auto starting');
-        this.conn.send({startGame: {}}, true);
-      } else {
-        this.view = 'lobby';
+      if (this.hosting && this.autoStart) {
+        this.conn.send({updateSettings: {started: true}}, true);
       }
 
     } else if (msg.receiveChat) {
       this.$.chat.receiveMsg(msg.receiveChat);
-
-    } else if (msg.startGame) {
-      console.log('game: host is starting game');
-      this.start();
     }
   }
 
-  start() {
-    this.started = true;
-    // TODO Move station map somewhere more global.
-    this.view = {
-      [Net.Station.Helm]: 'helm',
-      [Net.Station.Comms]: 'comms',
-      [Net.Station.Science]: 'science',
-      [Net.Station.Weapons]: 'weapons',
-      [Net.Station.Engineering]: 'engineering',
-    }[this.db.players[this.playerId].station || Net.Station.Helm];
+  @observe('db.settings.*')
+  settingsChanged() {
+    if (!this.db) {
+      return;
+    }
+    const settings = this.db.findSettings();
+    if (!settings) {
+      return;
+    }
+
+    this.size = settings.galaxySize;
+    this.token = settings.token;
+
+    if (!settings.started) {
+      this.started = false;
+      this.view = 'lobby';
+
+    } else if (!this.started) {
+      this.started = true;
+      // TODO Move station map somewhere more global.
+      this.view = {
+        [Net.Station.Helm]: 'helm',
+        [Net.Station.Comms]: 'comms',
+        [Net.Station.Science]: 'science',
+        [Net.Station.Weapons]: 'weapons',
+        [Net.Station.Engineering]: 'engineering',
+      }[this.db.players[this.playerId].station || Net.Station.Helm];
+    }
   }
 
   @listen('net-send')

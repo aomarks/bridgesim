@@ -1,7 +1,8 @@
 import {Connection} from '../net/connection';
 import * as Net from '../net/message';
+import * as Com from './components';
 // Scenarios
-import {Scenario} from '../scenarios/scenarios';
+import {Scenario, scenarios} from '../scenarios/scenarios';
 // Entities
 import {Db} from './entity/db';
 import {SpawnShip} from './entity/ship';
@@ -17,31 +18,14 @@ import {Shields} from './systems/shields';
 import {Station} from './systems/station';
 import {Ftl} from './systems/ftl';
 
-export interface Settings {
-  // The play field will have this many sectors across and down.
-  galaxySize: number;
-
-  // Milliseconds between simulation ticks.
-  tickInterval: number;
-
-  // Milliseconds between update broadcasts.
-  updateInterval: number;
-
-  // How many command messages to store per player.
-  commandBufferSize: number;
-}
+// How many command messages to store per player.
+const COMMAND_BUFFER_SIZE = 100;
 
 export interface System { tick(); }
 
 export class Host {
-  private settings: Settings = {
-    commandBufferSize: 100,
-    galaxySize: 12,
-    updateInterval: 1000 / 30,
-    tickInterval: 1000 / 30,
-  };
-
   private db: Db = new Db();
+  public settings: Com.Settings = this.db.newSettings(this.db.spawn());
 
   // Systems
   private collision = new Collision(this.db, this.settings.galaxySize);
@@ -65,10 +49,7 @@ export class Host {
   private snapshotLag: number = 0;
   private snapshotStale: boolean = false;
   private seq: number = 0;
-  private started: boolean = false;
-
-  // TODO A better interface for setting scenario.
-  public scenario: Scenario;
+  private scenario: Scenario;
 
   public addConnection(conn: Connection) {
     const connId = this.db.spawn();
@@ -189,8 +170,8 @@ export class Host {
       this.onJoinCrew(connId, msg.joinCrew);
     } else if (msg.updatePlayer) {
       this.onUpdatePlayer(connId, msg.updatePlayer);
-    } else if (msg.startGame) {
-      this.onStartGame(connId, msg.startGame);
+    } else if (msg.updateSettings) {
+      this.onUpdateSettings(connId, msg.updateSettings);
     }
   }
 
@@ -206,10 +187,6 @@ export class Host {
     const welcome: Net.Welcome = {
       playerId: connId,
       snapshot: snapshot,
-      updateInterval: this.settings.updateInterval,
-      tickInterval: this.settings.tickInterval,
-      galaxySize: this.settings.galaxySize,
-      started: this.started,
     };
     console.log('host: sending welcome', connId);
     this.conns[connId].send({welcome: welcome}, true);
@@ -301,21 +278,36 @@ export class Host {
       // TODO Commands could legitimately arrive out of order.
       return;
     }
-    if (player.inputs.length == this.settings.commandBufferSize) {
+    if (player.inputs.length == COMMAND_BUFFER_SIZE) {
       player.inputs.shift();
     }
     player.inputs.push(commands);
     player.latestSeq = commands.seq;
   }
 
-  private onStartGame(playerId: string, startGame: Net.StartGame) {
-    // TODO This class should know which player has permission to do things
-    // like start the game.
-    if (this.scenario) {
-      console.log('host: loading scenario', this.scenario.name);
-      this.scenario.start(this.db, this.settings);
+  private onUpdateSettings(
+      playerId: string, updateSettings: Net.UpdateSettings) {
+    // TODO Only the host player should be allowed to update settings.
+
+    if (updateSettings.scenarioName != null) {
+      this.settings.scenarioName = updateSettings.scenarioName;
+      for (const scenario of scenarios) {
+        if (scenario.name === updateSettings.scenarioName) {
+          this.scenario = scenario;
+          break;
+        }
+      }
     }
-    this.broadcast({startGame: {}}, true);
-    this.started = true;
+
+    if (updateSettings.started && !this.settings.started) {
+      if (this.scenario) {
+        console.log('host: loading scenario', this.scenario.name);
+        this.scenario.start(this.db);
+      }
+      this.settings.started = true
+
+    } else if (updateSettings.started === false) {
+      this.settings.started = false;
+    }
   }
 }

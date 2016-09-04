@@ -1,8 +1,9 @@
 ///<reference path="../typings/index.d.ts" />
 
-import {Db} from './entity/db';
-import {Connection} from '../net/connection';
+import * as Com from './components';
 import * as Msg from '../net/message';
+import {Connection} from '../net/connection';
+import {Db} from './entity/db';
 import {Update} from './comdb';
 
 // performance.now() is not available in node, so we need a substitute for unit
@@ -37,9 +38,6 @@ export class Client {
   // us that was integrated into the simulation.
   private lastIntegratedSeq: number;
 
-  // Milliseconds between simulation ticks.
-  private tickInterval: number;
-
   // Expected milliseconds between host update broadcasts.
   private updateInterval: number;
 
@@ -50,6 +48,8 @@ export class Client {
 
   private fwdMessages:
       (msg: Msg.Message, reliable: boolean, bytes: number) => void;
+
+  private settings: Com.Settings;
 
   constructor(
       private con: Connection, private getCommands: () => Msg.Commands) {
@@ -87,17 +87,22 @@ export class Client {
     // Immediately apply the initial database snapshot.
     this.db = new Db();
     this.db.apply(welcome.snapshot);
+    this.settings = this.db.findSettings();
+    if (!this.settings) {
+      console.error('client: no settings object found');
+      this.stop();
+      return;
+    }
 
     // Initialize previous positions for interpolation.
     this.savePrevPositions();
 
     this.lastHostSeq = welcome.snapshot.hostSeq;
-    this.tickInterval = welcome.tickInterval;
-    this.updateInterval = welcome.updateInterval;
+    this.updateInterval = this.settings.updateInterval;
     this.lastUpdateTime = now();
     this.welcomed = true;
     this.sendCommandsTimeout =
-        setTimeout(this.sendCommands.bind(this), this.tickInterval);
+        setTimeout(this.sendCommands.bind(this), this.settings.tickInterval);
   }
 
   private onUpdate(update: Update) {
@@ -116,7 +121,7 @@ export class Client {
 
   private sendCommands() {
     this.sendCommandsTimeout =
-        setTimeout(this.sendCommands.bind(this), this.tickInterval);
+        setTimeout(this.sendCommands.bind(this), this.settings.tickInterval);
 
     const commands = this.getCommands();
     commands.seq = this.nextSeq++;
