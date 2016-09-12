@@ -23,7 +23,6 @@ export class Ship {
     const reflectionTexture = new BABYLON.CubeTexture(
         'textures/skybox/box', scene, SKYBOX_EXTENSIONS);
 
-
     assetPack.loadShip(shipAsset).then((mesh: BABYLON.Mesh) => {
       this.visualMesh = mesh.clone('');
       this.visualMesh.setEnabled(true);
@@ -106,21 +105,23 @@ export class Ship {
     if (prev == null) {
       prev = pos;
     }
-    this.mesh.position.x = lerp(pos.x, prev.x, alpha) * 100;
-    this.mesh.position.z = -lerp(pos.y, prev.y, alpha) * 100;
+    this.mesh.position.x = lerp(pos.x, prev.x, alpha);
+    this.mesh.position.z = -lerp(pos.y, prev.y, alpha);
     this.mesh.rotation.y = Math.PI / 180 * lerp(pos.yaw, prev.yaw, alpha);
     const roll = lerp(pos.roll, prev.roll, alpha);
     if (this.visualMesh) {
       this.visualMesh.rotation.x = -(roll * roll) / 4;
       this.visualMesh.rotation.z = roll;
     }
+
+    // TODO kinda broken
     // visual scaling effect when going fast
-    const mot = this.db.motion[this.id];
-    const thrust = Math.abs(mot.velocityX) + Math.abs(mot.velocityY);
-    this.mesh.scaling.z = 1 /
-        ((Math.pow(thrust, 4) * 19) + 1)
-        // TODO shield
-        this.shield.setEnabled(false);
+    // const mot = this.db.motion[this.id];
+    // const thrust = (Math.abs(mot.velocityX) + Math.abs(mot.velocityY));
+    // this.mesh.scaling.z = 1 / ((Math.pow(thrust, 4) * 19) + 1);
+
+    // TODO shield
+    this.shield.setEnabled(false);
   }
 
   walk(mesh: BABYLON.Node, cb: (node: BABYLON.Node) => void) {

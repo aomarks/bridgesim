@@ -3,10 +3,15 @@
 
 import {Db} from '../../core/entity/db';
 import {Ship} from './ship';
+import {SECTOR_METERS} from '../../core/galaxy';
 
 export const SKYBOX_EXTENSIONS = [
-  '_right1.png', '_top3.png', '_front5.png', '_left2.png', '_bottom4.png',
-  '_back6.png'
+  '_right1.png',
+  '_top3.png',
+  '_front5.png',
+  '_left2.png',
+  '_bottom4.png',
+  '_back6.png',
 ];
 
 @component('bridgesim-renderer')
@@ -15,15 +20,12 @@ export class Renderer extends polymer.Base {
   private scene: BABYLON.Scene;
   private assetsManager: BABYLON.AssetsManager;
   private camera: BABYLON.ArcRotateCamera;
-
   private renderShips: Ship[] = [];
   private shipMap: {[shipId: string]: Ship;} = {};
   private skybox: BABYLON.Mesh;
 
-  @property({type: Boolean}) assetsLoaded: boolean=false;
-
+  @property({type: Boolean, value: false}) assetsLoaded: boolean;
   @property({type: Number}) size: number;
-
   @property({type: Object}) db: Db;
   @property({type: String}) shipId: string;
 
@@ -33,6 +35,9 @@ export class Renderer extends polymer.Base {
     this.scene.clearColor = new BABYLON.Color4(0, 0, 0, 1);
     this.assetsManager = new BABYLON.AssetsManager(this.scene);
     this.assetsManager.useDefaultLoadingScreen = false;
+
+    // Disable failing XHR requests for .manifest files.
+    this.engine.enableOfflineSupport = false;
 
     this.camera = new BABYLON.ArcRotateCamera(
         'camera1', -Math.PI / 2, Math.PI / 2, 2,
@@ -67,13 +72,10 @@ export class Renderer extends polymer.Base {
     gridMaterial.emissiveColor = new BABYLON.Color3(0, 1, 0);
     gridMaterial.wireframe = true;
 
-    const trueSize = this.size * 10;
-    const cellSize = trueSize / 10;
+    const trueSize = this.size * SECTOR_METERS;
     const grid = BABYLON.Mesh.CreateGround(
-        'ground1', trueSize, trueSize, 10, this.scene);
+        'ground1', trueSize, trueSize, this.size, this.scene);
     grid.material = gridMaterial;
-    grid.position.x = trueSize / 2 - cellSize / 2;
-    grid.position.z = -trueSize / 2 + cellSize / 2;
     grid.position.y = -1;
 
     // Skybox
@@ -133,7 +135,6 @@ export class Renderer extends polymer.Base {
         0.3, 0.8, new BABYLON.Color3(1, 1, 1), 'textures/Flare.png',
         lensFlareSystem);
 
-
     window.addEventListener('resize', this.resize.bind(this));
   }
 
@@ -189,5 +190,4 @@ export class Renderer extends polymer.Base {
     }
   }
 }
-
 Renderer.register();

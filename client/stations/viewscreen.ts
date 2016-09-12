@@ -4,27 +4,23 @@ import {Renderer} from '../renderer/renderer';
 
 @component('viewscreen-station')
 class Viewscreen extends polymer.Base {
-  private active: boolean = false;
+  @property({type: Boolean}) active: boolean;
   private renderer: Renderer;
 
   draw(localAlpha: number, remoteAlpha: number) {
-    if (!this.active) {
+    if (this.renderer) {
+      this.renderer.draw(localAlpha, remoteAlpha);
+    }
+  }
+
+  @observe('active')
+  activeChanged(active: boolean) {
+    if (active) {
+      // Wait for the dom-if to stamp out.
+      this.async(() => { this.renderer = this.$$('#renderer'); });
+    } else {
       this.renderer = null;
-      return;
     }
-    if (!this.renderer) {
-      this.renderer = this.$$('#renderer');
-    }
-    this.renderer.draw(localAlpha, remoteAlpha);
-  }
-
-  attached() {
-    this.parentNode.addEventListener('iron-select', this.select.bind(this));
-  }
-
-  select(e: Event) {
-    this.active = (this.parentNode as any).selectedItem === this;
   }
 }
-
 Viewscreen.register();

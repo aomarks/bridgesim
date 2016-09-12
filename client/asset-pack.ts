@@ -17,12 +17,12 @@ export class AssetPack extends polymer.Base {
   @property({type: String}) manifest: string;
   @property({type: Object}) manifestBody: Manifest;
   @property({type: Object}) scene: BABYLON.Scene;
-  @property({type: Boolean, notify: true}) loaded: boolean=false;
+  @property({type: Boolean, notify: true, value: false}) loaded: boolean;
 
   private modelPromises: {[model: string]: Promise<BABYLON.Mesh>} = {};
 
   @property({computed: 'computeBaseUrl(manifest)'}) baseURL: string;
-  computeBaseURL(manifest: string): string { return this.urlDir(manifest); }
+  computeBaseUrl(manifest: string): string { return this.urlDir(manifest); }
 
   @property({type: Object, computed: 'computeShips(manifestBody)'})
   ships: Ship[];
