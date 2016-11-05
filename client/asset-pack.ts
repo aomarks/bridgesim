@@ -1,6 +1,6 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 ///<reference path="../bower_components/babylonjs/dist/babylon.2.4.d.ts" />
-///<reference path="../typings/index.d.ts" />
+
 
 interface Manifest {
   ships: Ship[];

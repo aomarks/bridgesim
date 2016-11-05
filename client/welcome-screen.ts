@@ -1,5 +1,5 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../typings/index.d.ts" />
+
 
 @component('bridgesim-welcome-screen')
 class WelcomeScreen extends polymer.Base {

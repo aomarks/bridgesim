@@ -5,7 +5,7 @@ export function SpawnMissile(
   const res = db.resources[origin];
   if (res) {
     if (res.missile <= 0) {
-      return;
+      return undefined;
     }
     res.missile--;
   }

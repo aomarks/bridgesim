@@ -1,4 +1,4 @@
-///<reference path="../typings/index.d.ts" />
+///<reference path="../node_modules/\@types/webrtc/index.d.ts" />
 
 import {Connection} from './connection';
 import {Message} from './message';
@@ -35,8 +35,8 @@ export class WebRTCConnection implements Connection {
   private open = false;
 
   constructor(config: RTCConfiguration) {
-    const rtcPeerConnection: any = window.RTCPeerConnection ||
-        window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+    const rtcPeerConnection: typeof window.RTCPeerConnection = window.RTCPeerConnection ||
+        window['webkitRTCPeerConnection'] || window['mozRTCPeerConnection'];
     this.peer = new rtcPeerConnection(config);
   }
 
@@ -81,7 +81,7 @@ export class WebRTCConnection implements Connection {
     this.setupChan(this.unreliable, false);
 
     return new Promise((resolve, reject) => {
-      this.peer.onicecandidate = (ev: RTCIceCandidateEvent) => {
+      this.peer.onicecandidate = (ev: RTCPeerConnectionIceEvent) => {
         if (!ev.candidate) {
           resolve(this.peer.localDescription);
         }
@@ -108,7 +108,7 @@ export class WebRTCConnection implements Connection {
     };
 
     return new Promise((resolve, reject) => {
-      this.peer.onicecandidate = (ev: RTCIceCandidateEvent) => {
+      this.peer.onicecandidate = (ev: RTCPeerConnectionIceEvent) => {
         if (!ev.candidate) {
           resolve(this.peer.localDescription);
         }

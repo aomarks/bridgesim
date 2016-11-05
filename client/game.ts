@@ -1,5 +1,5 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../typings/index.d.ts" />
+
 
 import {Client} from '../core/client';
 import {Update} from '../core/comdb';

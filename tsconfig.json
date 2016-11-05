@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "ES6",
     "module": "commonjs",
     "experimentalDecorators": true,
     "noImplicitReturns": true,
@@ -9,7 +9,6 @@
   },
   "exclude": [
     "bower_components",
-    "node_modules",
-    "typings"
+    "node_modules"
   ]
 }

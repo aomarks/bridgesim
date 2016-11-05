@@ -1,4 +1,4 @@
-///<reference path="../typings/index.d.ts" />
+
 
 import {expect} from 'chai';
 import * as sinon from 'sinon';
