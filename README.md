@@ -6,7 +6,7 @@ It's a starship bridge simulator.
 Node.JS and NPM are required.
 
 ```sh
-rpm run deps
+npm install && npm run init
 ```
 
 ## Developing
@@ -19,7 +19,7 @@ npm run watch
 
 ### Run
 ```sh
-http-server -c-1
+npm run serve
 google-chrome http://localhost:8080/
 ```
 Use WASD to pilot.
