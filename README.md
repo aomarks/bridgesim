@@ -6,7 +6,7 @@ It's a starship bridge simulator.
 Node.JS and NPM are required.
 
 ```sh
-npm install && npm run init
+npm install -g yarn && yarn install && npm run init
 ```
 
 ## Developing

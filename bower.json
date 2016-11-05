@@ -9,12 +9,12 @@
     "typings"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.5.0",
-    "polymer-ts": "nippur72/PolymerTS#^0.1.26",
+    "app-route": "PolymerElements/app-route#^0.9.1",
+    "babylonjs": "BabylonJS/Babylon.js#~2.4.0",
     "iron-elements": "PolymerElements/iron-elements#^1.0.10",
     "paper-elements": "PolymerElements/paper-elements#^1.0.7",
-    "babylonjs": "BabylonJS/Babylon.js#~2.4.0",
-    "app-route": "PolymerElements/app-route#^0.9.1",
+    "polymer": "Polymer/polymer#^1.5.0",
+    "polymer-ts": "nippur72/PolymerTS#^0.1.26",
     "webrtc-lobby-elements": "d4l3k/webrtc-lobby-elements#^1.0.3"
   },
   "resolutions": {
