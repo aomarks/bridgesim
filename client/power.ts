@@ -16,7 +16,7 @@ export class Power extends polymer.Base {
 
   ready() {
     this.subsystems = [];
-    for (name of Components.Power.prototype.props) {
+    for (const name of Components.Power.prototype.props) {
       this.push('subsystems', {
         name: name,
         level: 0,

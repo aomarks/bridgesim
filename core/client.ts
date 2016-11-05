@@ -1,4 +1,4 @@
-///<reference path="../typings/index.d.ts" />
+
 
 import * as Com from './components';
 import * as Msg from '../net/message';
@@ -128,10 +128,10 @@ export class Client {
     this.con.send({commands: commands}, false);
   }
 
-  update(ts: number): number {
+  update(ts: number): number | undefined {
     if (!this.welcomed) {
       console.error('client: not welcomed');
-      return;
+      return undefined;
     }
 
     // Sort updates by host sequence number before applying. We might have

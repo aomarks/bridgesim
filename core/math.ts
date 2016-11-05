@@ -1,4 +1,4 @@
-import {Point, Region} from './components.ts';
+import {Point, Region} from './components';
 
 export function radians(degrees: number): number {
   return (degrees * Math.PI) / 180;

@@ -1,5 +1,5 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../../typings/index.d.ts" />
+
 
 import {Db} from '../../core/entity/db';
 import {heading} from '../../core/math';

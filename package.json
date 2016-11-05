@@ -4,12 +4,17 @@
   "description": "It's a starship bridge simulator.",
   "main": "index.js",
   "devDependencies": {
+    "@types/chai": "^3.4.34",
+    "@types/mocha": "^2.2.32",
+    "@types/sinon": "^1.16.31",
+    "@types/webrtc": "0.0.21",
     "browserify": "^13.0.1",
     "chai": "^3.5.0",
     "crisper": "^2.0.2",
     "html-minifier": "^2.1.2",
     "mocha": "^2.4.5",
     "sinon": "^1.17.4",
+    "typescript": "^2.0.7",
     "uglify-js": "^2.6.2",
     "vulcanize": "^1.14.8",
     "watchify": "^3.7.0"

@@ -1,4 +1,4 @@
-///<reference path="../typings/index.d.ts" />
+
 
 export const RTC_CONFIG: RTCConfiguration = {
   iceServers: [

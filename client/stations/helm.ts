@@ -1,5 +1,5 @@
 ///<reference path="../../bower_components/polymer-ts/polymer-ts.d.ts" />
-///<reference path="../../typings/index.d.ts" />
+
 
 import {clamp} from '../../core/math';
 import * as Net from '../../net/message';

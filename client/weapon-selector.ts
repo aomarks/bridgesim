@@ -12,7 +12,7 @@ export class WeaponSelector extends polymer.Base {
   weapons(id: string): Weapon[] {
     const health = this.db.healths[id];
     if (!health) {
-      return;
+      return undefined;
     }
     if (!this.selected) {
       this.selected = health.weapons[0];

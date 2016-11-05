@@ -9,7 +9,7 @@ export function SpawnLaser(
   const res = db.resources[origin];
   if (res) {
     if (res.energy < LASER_ENERGY) {
-      return;
+      return undefined;
     }
     res.energy -= LASER_ENERGY;
   }
