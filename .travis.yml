@@ -1,0 +1,7 @@
+language: node_js
+
+before_script:
+  - npm install -g yarn
+  - yarn install
+  - npm run init
+
