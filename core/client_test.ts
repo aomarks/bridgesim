@@ -11,8 +11,8 @@ import {Loopback} from '../net/loopback';
 import {Connection} from '../net/connection';
 
 const FRAME = 10;
-const TICK = FRAME * 2;
-const UPDATE = TICK * 2;
+const TICK = 20;
+const UPDATE = 40;
 
 describe('client', () => {
   let clock;
@@ -211,9 +211,13 @@ describe('client', () => {
       con.send({update: update}, false);
       expect(client.update(now())).to.equal(0);
 
-      // One more frame.
+      // One more frame. Expected update interval is based on the observed
+      // update rate instead of the update rate claimed by the server. So we
+      // are now expecting a longer delay until the next update than before,
+      // hence alpha is lower (.2 vs .25), and we will draw a little closer to
+      // update N-1 vs N.
       clock.tick(FRAME);
-      expect(client.update(now())).to.equal(.25);
+      expect(client.update(now())).to.equal(.2);
     });
   });
 });
