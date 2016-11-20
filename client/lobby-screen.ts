@@ -1,9 +1,9 @@
 ///<reference path="../bower_components/polymer-ts/polymer-ts.d.ts" />
 
 
-import * as Net from '../net/message';
-import {Db} from '../core/entity/db';
 import {Name, Player} from '../core/components';
+import {Db} from '../core/entity/db';
+import * as Net from '../net/message';
 import {Scenario} from '../scenarios/scenarios';
 
 interface Ship {
@@ -104,7 +104,7 @@ class LobbyScreen extends polymer.Base {
   }
 
   private tokenURL(token: string): string {
-    return window.location.origin + '/#' + token;
+    return window.location.origin + window.location.pathname + '#' + token;
   }
 }
 LobbyScreen.register();
