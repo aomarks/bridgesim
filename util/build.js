@@ -63,7 +63,6 @@ function runVulcanize() {
   console.log('Vulcanizing...');
 
   var vulcan = new vulcanize({
-    abspath: '.',
     excludes: ['out.js'],
     stripExcludes: [],
     inlineScripts: true,
@@ -187,7 +186,9 @@ function optimizeFolder(dir, config, output) {
   // absoluted folder path
   var rpath = path.resolve(dir);
 
-  function printTimeInfo(time) { console.log('Done in ' + time + ' ms!'); }
+  function printTimeInfo(time) {
+    console.log('Done in ' + time + ' ms!');
+  }
 
   function printProfitInfo(inBytes, outBytes) {
     var profitPercents = 100 - outBytes * 100 / inBytes;
