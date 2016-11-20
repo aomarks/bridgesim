@@ -1,10 +1,17 @@
 # bridgesim
 
-A starship bridge simulator for the web.
+[![Build Status](https://travis-ci.org/aomarks/bridgesim.svg?branch=master)](https://travis-ci.org/aomarks/bridgesim)
 
-Play it at [aomarks.github.io/bridgesim](https://aomarks.github.io/bridgesim/).
+A starship bridge simulator for the web. A work in progress.
+
+Try it out at [aomarks.github.io/bridgesim](https://aomarks.github.io/bridgesim/) (currently Chrome only).
+
+Built with [Polymer](https://www.polymer-project.org/),
+[TypeScript](https://www.typescriptlang.org/),
+and [WebRTC](https://webrtc.org/).
 
 ![Screenshot](/screenshot.png)
+
 
 ## Install/Update Dependencies
 Node.JS and NPM are required.
