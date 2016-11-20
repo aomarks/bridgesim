@@ -1,6 +1,10 @@
 # bridgesim
 
-It's a starship bridge simulator.
+A starship bridge simulator for the web.
+
+Play it at [aomarks.github.io/bridgesim](https://aomarks.github.io/bridgesim/).
+
+![Screenshot](/screenshot.png)
 
 ## Install/Update Dependencies
 Node.JS and NPM are required.
