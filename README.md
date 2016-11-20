@@ -12,31 +12,40 @@ and [WebRTC](https://webrtc.org/).
 
 ![Screenshot](/screenshot.png)
 
+## Developing
 
-## Install/Update Dependencies
-Node.JS and NPM are required.
+### Setup
+Assumes [Node.js](https://nodejs.org/en/) is installed.
 
 ```sh
 npm install -g yarn && yarn install && npm run init
 ```
 
-## Developing
-### Build TypeScript
-This command compiles all `.ts` files in the project and will recompile if
-there are any changes made to them.
+### Build
+Continuously watch for changes, compile all `.ts` files, and bundle for development serving.
 ```sh
 npm run watch
 ```
 
-### Run
+## Serve
+
 ```sh
 npm run serve
 google-chrome http://localhost:8080/
 ```
-Use WASD to pilot.
+
+### Test
+Run tests once:
+```sh
+npm run test
+```
+
+Run tests continuously on every change:
+```sh
+npm run watch-test
+```
 
 ### URLs
-
 URL hash determines the game to connect to:
 ```
 #host   # Launch host.
@@ -56,25 +65,11 @@ Example:
 http://localhost:8080/?station=weapons&metrics&autostart#host
 ```
 
-### Test
-Run all tests (includes compilation).
-```sh
-npm run test
-```
-
-Run all tests (includes compilation) and watch for changes.
-```sh
-npm run watch-test
-```
-
 ## Deploy
-To build the production version of the app run the build script. This
-automatically compiles the typescript, vulcanizes and minifies the source code.
-Output goes into `build/`.
+Build a vulcanized and minified version for deployment. Outputs to `dist/`.
 ```sh
-node ./build.js
+npm run build
 ```
 
 ## Lobby Service
-
 See [webrtc-lobby](https://github.com/d4l3k/webrtc-lobby) for details about running a lobby service for bridgesim to connect to. There's a hosted version at `wss://fn.lc/lobby`.
