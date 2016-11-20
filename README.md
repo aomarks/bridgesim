@@ -73,3 +73,8 @@ npm run build
 
 ## Lobby Service
 See [webrtc-lobby](https://github.com/d4l3k/webrtc-lobby) for details about running a lobby service for bridgesim to connect to. There's a hosted version at `wss://fn.lc/lobby`.
+
+## Authors
+[Al Marks](https://github.com/aomarks), [Tristan Rice](https://github.com/d4l3k), and [others](https://github.com/aomarks/bridgesim/graphs/contributors).
+
+Licensed under the [MIT License](https://opensource.org/licenses/MIT).
