@@ -1,10 +1,22 @@
 language: node_js
 
 node_js:
-  - node
+  - node # Latest version.
 
 before_script:
-  - npm install -g yarn
-  - yarn install
+  # yarn install runs automatically.
   - npm run init
 
+script:
+  - npm test
+  # Check build works even if we don't deploy.
+  - npm run build
+
+deploy:
+  provider: script
+  script: util/deploy.sh
+  # Don't reset working directory, we need the build output.
+  skip_cleanup: true
+  # Only deploy on pushes to master branch.
+  on:
+    branch: master
