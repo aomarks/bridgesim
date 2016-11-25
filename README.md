@@ -13,62 +13,26 @@ and [WebRTC](https://webrtc.org/).
 ![Screenshot](/screenshot.png)
 
 ## Developing
-
-### Setup
-Assumes [Node.js](https://nodejs.org/en/) is installed.
+Assumes [Node.js](https://nodejs.org/en/) and [Yarn](https://yarnpkg.com/) are installed.
 
 ```sh
-npm install -g yarn && yarn install
+yarn install       # Initial setup.
+npm run watch      # Build continuously on change.
+npm run serve      # Serve on port 8080.
+npm test           # Run tests once.
+npm run watch-test # Run tests continuously on change.
+npm run build      # Build vulcanized/minified deployment to dist/.
 ```
 
-### Build
-Continuously watch for changes, compile all `.ts` files, and bundle for development serving.
-```sh
-npm run watch
-```
+URL hash and query params can be useful for development:
 
-## Serve
-
-```sh
-npm run serve
-google-chrome http://localhost:8080/
 ```
-
-### Test
-Run tests once:
-```sh
-npm run test
-```
-
-Run tests continuously on every change:
-```sh
-npm run watch-test
-```
-
-### URLs
-URL hash determines the game to connect to:
-```
-#host   # Launch host.
-#local  # Connect to a host running in another tab.
-#abc123 # Connect to a game with the given token through the lobby server.
-```
-
-URL query parameters set debugging options:
-```
+#host            # Launch host.
+#local           # Connect to a host running in another tab.
+#abc123          # Connect to a game with the given token through the lobby server.
 ?station=weapons # Default to the given station.
 ?autostart       # If hosting, start the game immediately.
 ?metrics         # Show FPS, data usage, etc.
-```
-
-Example:
-```
-http://localhost:8080/?station=weapons&metrics&autostart#host
-```
-
-## Deploy
-Build a vulcanized and minified version for deployment. Outputs to `dist/`.
-```sh
-npm run build
 ```
 
 ## Lobby Service
