@@ -18,7 +18,7 @@ and [WebRTC](https://webrtc.org/).
 Assumes [Node.js](https://nodejs.org/en/) is installed.
 
 ```sh
-npm install -g yarn && yarn install && npm run init
+npm install -g yarn && yarn install
 ```
 
 ### Build

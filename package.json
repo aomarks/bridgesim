@@ -5,7 +5,7 @@
   "repository": "git@github.com:aomarks/bridgesim.git",
   "license": "MIT",
   "scripts": {
-    "init": "bower install",
+    "postinstall": "bower install",
     "test": "tsc && mocha $(find . -name '*_test.js' ! -path './node_modules/*' ! -path './bower_components/*'| tr -s '\n' ' ')",
     "watch": "watchify $(find client/ -name '*.ts' ! -name '*_test.ts' | tr -s '\n' ' ') -p tsify --outfile out.js --debug --verbose",
     "watch-test": "tsc --watch & mocha $(find . -name '*_test.js' ! -path './node_modules/*' ! -path './bower_components/*'| tr -s '\n' ' ') --watch",

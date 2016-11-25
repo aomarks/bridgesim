@@ -3,11 +3,8 @@ language: node_js
 node_js:
   - node # Latest version.
 
-before_script:
-  # yarn install runs automatically.
-  - npm run init
-
 script:
+  # yarn install runs automatically.
   - npm test
   # Check build works even if we don't deploy.
   - npm run build
