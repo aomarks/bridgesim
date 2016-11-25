@@ -29,8 +29,12 @@ cd deploy
 rm -rf *
 cp -R ../dist/* .
 
+# Stage and exit now if there are no changes.
+git add --all
+git diff --cached --exit-code && exit || true
+
 # Commit and push.
 git config user.name "Deploy Robot"
 git config user.email "aomarks+robot@gmail.com"
-git add --all
-git commit --message "Deploy $SHA" && git push || true
+git commit --message "Deploy $SHA"
+git push
