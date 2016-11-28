@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <title>bs-button demo</title>
+    <script src="../../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="bs-button.html">
+    <link rel="import" href="../bs-color/bs-color.html"></link>
+    <script src="../../out.js"></script>
+
+    <style is="custom-style">
+      body {
+        background-color: black;
+      }
+      bs-button {
+        margin-right: 5px;
+      }
+      #red {
+        --bs-button-color: var(--bs-red);
+      }
+      #orange {
+        --bs-button-color: var(--bs-orange);
+      }
+      #green {
+        --bs-button-color: var(--bs-green);
+      }
+      #blue {
+        --bs-button-color: var(--bs-blue);
+      }
+    </style>
+  </head>
+
+  <body>
+    <bs-button id="red">Red</bs-button>
+    <bs-button id="orange">Orange</bs-button>
+    <bs-button id="green">Green</bs-button>
+    <bs-button id="blue">Blue</bs-button>
+    <bs-button disabled>Disabled</bs-button>
+  </body>
+</html>

@@ -6,6 +6,7 @@
 <link rel="import" href="../resource-display.html">
 <link rel="import" href="../health-display.html">
 <link rel="import" href="../bridgesim-card.html">
+<link rel="import" href="../bs-button/bs-button.html">
 
 <dom-module id="science-station">
   <template>
@@ -54,8 +55,7 @@
       }
 
       #scanButton {
-        background-color: #0b2e61;
-        min-width: 100px;
+        min-width: 120px;
       }
     </style>
 
@@ -65,10 +65,10 @@
         <p>Distance: <span>[[selected.distance]]</span></p>
         <p>Heading: <span>[[selected.heading]]</span></p>
 
-        <paper-button id="scanButton" disabled$="[[scanning]]" on-tap="scan">
+        <bs-button id="scanButton" disabled$="[[scanning]]" on-tap="scan">
           <span hidden$="[[scanning]]">Scan</span>
           <span hidden$="[[!scanning]]">Scanning</span>
-        </paper-button>
+        </bs-button>
 
         <template is="dom-if" if="[[scanResults]]">
           <h2>Scan Results</h2>

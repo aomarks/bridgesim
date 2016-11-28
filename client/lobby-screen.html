@@ -5,6 +5,8 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 
+<link rel="import" href="bs-button/bs-button.html">
+<link rel="import" href="bs-color/bs-color.html">
 <link rel="import" href="scenario-selector.html">
 <link rel="import" href="deps.html">
 
@@ -84,7 +86,7 @@
       }
 
       #startButton {
-        background-color: #DE5C13;
+        --bs-button-color: var(--bs-orange);
         width: 150px;
         height: 40px;
       }
@@ -165,11 +167,11 @@
     </section>
 
     <section class="flex-none layout horizontal around-justified center">
-      <paper-button id="startButton"
-                    hidden$="[[!hosting]]"
-                    on-tap="start">
+      <bs-button id="startButton"
+                 hidden$="[[!hosting]]"
+                 on-tap="start">
         START
-      </paper-button>
+      </bs-button>
 
       <p hidden$="[[hosting]]">
         Waiting for host to start.

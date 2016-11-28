@@ -1,0 +1,66 @@
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer-ts/polymer-ts.html"></link>
+<link rel="import" href="../bs-color/bs-color.html"></link>
+<link rel="import" href="../bs-font/bs-font.html"></link>
+
+<!--
+`bs-button` is a monochromatic button based on `paper-button`. Color is set by
+the `bs-button-color` CSS variable.
+
+TODO: Bleepy bloopy sound effects.
+-->
+
+<dom-module id="bs-button">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      :host([disabled]) {
+        opacity: 0.6;
+      }
+
+      paper-button {
+        color: var(--bs-button-color, --bs-blue);
+        border: 1px solid var(--bs-button-color, --bs-blue);
+        --paper-button-ink-color: var(--bs-button-color, --bs-blue);
+        font-family: var(--bs-font);
+        padding: 8px 20px;
+        border-radius: 8px;
+
+        /* Stretch to fill. */
+        display: block;
+        text-align: center;
+      }
+
+      paper-button[disabled] {
+        /* Get rid of paper-button white text and background. */
+        color: var(--bs-button-color, --bs-blue);
+        background: none;
+      }
+
+      /**
+       * Use an absolutely positioned background layer with low opacity
+       * because it's hard to calculate the right color + alpha background.
+       */
+      #background {
+        background-color: var(--bs-button-color, --bs-blue);
+        opacity: 0.2;
+        border-radius: 8px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+
+    <paper-button disabled="[[disabled]]">
+      <content></content>
+      <div id="background"></div>
+    </paper-button>
+
+  </template>
+</dom-module>
