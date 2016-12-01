@@ -4,10 +4,8 @@ import {Db} from '../core/entity/db';
 
 interface Health {
   hp: number;
-  hpMax: number;
   shieldsUp: boolean;
   shields: number;
-  shieldsMax: number;
 }
 
 @component('health-display')
@@ -16,10 +14,14 @@ export class HealthDisplay extends polymer.Base {
   @property({type: String}) shipId: string;
 
   @observe('shipId')
-  observeShipId() { this.updateHealth(); }
+  observeShipId() {
+    this.updateHealth();
+  }
 
   @observe('db.healths.*')
-  observeHealths() { this.updateHealth(); }
+  observeHealths() {
+    this.updateHealth();
+  }
 
   @property({type: Object}) health: Health;
   updateHealth() {
@@ -31,12 +33,11 @@ export class HealthDisplay extends polymer.Base {
       return;
     }
     this.health = {
-      hp: health.hp,
-      hpMax: health.hpMax,
+      hp: health.hp / health.hpMax * 100,
       shieldsUp: health.shieldsUp,
-      shields: health.shields,
-      shieldsMax: health.shieldsMax,
+      shields: health.shields / health.shieldsMax * 100,
     };
+    console.log(this.health, health);
   }
 }
 HealthDisplay.register();

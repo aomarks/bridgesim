@@ -36,7 +36,7 @@
       <tr>
         <td class="label">Hull</td>
         <td>
-          <bs-meter value="60"
+          <bs-meter value="[[health.hp]]"
                     id="hull">
           </bs-meter>
         </td>
@@ -44,9 +44,8 @@
       <tr>
         <td class="label">Shields</td>
         <td>
-          <bs-meter value="30"
-                    id="shields"
-                    disabled="[[!health.shieldsUp]]">
+          <bs-meter value="[[health.shields]]"
+                    id="shields">
           </bs-meter>
         </td>
       </tr>
