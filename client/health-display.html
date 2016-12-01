@@ -1,29 +1,55 @@
-<link rel="import" href="../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="bs-color/bs-color.html"></link>
+<link rel="import" href="bs-meter/bs-meter.html">
 
 <dom-module id="health-display">
   <template>
     <style>
-      paper-progress.shields {
-        --paper-progress-active-color: var(--paper-light-blue-500);
+      :host {
+        display: block;
+      }
+
+      bs-meter {
+        height: 10px;
+      }
+
+      table {
+        width: 100%;
+      }
+
+      td.label {
+        width: 1px;
+        padding-right: 10px;
+      }
+
+      #hull {
+        --bs-meter-color: var(--bs-blue);
+      }
+
+      #shields {
+        --bs-meter-color: var(--bs-green);
       }
     </style>
 
     <h3>Ship Status</h3>
-      <table>
-        <tr>
-          <td>Hull</td>
-          <td>
-            <paper-progress value="[[health.hp]]" max="[[health.hpMax]]" class="hull"></paper-progress>
-          </td>
-        </tr>
-        <tr>
-          <td>Shields</td>
-          <td>
-            <paper-progress value="[[health.shields]]"
-              max="[[health.shieldsMax]]" class="shields"
-              disabled="[[!health.shieldsUp]]"></paper-progress>
-          </td>
-        </tr>
-      </table>
+
+    <table>
+      <tr>
+        <td class="label">Hull</td>
+        <td>
+          <bs-meter value="60"
+                    id="hull">
+          </bs-meter>
+        </td>
+      </tr>
+      <tr>
+        <td class="label">Shields</td>
+        <td>
+          <bs-meter value="30"
+                    id="shields"
+                    disabled="[[!health.shieldsUp]]">
+          </bs-meter>
+        </td>
+      </tr>
+    </table>
   </template>
 </dom-module>

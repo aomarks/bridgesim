@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <title>bs-meter demo</title>
+    <script src="../../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="bs-meter.html">
+    <link rel="import" href="../bs-color/bs-color.html"></link>
+    <script src="../../out.js"></script>
+
+    <style is="custom-style">
+      body {
+        background-color: black;
+      }
+
+      bs-meter {
+        margin-top: 10px;
+        width: 400px;
+      }
+
+      #a { --bs-meter-color: var(--bs-red); }
+      #b { --bs-meter-color: var(--bs-orange); }
+      #c { --bs-meter-color: var(--bs-green); }
+      #d { --bs-meter-color: var(--bs-blue); }
+    </style>
+  </head>
+
+  <body>
+    <bs-meter id="a" value="20"></bs-meter>
+    <bs-meter id="b" value="40"></bs-meter>
+    <bs-meter id="c" value="60"></bs-meter>
+    <bs-meter id="d" value="80"></bs-meter>
+  </body>
+</html>
